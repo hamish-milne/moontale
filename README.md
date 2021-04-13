@@ -1,9 +1,9 @@
-# Luatwine
+# Moontale
 A Twine 2 story format that outputs Lua
 
 ## Overview
 
-With Luatwine, you can write Twine 2 stories with Lua scripts embedded directly into your Passages. The Story can then be exported as a plain Lua file, which can be played in the browser like any other Twine format, or be embedded into any engine that supports Lua - for example, the Luatwine Unity plugin.
+With Moontale, you can write Twine 2 stories with Lua scripts embedded directly into your passages. The story can be played in the browser like any other Twine format, or be exported as a Lua script and embedded into any engine that supports Lua - for example, the Moontale Unity plugin.
 
 ### Who is this for?
 
@@ -13,12 +13,12 @@ With Luatwine, you can write Twine 2 stories with Lua scripts embedded directly 
 ### Who is this not for?
 
 * Developers focused on linear storytelling, CYOA, and other projects with minimal logic (and are only targeting the browser). Harlowe should have everything you need.
-* Developers indending to take advantage of complex browser-based features: media playback, CSS and so on. For any feature, if it's not in [TextMeshPro's Rich Text](http://digitalnativestudios.com/textmeshpro/docs/rich-text/) then Luatwine probably won't support it in the browser.
-* Developers who like the 'mutable' model used by Harlowe: hiding/showing parts of a passage, changing words from one to another when the user clicks something and so on. See [Immutability] for more details.
+* Developers indending to take advantage of complex browser-based features: media playback, CSS and so on. For any feature, if it's not in [TextMeshPro's Rich Text](http://digitalnativestudios.com/textmeshpro/docs/rich-text/) then Moontale probably won't support it in the browser.
+* Developers who like the 'mutable' model used by Harlowe: hiding/showing parts of a passage, changing words from one to another when the user clicks something and so on. See [Immutability](#immutability) for more details.
 
 ## Syntax
 
-Luatwine supports the following:
+Moontale supports the following:
 * All CommonMark Markdown syntax, excluding standard hyperlinks and HTML
 * Links in the form `[[Passage]]`, `[[Text->Passage]]`, and `[[Passage<-Text]]`
 * Plain variables, in the form `$myVariable`
@@ -28,16 +28,16 @@ Luatwine supports the following:
 
 ### Links
 
-Luatwine supports the 'Twine standard' passage link syntax, which allows the Twine editor to work out what passages link to what, and draw pretty lines between them.
+Moontale supports the 'Twine standard' passage link syntax, which allows the Twine editor to work out what passages link to what, and draw pretty lines between them.
 
 Internally, `[[Text->Passage]]` expands to `<$ link('Passage') $>[Text]`; but note that if you use the expanded form, Twine won't draw the link lines.
 
 ### Embedded code
 
-Short-form variables such as `$foo` will look up the value of 'foo' and display it. See [Rules for rendering] for details on what exactly will be outputted here. The variable name must begin with an ASCII letter or underscore, which is followed by a contiguous sequence of ASCII letters, numbers, or underscores. This ensures that monetary values in the text e.g. `$1.10` will display as intended.
+Short-form variables such as `$foo` will look up the value of 'foo' and display it. See [Rules for rendering](#rules-for-rendering) for details on what exactly will be outputted here. The variable name must begin with an ASCII letter or underscore, which is followed by a contiguous sequence of ASCII letters, numbers, or underscores. This ensures that monetary values in the text e.g. `$1.10` will display as intended.
 > If for some reason you want to look up a variable with a non-identifier name, you can use `<$ _G['1.10'] $>`
 
-Short-form variables are of course limited to a single identifier. To show the result of an expression - a function call, arithmetic, or similar - you can use the expression syntax: `<$ 1 + 2 + 3 $>` will print '6'. You can add whitespace and new-lines anywhere you could ordinarily with Lua, without affecting the output. The same [Rules for rendering] apply here.
+Short-form variables are of course limited to a single identifier. To show the result of an expression - a function call, arithmetic, or similar - you can use the expression syntax: `<$ 1 + 2 + 3 $>` will print '6'. You can add whitespace and new-lines anywhere you could ordinarily with Lua, without affecting the output. The same [Rules for rendering](#rules-for-rendering) apply here.
 
 Expressions are limited to a single, well, expression. If you want to run code with statements, such as to set variables and define functions, you can use the script block syntax: `{$ x = 5 $}`, which will set the value of 'x' to '5'. Script blocks only generate output if explicit calls to `show()` and friends are made. As with expressions, you can add whitespace anywhere you like.
 
@@ -45,11 +45,14 @@ Internally, short-form variables expand to expressions, which in turn expand to 
 
 ### Changer syntax
 
-If a short-form variable or expression immediately precedes a 'content block' - any content surrounded by `[` and `]` - it will be treated as a 'changer' with the content block applied to it. See [Changers] for more details. Changer blocks can be nested infinitely.
+If a short-form variable or expression immediately precedes a 'content block' - any content surrounded by `[` and `]` - it will be treated as a 'changer' with the content block applied to it. See [Changers](#changers) for more details. Changer blocks can be nested infinitely.
 
 A content block without an attached changer expression will generate a warning (because there is no reason to do this) but will otherwise be shown normally. So `[Text]` will display as `Text`.
 
 ## Built-in functions
+
+### Basics
+* `show(value)`: Displays the given value according to the [Rules for rendering](#rules-for-rendering)
 
 ### Changers
 
@@ -92,29 +95,35 @@ These are the low-level functions that produce the user-visible text, and need t
   * `i`: Italics
   * `u`: Underline
   * `s`: Strikethrough
+  * `pre`: Preformatted
   * `h1`-`h6`: Heading
-  * `color`: Text color (with argument)
-  * `click`: Executes the given function when the text is clicked
+  * `color`: Text color (1st argument)
+  * `click`: Executes the given function (1st argument)  when the text is clicked
 * `pop()`: Ends the tag from the last un-popped `push()` instruction.  `push()` and `pop()` must be balanced.
-* `text(text)`: Outputs the given text string
+* `text(text)`: Outputs the given text string (the argument *must* be a string; see `show()` for conversion semantics)
 * `object(tag, arguments...)`: Outputs the given non-text object. Valid tags include:
   * `hr`: Horizontal line
   * `br`: Line break
 
-Note that *any* tag can be given as an argument here; this list is intended as a useful baseline, but the host could support more or less than this.
+Note that *any* tag can be given as an argument here; this list is intended as a useful baseline, but the host could support more or less than this. For example, a `tooltip` tag that displays in a separate canvas when the enclosing element is hovered over.
 
 ## Conventions and caveats
 
-Luatwine attempts to make most of its internal operations straightforward and predictable, even if this is on the surface less convenient.
+Moontale attempts to make most of its internal operations straightforward and predictable, even if this is on the surface less convenient.
 
 ### Rules for rendering
 
-When you `show()` a value, the content that gets outputted (i.e. the sequence of emissions) depends on the value's type:
+When you `show()` a value, reference it in an expression, or use it in a short-form variable, the content that gets outputted (i.e. the sequence of emissions) depends on the value's type:
 * Strings are outputted directly: `text(value)`
 * Booleans and Numbers are converted to strings: `text(tostring(value))`
 * Functions are called with no arguments, which may generate output as a side-effect. Their return value is ignored. This is what allows saved content blocks (with `name()`) to be printable later on.
 * Tables are treated like functions (they could have a metatable with call operator)
+* Tables without a valid call operator will generate an error, but otherwise produce no output
 * Nil values are skipped
+
+### Error handling
+
+Expressions, script blocks, and `show()` calls are 'protected'. If any of these throws an error part-way through execution, any output that was emitted so far is preserved, the error is logged, and the current expression/script terminates early. The rest of the passage (or content block) will continue to be rendered.
 
 ### Block repetition
 
@@ -175,7 +184,7 @@ However, if you have a Lua string literal that actually contains `$}` or `$>`, y
 
 ## Extension
 
-By default, Luatwine's built-in functionality is deliberately limited to improve performance and reduce bloat. However, adding in the functionality you need is usually trivial thanks to the flexibility of Lua.
+By default, Moontale's built-in functionality is deliberately limited to improve performance and reduce bloat. However, adding in the functionality you need is usually trivial thanks to the flexibility of Lua.
 
 ### Number of visits
 For example, suppose you need to know if a given passage has been visited before - something like `$firstVisit[ Ask for her name ] $_else[ Ask for her number ]`. You could add the following code blocks:
