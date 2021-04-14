@@ -51,8 +51,18 @@ A content block without an attached changer expression will generate a warning (
 
 ## Built-in functions
 
+### Variables
+* `passage`: The currently rendering passage object, which has the following fields:
+  * `name`: The string name, as given in the editor
+  * `tags`: An array of the passage tags, in order
+  * `content`: A function that renders the passage's content
+* `passages`: The array of passages, keyed by index
+* `saved`: A user-modifiable table that 'shadows' the global table. See [Saving and loading](#saving-and-loading) for details.
+
 ### Basics
 * `show(value)`: Displays the given value according to the [Rules for rendering](#rules-for-rendering)
+* `jump(passage)`: Clears the screen and renders the passage with the given name. This will change the value of the `passage` global variable. 
+* `display(passage)`: Renders the passage with the given name in-line with the text. Note that this does *not* change the value of the `passage` global variable.
 
 ### Changers
 
@@ -104,8 +114,10 @@ These are the low-level functions that produce the user-visible text, and need t
 * `object(tag, arguments...)`: Outputs the given non-text object. Valid tags include:
   * `hr`: Horizontal line
   * `br`: Line break
+* `clear()`: Clears the screen; normally called just before rendering a passage
+* `log(message, trace)`: Used to log diagnostic messages, particularly rendering errors
 
-Note that *any* tag can be given as an argument here; this list is intended as a useful baseline, but the host could support more or less than this. For example, a `tooltip` tag that displays in a separate canvas when the enclosing element is hovered over.
+Note that *any* tag can be given as an argument to `push` and `object`; this list is intended as a useful baseline, but the host could support more or less than this. For example, a `tooltip` tag that displays in a separate canvas when the enclosing element is hovered over.
 
 ## Conventions and caveats
 
@@ -181,6 +193,10 @@ Fortunately, there are a number of options to achieve a very similar effect:
 The tokens `<$`, `$>`, `{$`, and `$}` were chosen because they are always invalid sequences in Lua and (probably) invalid in Markdown, so the parser just needs to scan for the matching end token and treat the whole match as the Lua code to execute.
 
 However, if you have a Lua string literal that actually contains `$}` or `$>`, you'll run into problems! If for **some reason** you need to operate on these sequences or include them in your text, you'll have to elaborate the expression a bit: `'$'..'}'`. There are no 'escape sequences' or suchlike.
+
+### Variable scope
+
+Moontale has no first-class support for 'passage local' variables. Once set, a (global) variable is set 'forever'. Lua's `local` variables, when used in expressions/scripts, are scoped to that particular code element and do not leak into the enclosing passage.
 
 ## Extension
 
