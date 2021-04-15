@@ -1,4 +1,5 @@
 import markdownit from 'markdown-it'
+import { lua, lauxlib, lualib } from 'fengari'
 
 import content_block from './content_block'
 import expression from './expression'
@@ -93,3 +94,19 @@ function renderOne(input: Token, output: string[], state: {level: number}) {
         }
     }
 }
+
+
+export function setupLua() {
+    const L = lauxlib.luaL_newstate()
+    lualib.luaL_openlibs(L)
+    lua.lua_register(L, "foo", _ => {
+        console.log(new TextDecoder().decode(lua.lua_tostring(L, -1)))
+        lua.lua_pop(L, 1)
+        return 0
+    })
+    console.log(lauxlib.luaL_dostring(L, new TextEncoder().encode("print('some text!');")))
+    console.log(lauxlib.luaL_dostring(L, new TextEncoder().encode("foo('some text!');")))
+    // console.log(lauxlib.luaL_loadbuffer(L, "print('some text!');", 20, "chunk1"))
+
+}
+
