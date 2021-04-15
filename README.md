@@ -65,7 +65,7 @@ A content block without an attached changer expression will generate a warning (
 * `reload()`: Causes the current passage to be re-rendered.
 * `display(passage)`: Renders the passage with the given name in-line with the text. Note that this does *not* change the value of the `passage` global variable.
 * `softReset()`: Jumps to the start passage, re-running any `startup`-tagged passages.
-* `hardReset()`: Clears all user-defined variables, then does a `softReset()`. This is a 'best effort' function;
+* `hardReset()`: Clears all user-defined variables, then does a `softReset()`. This is a 'best effort' function - it is possible to 'leak' state into places that this function won't touch, such as the `passages` table. If this is a concern, the host should destroy and re-create the Lua VM.
 
 ### Saving and loading
 * `save()`: Encodes the contents of the `saved` table (which includes the current passage name) to a string. This is intended to be called by the host, which should handle storing and organizing the data.
