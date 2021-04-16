@@ -8,6 +8,7 @@
         "allowSyntheticDefaultImports": true,
         "moduleResolution": "node",
         "esModuleInterop": true,
+        "sourceMap": true
     },
     "exclude": [
         "src/**/*.spec.ts",

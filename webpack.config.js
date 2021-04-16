@@ -3,6 +3,7 @@ const webpack = require('webpack');
 
 module.exports = {
     mode: 'development',
+    devtool: "source-map",
     entry: './src/index.ts',
     module: {
         rules: [
@@ -15,6 +16,10 @@ module.exports = {
                 test: /mdurl/,
                 use: 'null-loader',
             },
+            {
+                test: /\.lua/,
+                type: 'asset/source',
+            }
         ],
     },
     resolve: {
@@ -36,5 +41,7 @@ module.exports = {
         contentBase: path.join(__dirname, 'dist'),
         compress: true,
         port: 9000,
+        inline: true,
+        hot: true
     },
 };

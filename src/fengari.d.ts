@@ -501,7 +501,7 @@ export namespace lua {
 
     function lua_atpanic(L: lua_State, panicf: lua_CFunction): any;
 
-    function lua_call(L: lua_State, n: any, r: any): void;
+    function lua_call(L: lua_State, n: number, r: number): void;
 
     function lua_callk(L: lua_State, nargs: any, nresults: any, ctx: any, k: any): void;
 
@@ -701,7 +701,7 @@ export namespace lua {
 
     function lua_tointegerx(L: lua_State, idx: number): any;
 
-    function lua_tojsstring(L: lua_State, idx: number): any;
+    function lua_tojsstring(L: lua_State, idx: number): string;
 
     function lua_tolstring(L: lua_State, idx: number): any;
 

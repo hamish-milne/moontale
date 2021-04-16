@@ -10,6 +10,13 @@
 			"group": "build",
 			"label": "npm: build",
 			"detail": "webpack"
-		}
+		},
+		{
+            "label": "serve",
+            "type": "npm",
+            "script": "serve",
+            "promptOnClose": true,
+            "problemMatcher": []
+        }
 	]
 }
