@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "type": "node-terminal",
+            "name": "Run Script: serve",
+            "request": "launch",
+            "command": "npm run serve",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "node-terminal",
+            "name": "Run Script: test",
+            "request": "launch",
+            "command": "npm run test",
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

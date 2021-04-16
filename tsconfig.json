@@ -7,6 +7,10 @@
         "allowJs": true,
         "allowSyntheticDefaultImports": true,
         "moduleResolution": "node",
-        "esModuleInterop": true
-    }
+        "esModuleInterop": true,
+    },
+    "exclude": [
+        "src/**/*.spec.ts",
+        "node_modules"
+    ]
 }

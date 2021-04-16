@@ -1,13 +1,21 @@
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = {
+    mode: 'development',
     entry: './src/index.ts',
     module: {
-        rules: [{
-            test: /\.tsx?$/,
-            use: 'ts-loader',
-            exclude: /node_modules/,
-        }, ],
+        rules: [
+            {
+                test: /\.tsx?$/,
+                use: 'ts-loader',
+                exclude: /node_modules/,
+            },
+            {
+                test: /mdurl/,
+                use: 'null-loader',
+            },
+        ],
     },
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
@@ -15,5 +23,18 @@ module.exports = {
     output: {
         filename: 'bundle.js',
         path: path.resolve(__dirname, 'dist'),
+    },
+    node: false,
+    plugins: [
+        // Excludes nodejs-specific stuff from Fengari
+        new webpack.DefinePlugin({
+            "process.env.FENGARICONF": "void 0",
+            "typeof process": JSON.stringify("undefined")
+        }),
+    ],
+    devServer: {
+        contentBase: path.join(__dirname, 'dist'),
+        compress: true,
+        port: 9000,
     },
 };
