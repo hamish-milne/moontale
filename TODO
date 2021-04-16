@@ -1,0 +1,72 @@
+Build the format.json file:
+    ✔ Inline the JS @done(21-04-17 00:18)
+    ✔ Inline the CSS @done(21-04-17 00:18)
+    ✔ Minify the HTML @done(21-04-17 00:18)
+    ✔ Build format.json from dist/index.html @done(21-04-17 00:18)
+
+Error handling:
+    ☐ Show an error log in the browser player
+    ☐ Protect all the calls from JS
+    ☐ Protect all the calls within Lua
+
+Serialization:
+    ☐ save()
+    ☐ load()
+    ☐ 'saved' table (with shadowing in _G)
+
+Library:
+    ☐ show()
+    ☐ jump()
+    ☐ reload()
+    ☐ display()
+    ☐ start()
+    ☐ softReset / hardReset
+    ☐ Conditionals
+    ☐ Formatting
+    ☐ Repetition
+    ☐ replace()
+    ☐ strip()
+    ☐ name()
+    ☐ combine()
+    ☐ freeze
+    ☐ Special passage tags
+
+Player features:
+    ☐ Back button
+    ☐ Save/load
+    ☐ Show/download Lua code
+    ☐ Distinguish between 'debug' and 'not debug' modes
+
+Debugging:
+    ☐ Show Lua variables in Player
+    Display types:
+        ☐ String
+        ☐ Number
+        ☐ Boolean
+        ☐ Table
+        ☐ Function
+    Modification:
+        ☐ String
+        ☐ Number
+        ☐ Boolean
+        ☐ Table
+        ☐ Function
+    ☐ Allow changing variable types
+    ☐ 'yield' mode to allow line-by-line debugging (Future!)
+
+Editor features:
+    ☐ Syntax highlighting
+    ☐ Keyboard shortcuts
+    ☐ Toolbar?
+
+Unity features:
+    ☐ NLua/KopiLua/KeraLua runtime
+    ☐ TMPro integration
+    ☐ UGUI integration
+
+Admin:
+    ☐ Make a github pages
+    ☐ Documentation -> gitbook
+    ☐ CI/CD -> publishing
+    ☐ Unit tests (w/ coverage)
+    ✔ Logo :) @done(21-04-17 00:18)

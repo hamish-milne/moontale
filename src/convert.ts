@@ -54,7 +54,7 @@ function renderOne(input: Token, output: string[], state: {level: number}) {
 
     function add(str: string) {
         output.push(`${'  '.repeat(state.level)}${str}`)
-    } 
+    }
     switch (input.type) {
     case 'inline':
         for (const child of input.children) {
@@ -113,15 +113,20 @@ export function markdownToLua(src: string, outputBuffer: string[], state: {level
 }
 
 export function storyToLua(story: Element): string {
+    let startNode = story.getAttribute('startnode')
+    let startNodeName: string | null = null
     const buf: string[] = ['-- Generated with Moontale']
     buf.push(`story = '${escape(story.getAttribute('name'))}'`)
     buf.push(`passages = {`)
     for (let i = 0; i < story.children.length; i++) {
         let node = story.children[i]
         if (node.tagName.toLowerCase() === "tw-passagedata") {
+            if (startNode === node.getAttribute('pid')) {
+                startNodeName = node.getAttribute('name')
+            }
             buf.push(`  ['${escape(node.getAttribute('name'))}'] = {`)
             buf.push(`    id = ${node.getAttribute('pid')},`)
-            buf.push(`    tags = {${node.getAttribute('tags')}},`)
+            buf.push(`    tags = {${node.getAttribute('tags').split(' ').map(t => `'${escape(t)}'`).join(',')}},`)
             buf.push(`    position = {${node.getAttribute('position')}},`)
             buf.push(`    content = function()`)
             markdownToLua(node.textContent, buf, {level: 3})
@@ -130,6 +135,7 @@ export function storyToLua(story: Element): string {
         }
     }
     buf.push(`}`)
+    buf.push(`startPassage = '${escape(startNodeName)}'`)
 
     return buf.join('\n')
 }

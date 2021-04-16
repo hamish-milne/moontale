@@ -6,6 +6,10 @@ function clear()
     _events = {}
 end
 
+function show(value)
+    text(tostring(value))
+end
+
 function makeEvent(fn)
     _events[#_events + 1] = fn
     return #_events
@@ -30,5 +34,5 @@ function link(target)
 end
 
 function start()
-    jump('Untitled Passage')
+    jump(startPassage)
 end

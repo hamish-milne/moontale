@@ -1,0 +1,24 @@
+* {
+    transition: all 0.2s ease;
+}
+
+html {
+    background: beige;
+    margin: 0 auto;
+    padding: 50px 20px;
+    max-width: 600px;
+}
+
+p {
+    font-family: Garamond;
+    font-size: x-large;
+}
+
+a {
+    color: darkred;
+    text-decoration: none;
+}
+
+a:hover {
+    color: red
+}

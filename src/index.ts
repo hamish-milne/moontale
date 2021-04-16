@@ -1,8 +1,9 @@
 
 import { storyToLua } from './convert'
 import { loadStory, start, raiseEvent } from './runtime'
+import './style.css'
 
-let luaSrc = storyToLua(document.body.children[0])
+let luaSrc = storyToLua(document.getElementById('storyData').children[0])
 let output = document.getElementById('output')
 
 function onNewText(html: string) {
