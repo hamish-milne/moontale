@@ -21,5 +21,3 @@ echo 'You got to trust me on this, I saved the world'
 ```
 {% endcode %}
 
-{% file src=".gitbook/assets/format.json" caption="Moontale format" %}
-
