@@ -1,5 +1,7 @@
 # Introduction
 
+Moontale is a Twine story format that uses Lua as its scripting language. In addition to writing Lua code directly in your passages, you can convert your entire story to a single Lua file, which can be run by any "host" that supports Lua. You can also test and play your stories right in the browser, or publish them to HTML, just like any other Twine format.
+
 ## Quick start
 
 ```bash
@@ -41,9 +43,11 @@ Some variables/expressions, called 'changers', can be applied to content in the 
 $_else[ The walls of reality are collapsing! ]
 ```
 
-## Overview
+## Motivation
 
-Moontale is a Twine story format that uses Lua as its scripting language. In addition to writing Lua code directly in your passages, you can convert your entire story to a single Lua file, which can be run by any "host" that supports Lua. You can also test and play your stories right in the browser, or publish them to HTML, just like any other Twine format.
+It has always been possible, in theory at least, to use the output of Twine \(and Twee\) in non-browser applications. A number of other projects achieve this to some degree: Cradle, and my own Spool library. However, these solutions are hampered by their reliance on existing browser-focused story formats, which make developing and using these solutions difficult at best.
+
+I created Moontale to help make Twine useful in all stages of game development - from prototyping to production.
 
 ### Who is this for?
 
@@ -53,6 +57,6 @@ Moontale is a Twine story format that uses Lua as its scripting language. In add
 ### Who is this not for?
 
 * Developers focused on linear storytelling, CYOA, and other projects with minimal logic \(and are only targeting the browser\). Harlowe should have everything you need.
-* Developers indending to take advantage of complex browser-based features: media playback, CSS and so on. For any feature, if it's not in [TextMeshPro's Rich Text](http://digitalnativestudios.com/textmeshpro/docs/rich-text/) then Moontale probably won't support it in the browser.
+* Developers intending to take advantage of complex browser-based features: media playback, CSS and so on. For any feature, if it's not in [TextMeshPro's Rich Text](http://digitalnativestudios.com/textmeshpro/docs/rich-text/) then Moontale probably won't support it in the browser.
 * Developers who like the 'mutable' model used by Harlowe: hiding/showing parts of a passage, changing words from one to another when the user clicks something and so on. See Immutability for more details.
 
