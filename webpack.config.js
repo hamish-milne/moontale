@@ -71,7 +71,7 @@ module.exports = {
                     }
                     let outputString = `window.storyFormat(${JSON.stringify(outputJson)});`
                     fs.writeFileSync("build/format.js", outputString)
-                    fs.copyFileSync("dist/bundle.js.map", "build/bundle.js.map")
+                        // fs.copyFileSync("dist/bundle.js.map", "build/bundle.js.map")
                 })
             },
         },
@@ -94,4 +94,5 @@ module.exports = {
     }, {
         message: /You can limit the size of your bundles/
     }],
+    devtool: 'source-map'
 };
