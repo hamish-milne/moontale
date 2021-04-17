@@ -11,6 +11,7 @@ description: Moontale's standard library
 | `passages` | Map of string to table | The set of all passages in the story, keyed by their name. |
 | `passages[name].tags` | Set of string | The set of tags assigned to the passage; you can use `if(tags['my-tag'])` to check for a tag's presence |
 | `passages[name].content` | Function | The rendering function for the passage's content. |
+| `passages[name].position` | \[Number, Number\] | The position of the passage node in the editor, in \[x, y\] pixels |
 | `passageName` | String | The name of the currently rendering passage. |
 | `startPassage` | String | The name of the starting passage, as set in the editor. |
 
@@ -44,14 +45,14 @@ If an entry is listed without parentheses, it should be used as such: for exampl
 ### Conditionals
 
 {% hint style="info" %}
-The underscore prefix is required to avoid conflicting with Lua keywords
+The capitalization is required to avoid conflicting with Lua keywords
 {% endhint %}
 
 | Name | Arguments | Description |
 | :--- | :--- | :--- |
-| `_if(condition)` | Boolean |  Renders its content if `condition` is truthy |
-| `_else` |  |  Renders its content if the previous `_if` and none of the `_elseif` calls following it were entered |
-| `_elseif(condition)` | Boolean |  Renders its content if `condition` is truthy _and_ the previous `_if` and none of the `_elseif` calls following it were entered |
+| `If(condition)` | Boolean |  Renders its content if `condition` is truthy |
+| `Else` |  |  Renders its content if the previous `If` and none of the `ElseIf` calls following it were entered |
+| `ElseIf(condition)` | Boolean |  Renders its content if `condition` is truthy _and_ the previous `If` and none of the `ElseIf` calls following it were entered |
 
 ### Formatting
 
@@ -78,7 +79,7 @@ All the functions here call `push` and `pop` with the first argument being their
 
 | Name | Arguments | Description |
 | :--- | :--- | :--- |
-| `repeat(count)` | Integer |  Renders the content `count` times in a row |
+| `Repeat(count)` | Integer |  Renders the content `count` times in a row |
 | `forEach(iterable)` | Table |  Renders the content for each item in `iterable`, setting the variables `key` and `value` to the key and value of each entry. This is equivalent to `forEach(iterable, 'key', 'value')`. |
 | `forEach(iterable, ...)` | Table, String \(multiple\) | Renders the content for each item in `iterable`, mapping each entry to variables with the names given in the subsequent arguments. |
 

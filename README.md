@@ -4,7 +4,13 @@ description: 'Learn what we''re about, and get started!'
 
 # Introduction
 
-Moontale is a Twine story format that uses Lua as its scripting language. In addition to writing Lua code directly in your passages, you can convert your entire story to a single Lua file, which can be run by any "host" that supports Lua. You can also test and play your stories right in the browser, or publish them to HTML, just like any other Twine format.
+**This documentation is best read on** [**GitBook**](https://moontale.hmilne.cc/)\*\*\*\*
+
+{% hint style="danger" %}
+Moontale is currently in an 'alpha' state; expect a lot of bugs! Add your issues and feature requests on [GitHub](https://github.com/hamish-milne/moontale/issues)
+{% endhint %}
+
+Moontale is a [Twine ](https://twinery.org/)story format that uses Lua as its scripting language. In addition to writing Lua code directly in your passages, you can convert your entire story to a single Lua file, which can be run by any "host" that supports Lua. You can also test and play your stories right in the browser, or publish them to HTML, just like any other Twine format.
 
 ## Quick start
 
@@ -43,13 +49,13 @@ The '< >' means that the result will be displayed.
 
 Some variables/expressions, called 'changers', can be applied to content in the passage:
 
-<$_if(x == 2)$>[ Yes! My logic is sound. ]
-$_else[ The walls of reality are collapsing! ]
+<$If(x == 2)$>[ Yes! My logic is sound. ]
+$Else[ The walls of reality are collapsing! ]
 ```
 
 ## Motivation
 
-It has always been possible, in theory at least, to use the output of Twine \(and Twee\) in non-browser applications. A number of other projects achieve this to some degree: Cradle, and my own Spool library. However, these solutions are hampered by their reliance on existing browser-focused story formats, which make developing and using these solutions difficult at best.
+It has always been possible, in theory at least, to use the output of Twine \(and [Twee](https://dan-q.github.io/twee2/)\) in non-browser applications. A number of other projects achieve this to some degree: Cradle, and my own Spool library. However, these solutions are hampered by their reliance on existing browser-focused story formats, which make developing and using these solutions difficult at best.
 
 I created Moontale to help make Twine useful in all stages of game development - from prototyping to production.
 

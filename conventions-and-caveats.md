@@ -1,0 +1,2 @@
+# Conventions and caveats
+
