@@ -49,8 +49,8 @@ The '< >' means that the result will be displayed.
 
 Some variables/expressions, called 'changers', can be applied to content in the passage:
 
-<$_if(x == 2)$>[ Yes! My logic is sound. ]
-$_else[ The walls of reality are collapsing! ]
+<$If(x == 2)$>[ Yes! My logic is sound. ]
+$Else[ The walls of reality are collapsing! ]
 ```
 
 ## Motivation
