@@ -9,6 +9,10 @@ html {
     max-width: 600px;
 }
 
+li::marker {
+    font-size: x-large;
+}
+
 p {
     font-family: Garamond;
     font-size: x-large;

@@ -16,7 +16,7 @@ export function loadStory(src: string, emitFn: (html: string)=>void) {
     lualib.luaL_openlibs(L)
 
     lua.lua_register(L, "push", _ => {
-        let str = dec.decode(lua.lua_tostring(L, 1))
+        let str = lua.lua_tojsstring(L, 1)
         tags.push(str)
         if (str == 'a') {
             buf.push(`<${str} href="#" id="${lua.lua_tonumber(L, 2)}">`)
@@ -36,13 +36,13 @@ export function loadStory(src: string, emitFn: (html: string)=>void) {
         return 0
     })
     lua.lua_register(L, "text", _ => {
-        let str = dec.decode(lua.lua_tostring(L, 1))
+        let str = lua.lua_tojsstring(L, 1)
         buf.push(str)
         wasChanged = true
         return 0
     })
     lua.lua_register(L, "object", _ => {
-        let str = dec.decode(lua.lua_tostring(L, 1))
+        let str = lua.lua_tojsstring(L, 1)
         buf.push(`<${str}>`)
         wasChanged = true
         return 0
@@ -54,13 +54,15 @@ export function loadStory(src: string, emitFn: (html: string)=>void) {
     })
 
     lauxlib.luaL_dostring(L, enc.encode(moontaleLib))
+    console.log(src)
     lauxlib.luaL_dostring(L, enc.encode(src))
 }
 
 export function raiseEvent(event: string, id: string) {
     lua.lua_getglobal(L, 'raiseEvent')
+    lua.lua_pushstring(L, event)
     lua.lua_pushnumber(L, Number(id))
-    lua.lua_call(L, 1, 0)
+    lua.lua_call(L, 2, 0)
     if (wasChanged) {
         wasChanged = false
         emit?.(buf.join(''))
@@ -68,7 +70,7 @@ export function raiseEvent(event: string, id: string) {
 }
 
 export function start() {
-    lua.lua_getglobal(L, 'start')
+    lua.lua_getglobal(L, 'softReset')
     lua.lua_call(L, 0, 0)
     emit?.(buf.join(''))
     wasChanged = false

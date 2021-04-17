@@ -59,7 +59,7 @@ module.exports = {
                     let package = JSON.parse(fs.readFileSync("package.json", "utf-8"))
                     let html = fs.readFileSync("dist/index.html", "utf-8")
                     let outputJson = {
-                        name: package.name,
+                        name: "Moontale",
                         version: package.version,
                         author: package.author,
                         description: package.description,
@@ -70,7 +70,8 @@ module.exports = {
                         source: html
                     }
                     let outputString = `window.storyFormat(${JSON.stringify(outputJson)});`
-                    fs.writeFileSync("dist/format.js", outputString)
+                    fs.writeFileSync("build/format.js", outputString)
+                    fs.copyFileSync("dist/bundle.js.map", "build/bundle.js.map")
                 })
             },
         },
@@ -88,4 +89,9 @@ module.exports = {
         inline: true,
         hot: true
     },
+    ignoreWarnings: [{
+        message: /asset size limit/
+    }, {
+        message: /You can limit the size of your bundles/
+    }],
 };
