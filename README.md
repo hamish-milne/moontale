@@ -1,3 +1,7 @@
+---
+description: 'Learn what we''re about, and get started!'
+---
+
 # Introduction
 
 Moontale is a Twine story format that uses Lua as its scripting language. In addition to writing Lua code directly in your passages, you can convert your entire story to a single Lua file, which can be run by any "host" that supports Lua. You can also test and play your stories right in the browser, or publish them to HTML, just like any other Twine format.

@@ -1,3 +1,7 @@
+---
+description: Learn how to write Moontale passages
+---
+
 # Syntax
 
 ## Formatting
