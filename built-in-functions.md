@@ -28,8 +28,6 @@ All functions in this section do not return a value.
 | `softReset()` | None |  Jumps to `startPassage`, re-running any `startup`-tagged passages. |
 | `hardReset()` | None | Clears all user-defined variables, then does a `softReset()`. This is a 'best effort' function - it is possible to 'leak' state into places that this function won't touch, such as the `passages` table. If this is a concern, the host should destroy and re-create the Lua VM. |
 
-## Saving and loading
-
 ## Changers
 
 A 'changer' is something that modifies a block of content - for example hiding/showing it, wrapping it with some formatting, or rendering it multiple times. Behind the scenes, changers are higher-order functions; they can be called with a single argument, which itself is a parameter-less function that renders the attached content. This means that `$em[Text]` is functionally equivalent to `<$ em(function() text('Text') end) $>`, and `<$color('red')$>[Text]` is the same as `<$color('red')(function() text('Text') end)$>`
@@ -79,7 +77,7 @@ All the functions here call `push` and `pop` with the first argument being their
 
 | Name | Arguments | Description |
 | :--- | :--- | :--- |
-| `Repeat(count)` | Integer |  Renders the content `count` times in a row |
+| `Repeat(count)` | Integer |  Renders the content `count` times in a row, with the number of the current iteration \(1-indexed\) assigned to `index`  |
 | `forEach(iterable)` | Table |  Renders the content for each item in `iterable`, setting the variables `key` and `value` to the key and value of each entry. This is equivalent to `forEach(iterable, 'key', 'value')`. |
 | `forEach(iterable, ...)` | Table, String \(multiple\) | Renders the content for each item in `iterable`, mapping each entry to variables with the names given in the subsequent arguments. |
 
@@ -120,7 +118,7 @@ Note that _any_ tag can be given as an argument to `push` and `object`; the list
 
 Most tags do not take any additional arguments. Notable exceptions are `color(color)` and `a(id)`. When developing custom tag conventions, you should use simple arguments \(string, number etc.\) rather than complex tables.
 
-### Input
+## Input
 
 While the Host can call any library-defined or user-defined Moontale function, the following should be called solely by the Host \(unless your intention is to simulate user actions\):
 

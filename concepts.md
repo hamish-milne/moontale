@@ -1,3 +1,7 @@
+---
+description: Things you should know before beginning
+---
+
 # Concepts
 
 {% hint style="info" %}
