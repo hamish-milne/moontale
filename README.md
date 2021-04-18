@@ -55,18 +55,18 @@ $Else[ The walls of reality are collapsing! ]
 
 ## Motivation
 
-It has always been possible, in theory at least, to use the output of Twine \(and [Twee](https://dan-q.github.io/twee2/)\) in non-browser applications. A number of other projects achieve this to some degree: Cradle, and my own Spool library. However, these solutions are hampered by their reliance on existing browser-focused story formats, which make developing and using these solutions difficult at best.
+It has always been possible, in theory at least, to use the output of Twine \(and [Twee](https://github.com/tmedwards/tweego)\) in non-browser applications. A number of other projects achieve this to some degree: [Cradle](https://github.com/daterre/Cradle), and my own [Spool ](https://github.com/hamish-milne/Spool)library. However, these solutions are hampered by their reliance on existing browser-focused story formats, which make developing and using these solutions difficult at best.
 
 I created Moontale to help make Twine useful in all stages of game development - from prototyping to production.
 
 ### Who is this for?
 
-* Twine 'power users' using the platform to develop games or complex mechanics, who will benefit from Lua's programmer-friendly syntax and structures.
+* Developers of text-driven or narrative-heavy games using Unity, Unreal, LÖVE, or any other engine that supports Lua, who would benefit from the use of Twine as a development tool.
 * Developers interested in using their creations in unconventional ways, who will benefit from Lua's embeddability and extensibility.
 
 ### Who is this not for?
 
-* Developers focused on linear storytelling, CYOA, and other projects with minimal logic \(and are only targeting the browser\). Harlowe should have everything you need.
+* Projects that singularly use Twine, and do not intend to integrate with any other engine. Any one of the [browser](https://klembot.github.io/chapbook/)-[based ](https://twine2.neocities.org/)[story ](https://www.motoslave.net/sugarcube/2/docs/)[formats ](https://videlais.github.io/snowman/2/)will be inherently easier to work with for these tasks.
 * Developers intending to take advantage of complex browser-based features: media playback, CSS and so on. For any feature, if it's not in [TextMeshPro's Rich Text](http://digitalnativestudios.com/textmeshpro/docs/rich-text/) then Moontale probably won't support it in the browser.
-* Developers who like the 'mutable' model used by Harlowe: hiding/showing parts of a passage, changing words from one to another when the user clicks something and so on. See Immutability for more details.
+* Developers who like the 'mutable' model used by other formats: hiding/showing parts of a passage, changing words from one to another when the user clicks something and so on. See the section on Immutability for more details.
 
