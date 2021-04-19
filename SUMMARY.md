@@ -8,3 +8,7 @@
 
 ## Migration guides
 
+---
+
+* [Harlowe](harlowe.md)
+
