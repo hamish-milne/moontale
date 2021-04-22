@@ -10,5 +10,7 @@
 
 ---
 
+* [Chapbook](chapbook.md)
 * [Harlowe](harlowe.md)
+* [Sugarcube](sugarcube.md)
 

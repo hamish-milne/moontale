@@ -1,4 +1,33 @@
+---
+description: Equivalent functionality in Harlowe 3.2.1
+---
+
 # Harlowe
+
+Examples taken from the [Harlowe online documentation](https://twine2.neocities.org/)
+
+{% hint style="warning" %}
+Harlowe and Moontale have fundamentally different use-cases! This guide is not exhaustive - in particular, it does not cover Styling, Input, Transitions, and utility functions.
+{% endhint %}
+
+## Hooks vs. Render functions
+
+In Harlowe, a Hook is a specific _instance_ of content in a passage. A Hook can be hidden or shown at will, causing it to be inserted/removed from the passage text. A Hook name, when used in code, acts like a selector and is used to modify all Hooks with that name.
+
+In contrast, Moontale render functions are a set of instructions for displaying content. Render functions can be combined with Changers, stored and retrieved like normal variables, and used in-line with other text as many times as desired. It is not possible to select and mutate text segments that have already been outputted.
+
+## Syntax
+
+The following syntax is identical in both Harlowe and Moontale:
+
+* `[[Passage]]`
+* `[[Link -> Target]]`
+* `[[Target <- Link]]`
+* `~~Strike through~~`
+* `*Emphasis*`
+* `**Strong emphasis**`
+* `$variable`
+* Special passage tags: `startup`, `header`, and `footer`
 
 <table>
   <thead>
@@ -58,7 +87,7 @@
     <tr>
       <td style="text-align:left"><code>[==</code>
       </td>
-      <td style="text-align:left"><code>[</code> - Content blocks are closed automatically (TODO!)</td>
+      <td style="text-align:left"><code>[</code> - Content blocks are closed automatically &#x1F6A7;</td>
     </tr>
     <tr>
       <td style="text-align:left"><code>`[[ ]]`</code>
@@ -121,7 +150,7 @@
     <tr>
       <td style="text-align:left"><code>==&gt;</code>, <code>=&gt;&lt;=</code>, <code>&lt;==&gt;</code>, and <code>&lt;==</code>
       </td>
-      <td style="text-align:left"><code>$right[</code>, <code>$center[</code>, <code>$justify[</code>, and <code>$left[</code> (TODO!)</td>
+      <td style="text-align:left"><code>$right[</code>, <code>$center[</code>, <code>$justify[</code>, and <code>$left[</code> &#x1F6A7;</td>
     </tr>
     <tr>
       <td style="text-align:left"><code>===&gt;&lt;=</code>, <code>=&gt;&lt;=====</code> etc.</td>
@@ -354,7 +383,7 @@
       <td style="text-align:left">
         <p><code>&lt;$ augment(&apos;frog&apos;, color(&apos;green&apos;)) $&gt;[</code>
         </p>
-        <p>TODO!</p>
+        <p>&#x1F6A7;</p>
       </td>
     </tr>
     <tr>
@@ -387,7 +416,7 @@
       <td style="text-align:left">
         <p><code>all({6, 8, 12, 10, 9}, function(it) it &gt; 1 and num &lt; 14 end)</code>
         </p>
-        <p>TODO!</p>
+        <p>&#x1F6A7;</p>
       </td>
     </tr>
     <tr>
@@ -402,7 +431,7 @@
       <td style="text-align:left">
         <p><code>visited[&quot;Cellar&quot;]</code>
         </p>
-        <p>TODO!</p>
+        <p>&#x1F6A7;</p>
       </td>
     </tr>
     <tr>

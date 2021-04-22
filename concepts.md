@@ -24,3 +24,8 @@ A Story has a 'Start Passage' which the editor can change. When a story is 'run'
 
 The content of a passage \(as well as any inner Content Blocks\) is realised as a 'render function' - a function that, when called with no arguments, writes its content to the screen. Render functions, just like normal Lua functions, can be passed around, saved and copied like any other value.
 
+```text
+The following definitions are equivalent:
+<$name('foo')$>[
+```
+

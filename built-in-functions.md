@@ -26,7 +26,7 @@ All functions in this section do not return a value.
 | `reload()` | None | Causes the current passage to be re-rendered. |
 | `display(passage)` | String | Renders the passage with the given name in-line with the text. Note that this does _not_ change the value of `passageName`. |
 | `softReset()` | None |  Jumps to `startPassage`, re-running any `startup`-tagged passages. |
-| `hardReset()` | None | Clears all user-defined variables, then does a `softReset()`. This is a 'best effort' function - it is possible to 'leak' state into places that this function won't touch, such as the `passages` table. If this is a concern, the host should destroy and re-create the Lua VM. |
+| `hardReset()` | None | 🚧 Clears all user-defined variables, then does a `softReset()`. This is a 'best effort' function - it is possible to 'leak' state into places that this function won't touch, such as the `passages` table. If this is a concern, the host should destroy and re-create the Lua VM. |
 
 ## Changers
 
@@ -48,9 +48,9 @@ The capitalization is required to avoid conflicting with Lua keywords
 
 | Name | Arguments | Description |
 | :--- | :--- | :--- |
-| `If(condition)` | Boolean |  Renders its content if `condition` is truthy |
-| `Else` |  |  Renders its content if the previous `If` and none of the `ElseIf` calls following it were entered |
-| `ElseIf(condition)` | Boolean |  Renders its content if `condition` is truthy _and_ the previous `If` and none of the `ElseIf` calls following it were entered |
+| `If(condition)` | Boolean | Renders its content if `condition` is truthy |
+| `Else` |  | Renders its content if neither the previous `If` or any of the `ElseIf` calls following it were entered |
+| `ElseIf(condition)` | Boolean | Renders its content if `condition` is truthy _and_ neither the previous `If` or any of the `ElseIf` calls following it were entered |
 
 ### Formatting
 
@@ -77,16 +77,16 @@ All the functions here call `push` and `pop` with the first argument being their
 
 | Name | Arguments | Description |
 | :--- | :--- | :--- |
-| `Repeat(count)` | Integer |  Renders the content `count` times in a row, with the number of the current iteration \(1-indexed\) assigned to `index`  |
-| `forEach(iterable)` | Table |  Renders the content for each item in `iterable`, setting the variables `key` and `value` to the key and value of each entry. This is equivalent to `forEach(iterable, 'key', 'value')`. |
+| `Repeat(count)` | Integer | Renders the content `count` times in a row, with the number of the current iteration \(1-indexed\) assigned to `index`  |
+| `forEach(iterable)` | Table | Renders the content for each item in `iterable`, setting the variables `key` and `value` to the key and value of each entry. This is equivalent to `forEach(iterable, 'key', 'value')`. |
 | `forEach(iterable, ...)` | Table, String \(multiple\) | Renders the content for each item in `iterable`, mapping each entry to variables with the names given in the subsequent arguments. |
 
 ### Transformation
 
 | Name | Arguments | Description |
 | :--- | :--- | :--- |
-| `replace(pattern, replacement)` | String, String | Executes a [pattern](https://www.lua.org/pil/20.2.html) replacement on the `text()` emissions within the block |
-| `strip(...)` | String \(multiple\) |  Causes all `push(tag)` emissions \(with their paired `pop()`s\) to be dropped. For example, `<$strip('em')$>[ Some $em[text] ]` will render `Some text` without the `em` instruction of the inner block. |
+| `replace(pattern, replacement)` | String, String | 🚧 Executes a [pattern](https://www.lua.org/pil/20.2.html) replacement on the `text()` emissions within the block |
+| `strip(...)` | String \(multiple\) | 🚧 Causes all `push(tag)` emissions \(with their paired `pop()`s\) to be dropped. For example, `<$strip('em')$>[ Some $em[text] ]` will render `Some text` without the `em` instruction of the inner block. |
 
 ### Miscellaneous
 
@@ -94,7 +94,7 @@ All the functions here call `push` and `pop` with the first argument being their
 | :--- | :--- | :--- |
 | `name(name)` | String | Hides the block, and assigns it to a variable named `name`. The block can subsequently be displayed with `$name`. |
 | `combine(...)` | Changer \(multiple\) | Creates a Changer that combines each of its Changer arguments in order of outer-most to inner-most. For example, `<$combine(em, u)$>[Text]` equates to `$em[$u[Text]]`. |
-| `freeze` |  | Renders the block's content and caches it, so that subsequent calls don't execute any embedded code a second time. |
+| `freeze` |  | 🚧 Renders the block's content and caches it, so that subsequent calls don't execute any embedded code a second time. |
 
 ## Output
 

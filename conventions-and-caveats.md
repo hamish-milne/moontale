@@ -6,7 +6,7 @@ description: Things to watch out for!
 
 Moontale attempts to make most of its internal operations straightforward and predictable, even if this is on the surface less convenient. The benefit is that as your game grows in complexity, there should \(hopefully!\) be much less scope for bugs and edge-cases.
 
-## Error handling
+## 🚧 Error handling
 
 Expressions, script blocks, and `show()` calls are 'protected'. If any of these throws an error part-way through execution, any output that was emitted so far is preserved, the error is logged, and the current expression/script terminates early. The rest of the passage \(or content block\) will continue to be rendered.
 
@@ -78,7 +78,11 @@ In a similar vein, the Twine editor will see any 'link-like' structure and assum
 
 ## Variable scope
 
-Moontale has no \(built-in\) support for 'passage local' variables. Once set, a \(global\) variable is set 'forever'. Lua's `local` variables, when used in expressions/scripts, are scoped to that particular code element and do not leak into the enclosing passage.
+Moontale uses Lua's scoping rules for variables. A reference to `$x` will look for local variables in the current render function, then captured variables \('upvalues', in Lua terminology\), then globals.
+
+You can define a local variable using a script block: `{$ local x = x $}` will 'capture' the parent scope's value of `x` , for example. Note that such a variable is scoped to the render function \(the current content block, or passage root\) - not the passage as a whole. This means that local variables in nested content blocks will 'shadow' those in their parent.
+
+Moontale has no special syntax to differentiate between local and global variables.
 
 ## Infinite loops
 

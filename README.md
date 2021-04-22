@@ -10,6 +10,10 @@ description: 'Learn what we''re about, and get started!'
 Moontale is currently in an 'alpha' state; expect a lot of bugs! Add your issues and feature requests on [GitHub](https://github.com/hamish-milne/moontale/issues)
 {% endhint %}
 
+{% hint style="danger" %}
+This documentation represents the intended feature-set of Moontale. Not every feature listed has been implemented at the present time; these instances will be marked with the 'under construction' symbol: 🚧
+{% endhint %}
+
 Moontale is a [Twine ](https://twinery.org/)story format that uses Lua as its scripting language. In addition to writing Lua code directly in your passages, you can convert your entire story to a single Lua file, which can be run by any "host" that supports Lua. You can also test and play your stories right in the browser, or publish them to HTML, just like any other Twine format.
 
 ## Quick start
