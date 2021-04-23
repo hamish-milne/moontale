@@ -125,7 +125,11 @@ export function storyToLua(story: Element): string {
                 startNodeName = node.getAttribute('name')
             }
             buf.push(`  ['${escape(node.getAttribute('name'))}'] = {`)
-            buf.push(`    tags = { ${node.getAttribute('tags').split(' ').map(t => `['${escape(t)}'] = true`).join(',')} },`)
+            let tags = node.getAttribute('tags').split(' ')
+            if (tags.length === 1 && tags[0] === '') {
+                tags = []
+            }
+            buf.push(`    tags = { ${tags.map(t => `['${escape(t)}'] = true`).join(',')} },`)
             buf.push(`    position = {${node.getAttribute('position')}},`)
             buf.push(`    content = function()`)
             markdownToLua(node.textContent, buf, {level: 3})
