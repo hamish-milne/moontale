@@ -15,19 +15,19 @@ Serialization:
     ☐ 'saved' table (with shadowing in _G)
 
 Library:
-    ☐ show()
-    ☐ jump()
-    ☐ reload()
-    ☐ display()
-    ☐ start()
+    ✔ show() @done(21-04-18 00:33)
+    ✔ jump() @done(21-04-18 00:33)
+    ✔ reload() @done(21-04-18 00:33)
+    ✔ display() @done(21-04-18 00:33)
+    ✔ start() @done(21-04-18 00:33)
     ☐ softReset / hardReset
-    ☐ Conditionals
-    ☐ Formatting
-    ☐ Repetition
-    ☐ replace()
-    ☐ strip()
-    ☐ name()
-    ☐ combine()
+    ✔ Conditionals @done(21-04-18 00:33)
+    ✔ Formatting @done(21-04-18 00:33)
+    ✔ Repetition @done(21-04-18 00:33)
+    ✔ replace() @done(21-04-18 00:33)
+    ✔ strip() @done(21-04-18 00:33)
+    ✔ name() @done(21-04-18 00:33)
+    ✔ combine() @done(21-04-18 00:33)
     ☐ freeze
     ☐ Special passage tags
 
@@ -53,6 +53,7 @@ Debugging:
         ☐ Function
     ☐ Allow changing variable types
     ☐ 'yield' mode to allow line-by-line debugging (Future!)
+    ☐ Dynamic recompilation
 
 Editor features:
     ☐ Syntax highlighting
@@ -65,8 +66,8 @@ Unity features:
     ☐ UGUI integration
 
 Admin:
-    ☐ Make a github pages
-    ☐ Documentation -> gitbook
-    ☐ CI/CD -> publishing
+    ✔ Make a github pages @done(21-04-18 00:33)
+    ✔ Documentation -> gitbook @done(21-04-18 00:33)
+    ✔ CI/CD -> publishing @done(21-04-18 00:33)
     ☐ Unit tests (w/ coverage)
     ✔ Logo :) @done(21-04-17 00:18)
