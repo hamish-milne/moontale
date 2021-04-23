@@ -66,7 +66,7 @@ The following syntax is identical in Sugarcube and Moontale:
     <tr>
       <td style="text-align:left"><code>[[Go buy milk|Grocery][$bought to &quot;milk&quot;]]</code>
       </td>
-      <td style="text-align:left"><code>&lt;$ click(function() bought = &apos;milk&apos;; jump(&apos;Grocery&apos;) end) $&gt;[Go buy milk]</code>
+      <td style="text-align:left"><code>$click(function() bought = &apos;milk&apos;; jump(&apos;Grocery&apos;) end)[Go buy milk]</code>
       </td>
     </tr>
     <tr>
@@ -169,9 +169,9 @@ The following syntax is identical in Sugarcube and Moontale:
       <td style="text-align:left">Templates, e.g. <code>?He was always willing to lend ?his ear to anyone.</code>
       </td>
       <td style="text-align:left">
-        <p><code>&lt;$name(&apos;myTemplate&apos;)$&gt;[$He was always willing to lend $his ear to anyone.]</code>
+        <p><code>$name(&apos;myTemplate&apos;)[$He was always willing to lend $his ear to anyone.]</code>
         </p>
-        <p><code>&lt;$with{He = &apos;She&apos;, his = &apos;her&apos;}$&gt;[$myTemplate]</code>&#x1F6A7;</p>
+        <p><code>$with{He = &apos;She&apos;, his = &apos;her&apos;}[$myTemplate]</code>&#x1F6A7;</p>
       </td>
     </tr>
     <tr>
@@ -216,19 +216,19 @@ The following syntax is identical in Sugarcube and Moontale:
     <tr>
       <td style="text-align:left"><code>&lt;&lt;include &quot;Go West&quot;&gt;&gt;</code>
       </td>
-      <td style="text-align:left"><code>{$ display(&quot;Go West&quot;) $}</code>
+      <td style="text-align:left"><code>$display(&quot;Go West&quot;)</code>
       </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>&lt;&lt; if $cash lt 5&gt;&gt;</code>
       </td>
-      <td style="text-align:left"><code>&lt;$if(cash &lt; 5)$&gt;[</code>
+      <td style="text-align:left"><code>$If(cash &lt; 5)[</code>
       </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>&lt;&lt;for i, name range $dwarves&gt;&gt;</code>
       </td>
-      <td style="text-align:left"><code>&lt;$ forEach(dwarves) $&gt;[</code>
+      <td style="text-align:left"><code>$forEach(dwarves)[</code>
       </td>
     </tr>
     <tr>
@@ -250,9 +250,8 @@ The following syntax is identical in Sugarcube and Moontale:
         </p>
       </td>
       <td style="text-align:left">
-        <p><code>{$ switch(hairColor) $}</code> 
-          <br /><code>&lt;$case(&apos;black&apos;, &apos;brown&apos;)$&gt;</code>
-          <br /><code>[ Dark haired, eh? ]</code>
+        <p><code>$switch(hairColor)</code> 
+          <br /><code>$case(&apos;black&apos;, &apos;brown&apos;)[ Dark haired, eh? ]</code>
         </p>
         <p><code>$Else[  ]</code>&#x1F6A7;</p>
       </td>

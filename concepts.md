@@ -26,6 +26,7 @@ The content of a passage \(as well as any inner Content Blocks\) is realised as 
 
 ```text
 The following definitions are equivalent:
-<$name('foo')$>[
+1. $name('foo')[Some text **with markup**]
+2. {$ function foo() text('Some text ') em('with markup') end $}
 ```
 

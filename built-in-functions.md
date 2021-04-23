@@ -30,14 +30,14 @@ All functions in this section do not return a value.
 
 ## Changers
 
-A 'changer' is something that modifies a block of content - for example hiding/showing it, wrapping it with some formatting, or rendering it multiple times. Behind the scenes, changers are higher-order functions; they can be called with a single argument, which itself is a parameter-less function that renders the attached content. This means that `$em[Text]` is functionally equivalent to `<$ em(function() text('Text') end) $>`, and `<$color('red')$>[Text]` is the same as `<$color('red')(function() text('Text') end)$>`
+A 'changer' is something that modifies a block of content - for example hiding/showing it, wrapping it with some formatting, or rendering it multiple times. Behind the scenes, changers are higher-order functions; they can be called with a single argument, which itself is a parameter-less function that renders the attached content. This means that `$em[Text]` is functionally equivalent to `$em(function() text('Text') end)`, and `$color('red')[Text]` is the same as `$color('red')(function() text('Text') end)`
 
 As a convenience, built-in changers will convert a single string argument to a content rendering function. So instead of `em(function text('Text') end)` you could write `em('Text')`.
 
 All functions in this section are themselves Changers, or return a Changer function.
 
 {% hint style="warning" %}
-If an entry is listed without parentheses, it should be used as such: for example, `$_else[ Text ]` , **not** `<$ _else() $>[ Text ]`
+If an entry is listed without parentheses, it should be used as such: for example, `$Else[ Text ]`, **not** `$Else()[ Text ]`
 {% endhint %}
 
 ### Conditionals
@@ -86,14 +86,14 @@ All the functions here call `push` and `pop` with the first argument being their
 | Name | Arguments | Description |
 | :--- | :--- | :--- |
 | `replace(pattern, replacement)` | String, String | 🚧 Executes a [pattern](https://www.lua.org/pil/20.2.html) replacement on the `text()` emissions within the block |
-| `strip(...)` | String \(multiple\) | 🚧 Causes all `push(tag)` emissions \(with their paired `pop()`s\) to be dropped. For example, `<$strip('em')$>[ Some $em[text] ]` will render `Some text` without the `em` instruction of the inner block. |
+| `strip(...)` | String \(multiple\) | 🚧 Causes all `push(tag)` emissions \(with their paired `pop()`s\) to be dropped. For example, `$strip('em')[ Some $em[text] ]` will render `Some text` without the `em` instruction of the inner block. |
 
 ### Miscellaneous
 
 | Name | Arguments | Description |
 | :--- | :--- | :--- |
 | `name(name)` | String | Hides the block, and assigns it to a variable named `name`. The block can subsequently be displayed with `$name`. |
-| `combine(...)` | Changer \(multiple\) | Creates a Changer that combines each of its Changer arguments in order of outer-most to inner-most. For example, `<$combine(em, u)$>[Text]` equates to `$em[$u[Text]]`. |
+| `combine(...)` | Changer \(multiple\) | Creates a Changer that combines each of its Changer arguments in order of outer-most to inner-most. For example, `$combine(em, u)[Text]` equates to `$em[$u[Text]]`. |
 | `freeze` |  | 🚧 Renders the block's content and caches it, so that subsequent calls don't execute any embedded code a second time. |
 
 ## Output

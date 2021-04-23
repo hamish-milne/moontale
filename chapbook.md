@@ -55,7 +55,7 @@ The following syntax is identical in both Chapbook and Moontale:
     <tr>
       <td style="text-align:left"><code>[after 1 second]</code>
       </td>
-      <td style="text-align:left"><code>$&lt; delay(1.0) $&gt;[</code>&#x1F6A7;</td>
+      <td style="text-align:left"><code>$delay(1.0)[</code>&#x1F6A7;</td>
     </tr>
     <tr>
       <td style="text-align:left"><code>[append]</code>
@@ -81,13 +81,13 @@ The following syntax is identical in both Chapbook and Moontale:
     <tr>
       <td style="text-align:left"><code>{restart link, label: &apos;Oh forget it all&apos;}</code>
       </td>
-      <td style="text-align:left"><code>&lt;$click(hardReset)$&gt;[Oh forget it all]</code>
+      <td style="text-align:left"><code>$click(hardReset)[Oh forget it all]</code>
       </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>{link to: &apos;passage&apos;, label: &apos;Text&apos;}</code>
       </td>
-      <td style="text-align:left"><code>&lt;$link(&apos;passage&apos;)$&gt;[Text]</code>
+      <td style="text-align:left"><code>$link(&apos;passage&apos;)[Text]</code>
       </td>
     </tr>
     <tr>
@@ -105,14 +105,14 @@ The following syntax is identical in both Chapbook and Moontale:
       <td style="text-align:left">
         <p><code>$revealBefore[groceries]</code> 
         </p>
-        <p><code>$revealAfter[{$ display(&apos;Shopping list&apos;) $}]</code>
+        <p><code>$revealAfter[$display(&apos;Shopping list&apos;)]</code>
         </p>
       </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>{embed passage: &apos;L.A.&apos;}</code>
       </td>
-      <td style="text-align:left"><code>{$ display(&apos;L.A.&apos;) $}</code>
+      <td style="text-align:left"><code>$display(&apos;L.A.&apos;)</code>
       </td>
     </tr>
     <tr>
@@ -157,7 +157,7 @@ The following syntax is identical in both Chapbook and Moontale:
         <p><code>You could try [[unlocking it]] with the key</code>
         </p>
       </td>
-      <td style="text-align:left"><code>&lt;$If(hasKey)$&gt;[You could try [[unlocking it]] with the key]</code>
+      <td style="text-align:left"><code>$If(hasKey)[You could try [[unlocking it]] with the key]</code>
       </td>
     </tr>
     <tr>

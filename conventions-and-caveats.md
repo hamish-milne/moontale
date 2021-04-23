@@ -65,7 +65,7 @@ The reason for this is that a second parsing step, in addition to placing a lot 
 Fortunately, there are a number of options to achieve a very similar effect:
 
 * Use Lua directly, which is almost as terse as Markdown, e.g. `<$ em('foo'),bar $>`
-* Wrap the content in a `name()` changer, and refer to it later, e.g. `<$name('x')$>[ *foo*$bar ] ... $x`
+* Wrap the content in a `name()` changer, and refer to it later, e.g. `$name('x')[ *foo*$bar ] ... $x`
 * Use the content directly in the passage, and add any code before/after, e.g. `<$ code() $> *foo*$bar <$ moreCode() $>`
 
 ## The parser is dumb

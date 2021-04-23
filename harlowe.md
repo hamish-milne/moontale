@@ -40,7 +40,7 @@ The following syntax is identical in both Harlowe and Moontale:
     <tr>
       <td style="text-align:left"><code>[[Label -&gt; $target]]</code>
       </td>
-      <td style="text-align:left"><code>&lt;$ link(target) $&gt;[Label]</code>
+      <td style="text-align:left"><code>$link(target)[Label]</code>
       </td>
     </tr>
     <tr>
@@ -58,19 +58,19 @@ The following syntax is identical in both Harlowe and Moontale:
     <tr>
       <td style="text-align:left"><code>&lt;custom-tag&gt;Text&lt;/custom-tag&gt;</code>
       </td>
-      <td style="text-align:left"><code>&lt;$ tag(&apos;custom-tag&apos;) $&gt;[Text]</code>
+      <td style="text-align:left"><code>$tag(&apos;custom-tag&apos;)[Text]</code>
       </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>|foo)[Text]</code> or <code>[Text](foo|</code>
       </td>
-      <td style="text-align:left"><code>&lt;$ name(&apos;foo&apos;) $&gt;[Text]</code>
+      <td style="text-align:left"><code>$name(&apos;foo&apos;)[Text]</code>
       </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>|foo&gt;[Text]</code> or <code>[Text]&lt;foo|</code>
       </td>
-      <td style="text-align:left"><code>&lt;$ name(&apos;foo&apos;) $&gt;[Text] $foo</code>
+      <td style="text-align:left"><code>$name(&apos;foo&apos;)[Text] $foo</code>
       </td>
     </tr>
     <tr>
@@ -256,64 +256,60 @@ The following syntax is identical in both Harlowe and Moontale:
     <tr>
       <td style="text-align:left"><code>(set: $foo to (print: $bar))</code>
       </td>
-      <td style="text-align:left"><code>&lt;$ name(&apos;foo&apos;) $&gt;[$bar]</code> or <code>{$ foo = function() show(bar) end $}</code>
+      <td style="text-align:left"><code>$name(&apos;foo&apos;)[$bar]</code> or <code>{$ foo = function() show(bar) end $}</code>
       </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>(if: $legs is 8)</code>
       </td>
-      <td style="text-align:left"><code>&lt;$ If(legs == 8) $&gt;</code>
+      <td style="text-align:left"><code>$If(legs == 8)</code>
       </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>(hidden:)</code>
       </td>
-      <td style="text-align:left"><code>&lt;$ If(false) $&gt;</code> if you really need it - but you probably
-        want to use <code>name</code>
+      <td style="text-align:left"><code>$If(false)</code> if you really need it - but you probably want to
+        use <code>name</code>
       </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>(if: x is 5)[Show] (else:)[Hide] (else:)[Show]</code>
       </td>
-      <td style="text-align:left"><code>&lt;$ If(x == 5) $&gt;[Show Show] $Else[Hide]</code>
+      <td style="text-align:left"><code>$If(x == 5)[Show Show] $Else[Hide]</code>
       </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>(for: each _item, ...$array)</code>
       </td>
-      <td style="text-align:left"><code>&lt;$ forEach(array) $&gt;</code> with <code>value</code> as the iterator,
-        or <code>&lt;$ forEach(array, &apos;key&apos;, &apos;item&apos;) $&gt;</code>
+      <td style="text-align:left"><code>$forEach(array)</code> with <code>value</code> as the iterator, or <code>$forEach(array, &apos;key&apos;, &apos;item&apos;)</code>
       </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>(for: each _value, 2, 4, 6, 8)</code>
       </td>
-      <td style="text-align:left"><code>&lt;$ forEach {2, 4, 6, 8} $&gt;</code>
-      </td>
+      <td style="text-align:left"><code>$forEach{2, 4, 6, 8}</code>&#x1F6A7;</td>
     </tr>
     <tr>
       <td style="text-align:left"><code>(for: _ingredient where it contains &quot;petal&quot;, ...$reagents)</code>
       </td>
-      <td style="text-align:left"><code>&lt;$ forEach(reagents) $&gt;[&lt;$ If(string.find(value, &apos;petal&apos;) $&gt;[ ... ]]</code>
+      <td style="text-align:left"><code>$forEach(reagents)[$If(string.find(value, &apos;petal&apos;) [ ... ]]</code>
       </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>(for: each _i, ...(range:1,10))</code>
       </td>
-      <td style="text-align:left"><code>&lt;$ Repeat(10) $&gt;</code>
+      <td style="text-align:left"><code>$Repeat(10)</code>
       </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>(either: &quot;a&quot;, &quot;b&quot;, &quot;c&quot;)</code>
       </td>
-      <td style="text-align:left"><code>&lt;$ random(&apos;a&apos;, &apos;b&apos;, &apos;c&apos;) $&gt;</code>
-      </td>
+      <td style="text-align:left"><code>$random(&apos;a&apos;, &apos;b&apos;, &apos;c&apos;)</code>&#x1F6A7;</td>
     </tr>
     <tr>
       <td style="text-align:left"><code>(either: ...$array)</code>
       </td>
-      <td style="text-align:left"><code>&lt;$ random(table.unpack(array)) $&gt;</code>
-      </td>
+      <td style="text-align:left"><code>$random(table.unpack(array))</code>&#x1F6A7;</td>
     </tr>
     <tr>
       <td style="text-align:left"><code>(cond: x is 1, &quot;a&quot;, x is 2, &quot;b&quot;)</code>
@@ -353,7 +349,7 @@ The following syntax is identical in both Harlowe and Moontale:
       <td style="text-align:left"><code>(enchant: &apos;gold&apos;, (text-colour: yellow))</code>
       </td>
       <td style="text-align:left">
-        <p><code>&lt;$ enchant(&apos;gold&apos;, color(&apos;yellow&apos;)) $&gt;[</code>
+        <p><code>$enchant(&apos;gold&apos;, color(&apos;yellow&apos;))[</code>
         </p>
         <p>Note the rules on <a href="conventions-and-caveats.md#immutability">Immutability</a>;
           this must be done <em>before</em> the text you want to change</p>
@@ -381,7 +377,7 @@ The following syntax is identical in both Harlowe and Moontale:
       <td style="text-align:left"><code>(enchant-in: ?frog, (text-colour: green))</code>
       </td>
       <td style="text-align:left">
-        <p><code>&lt;$ augment(&apos;frog&apos;, color(&apos;green&apos;)) $&gt;[</code>
+        <p><code>$augment(&apos;frog&apos;, color(&apos;green&apos;))[</code>
         </p>
         <p>&#x1F6A7;</p>
       </td>

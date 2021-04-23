@@ -53,7 +53,7 @@ The '< >' means that the result will be displayed.
 
 Some variables/expressions, called 'changers', can be applied to content in the passage:
 
-<$If(x == 2)$>[ Yes! My logic is sound. ]
+$If(x == 2)[ Yes! My logic is sound. ]
 $Else[ The walls of reality are collapsing! ]
 ```
 

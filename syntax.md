@@ -260,6 +260,12 @@ The Variable syntax will look up the value of the variable in question, and disp
 
 Short-form variables are of course limited to a single identifier. To show the result of an expression - a function call, arithmetic, or similar - you can use the expression syntax: `<$ 1 + 2 + 3 $>` will print '6'. You can add whitespace and new-lines anywhere you could ordinarily with Lua, without affecting the output.
 
+If your expression is limited to a sequence of property accesses \( `foo.bar` \) and calls \( `foo(bar)` \), and doesn't include any line breaks, you can omit the `<$ $>` tokens: `$foo.bar(function() show('abc') end).baz` is valid! Note that extra whitespace around the joining `.` and `( )` tokens isn't allowed. Indexers with `[ ]` aren't valid because they would conflict with the Changer syntax.
+
+{% hint style="danger" %}
+Remember that [The Parser is Dumb](conventions-and-caveats.md#the-parser-is-dumb). Scanning for 'call' expressions is done by balancing `(` and `)` , so if you have a string literal with `)` it will cause issues! Use the `<$ $>` markers in this case.
+{% endhint %}
+
  Expressions are limited to a single, well, expression. If you want to run code with statements, such as to set variables and define functions, you can use the script block syntax, e.g. `{$ x = 5 $}`, which will set the value of 'x' to '5'. Script blocks only generate output if explicit calls to `show()` and friends are made. As with expressions, you can add whitespace anywhere you like.
 
  Internally, short-form variables expand to expressions, which in turn expand to script blocks with an inner call to `show()`. So `$foo` expands to `<$ foo $>` which expands to `{$ show(foo) $}`.
