@@ -1,5 +1,4 @@
 // Handle $variables
-import markdownit from 'markdown-it'
 import StateInline from 'markdown-it/lib/rules_inline/state_inline'
 
 function isLetter(code: number): boolean {
@@ -24,8 +23,8 @@ function propertyExpression(state: StateInline): boolean {
     return true
 }
 
-function callExpression(state: StateInline): boolean {
-    if (state.src.charCodeAt(state.pos) != 0x28 /* ( */) {
+function callExpression(state: StateInline, begin: number, end: number): boolean {
+    if (state.src.charCodeAt(state.pos) != begin) {
         return false
     }
     let pos = state.pos
@@ -34,9 +33,9 @@ function callExpression(state: StateInline): boolean {
     do {
         pos++
         code = state.src.charCodeAt(pos)
-        if (code == 0x28) {
+        if (code == begin) {
             level++
-        } else if (code == 0x29) {
+        } else if (code == end) {
             level--
             pos++
         }
@@ -62,7 +61,10 @@ export default function (state: StateInline, silent: boolean): boolean {
         length++
     }
     state.pos += 1 + length
-    while (propertyExpression(state) || callExpression(state)) {
+    while (propertyExpression(state) // foo.bar
+        || callExpression(state, 0x28, 0x29) // foo(bar)
+        || callExpression(state, 0x7B, 0x7D) // foo{bar}
+    ) {
         // Continue
     }
     state.push('code_variable', '', 0).content = state.src.slice(start, state.pos)
