@@ -22,17 +22,29 @@ All functions in this section do not return a value.
 | Name | Arguments | Description |
 | :--- | :--- | :--- |
 | `show(...)` | Any \(multiple\) | Displays each argument in the output. |
-| `jump(passage)` | String |  Clears the screen and renders the passage with the given name. This will change the value of `passageName` . |
+| `jump(passage)` | String | Clears the screen and renders the passage with the given name. This will change the value of `passageName` . |
+| `once(fn)` | Function or Table | Ensures that the given function is executed when the passage is reached, and not on any subsequent `reload`s. If a Table is passed, it treats each key-value pair as an instruction to set a variable. For example `$once{ gold = gold + 5 }` |
 | `reload()` | None | Causes the current passage to be re-rendered. |
 | `display(passage)` | String | Renders the passage with the given name in-line with the text. Note that this does _not_ change the value of `passageName`. |
-| `softReset()` | None |  Jumps to `startPassage`, re-running any `startup`-tagged passages. |
+| `softReset()` | None | Jumps to `startPassage`, re-running any `startup`-tagged passages. |
 | `hardReset()` | None | 🚧 Clears all user-defined variables, then does a `softReset()`. This is a 'best effort' function - it is possible to 'leak' state into places that this function won't touch, such as the `passages` table. If this is a concern, the host should destroy and re-create the Lua VM. |
+
+## Entities
+
+Broadly, an Entity is a non-text object that the Host is capable of handling.
+
+| Name | Arguments | Description |
+| :--- | :--- | :--- |
+| `entity[tag]` | String | Outputs the entity with the given name |
+| `entity.hr` |  | Outputs a horizontal line |
+| `image(path)` | String | Draws an image \(`img` entity\) with the given path |
+| `audio(path)` | String | Plays the audio file \(`audio` entity\) with the given path. You will probably want to combine this with `once`  |
 
 ## Changers
 
-A 'changer' is something that modifies a block of content - for example hiding/showing it, wrapping it with some formatting, or rendering it multiple times. Behind the scenes, changers are higher-order functions; they can be called with a single argument, which itself is a parameter-less function that renders the attached content. This means that `$em[Text]` is functionally equivalent to `$em(function() text('Text') end)`, and `$color('red')[Text]` is the same as `$color('red')(function() text('Text') end)`
+A 'changer' is something that modifies a block of content - for example hiding/showing it, wrapping it with some formatting, or rendering it multiple times. Behind the scenes, changers are higher-order functions; they can be called with a single argument, which itself is a parameter-less function that renders the attached content. This means that `$color.red[Text]` is functionally equivalent to `$color.red(function() text('Text') end)`, and `$link('Passage')[Text]` is the same as `$link('Passage')(function() text('Text') end)`
 
-As a convenience, built-in changers will convert a single string argument to a content rendering function. So instead of `em(function text('Text') end)` you could write `em('Text')`.
+As a convenience, built-in changers will convert a single string argument to a content rendering function. So instead of `style.em(function text('Text') end)` you could write `style.em('Text')`.
 
 All functions in this section are themselves Changers, or return a Changer function.
 
@@ -54,24 +66,26 @@ The capitalization is required to avoid conflicting with Lua keywords
 
 ### Formatting
 
-All the functions here call `push` and `pop` with the first argument being their own name. Ultimately the host decides how these will be displayed, so the description here is more of a 'serving suggestion'.
+Note that these functions are written as table indexers, allowing the 'dot' syntax where the index is a string literal \(the most common use case\).
 
 | Name | Arguments | Description |
 | :--- | :--- | :--- |
-| `em` |  | Emphasises the text, typically with italics |
-| `strong` |  | Strongly emphasises the text, typically by making it bold |
-| `u` |  | Underlines the text |
-| `s` |  | Strikes-through the text |
-| `p` |  | Puts the content in its own paragraph |
-| `color(color)` | String | Colours the text with the given [colour name](https://www.w3schools.com/colors/colors_names.asp) |
+| `style[tag]` | String | Wraps the content in the named tag. For example, `style.em`.  |
+| `style(tag, ...)` | String, Any | Wraps the content in the named tag, with the given additional arguments. For example, `style('line-height', 25)` |
+| `align[alignment]` | String | Sets the named text alignment for the content. For example, `align.left`, `align.justify` |
+| `color[color]` | String | Colours the text with the given [colour name](https://www.w3schools.com/colors/colors_names.asp) \(not case sensitive\). For example, `color.darkred` |
 
 ### Interactivity
+
+{% hint style="danger" %}
+When nesting interactivity changers, the resulting callbacks will all be applied to the outer-most block. This means that if you have a 'link within a link', the outer link will perform _both_ actions when clicked on.
+{% endhint %}
 
 | Name | Arguments | Description |
 | :--- | :--- | :--- |
 | `click(fn)` | Function | Executes `fn` when the content is clicked |
 | `link(passage)` | String | Jumps to `passage` when the content is clicked |
-| `a(id)` | Integer | Marks the content as interactive and assigns an event ID to it, which is passed to `raiseEvent` by the host. This is a low-level function; you probably won't call this directly. |
+| `hover(hovering, normal)` | Changer, Changer \(optional\) | Applies the `hovering` changer when the cursor is over the content, and `normal` when it is not. For example, `hover(color.red, color.blue)` . Note that any use of this function will cause a `reload` to happen when the cursor position changes; make sure to use `once` where appropriate! |
 
 ### Repetition
 
@@ -86,14 +100,15 @@ All the functions here call `push` and `pop` with the first argument being their
 | Name | Arguments | Description |
 | :--- | :--- | :--- |
 | `replace(pattern, replacement)` | String, String | 🚧 Executes a [pattern](https://www.lua.org/pil/20.2.html) replacement on the `text()` emissions within the block |
-| `strip(...)` | String \(multiple\) | 🚧 Causes all `push(tag)` emissions \(with their paired `pop()`s\) to be dropped. For example, `$strip('em')[ Some $em[text] ]` will render `Some text` without the `em` instruction of the inner block. |
+| `strip(...)` | String \(multiple\) | 🚧 Causes all `push(tag)` emissions \(with their paired `pop()`s\) to be dropped. For example, `$strip('em')[ Some $style.em[text] ]` will render `Some text` without the `em` instruction of the inner block. |
+| `with(replacements)` | Table | 🚧 Temporarily overrides the given expressions \(table keys\) with their corresponding values. For example `with{['style.em'] = color.blue}` |
 
 ### Miscellaneous
 
 | Name | Arguments | Description |
 | :--- | :--- | :--- |
 | `name(name)` | String | Hides the block, and assigns it to a variable named `name`. The block can subsequently be displayed with `$name`. |
-| `combine(...)` | Changer \(multiple\) | Creates a Changer that combines each of its Changer arguments in order of outer-most to inner-most. For example, `$combine(em, u)[Text]` equates to `$em[$u[Text]]`. |
+| `combine(...)` | Changer \(multiple\) | Creates a Changer that combines each of its Changer arguments in order of outer-most to inner-most. For example, `$combine(style.em, style.u)[Text]` equates to `$style.em[$style.u[Text]]`. |
 | `freeze` |  | 🚧 Renders the block's content and caches it, so that subsequent calls don't execute any embedded code a second time. |
 
 ## Output
@@ -102,6 +117,7 @@ These are the low-level functions that produce user-visible text, and need to be
 
 | Name | Arguments | Description |
 | :--- | :--- | :--- |
+| `host` |  | A String variable identifying the current Host as a dot-separated sequence of names. For example `RichText.Unity.TMP`, `HTML`, `RichText.LOVE.SYSL` |
 | `push(tag, ...)` | String, Any \(multiple\) | Encloses all further output in `tag`, until `pop()` is called. |
 | `pop()` | None | Ends the tag from the last un-popped `push()` instruction. `push()` and `pop()` must be balanced. |
 | `text(text)` | String | Outputs the given text string \(the argument _must_ be a string; use `show` if the argument might not be one\) |
@@ -110,11 +126,11 @@ These are the low-level functions that produce user-visible text, and need to be
 | `log(message, trace)` | String, String | Emits a diagnostic message, such as a rendering error |
 
 {% hint style="danger" %}
-Moontale overrides the `clear` function on start-up to facilitate proper event handling.  
+Moontale overrides some of these functions on start-up to facilitate proper event handling.  
 In general, once the Host registers these functions it should not change them for the lifetime of the Lua VM
 {% endhint %}
 
-Note that _any_ tag can be given as an argument to `push` and `object`; the list of valid tags will ultimately depend on the Host. The browser runner, for instance, will faithfully emit all tags as HTML. As a baseline, all the tags of the eponymous [Formatting](built-in-functions.md#formatting) functions, along with `a(id)`,  should be supported.
+Note that _any_ tag can be given as an argument to `push` and `object`; the list of valid tags will ultimately depend on the Host. The browser host, for instance, will faithfully emit all tags as HTML.
 
 Most tags do not take any additional arguments. Notable exceptions are `color(color)` and `a(id)`. When developing custom tag conventions, you should use simple arguments \(string, number etc.\) rather than complex tables.
 
@@ -124,7 +140,9 @@ While the Host can call any library-defined or user-defined Moontale function, t
 
 | Name | Arguments | Description |
 | :--- | :--- | :--- |
-| `raiseEvent(event, id, ...)` | String, Integer, Any \(multiple\) | Called when the named event occurs on the content with the given ID \(previously indicated by `push('a', id)`\) |
+| `raiseEvent(event, id, ...)` | String, Integer, Any \(multiple\) | Called when the named event occurs on the content with the given ID |
+
+Interactive content is indicated with `push('a', id)`, where `id` is a sequential integer. The Host is then responsible for calling `raiseEvent` with the ID for that span when an event occurs. Interactivity tags will never be nested.
 
 The following is a non-exhaustive list of event names, a subset of the [HTML DOM events](https://developer.mozilla.org/en-US/docs/Web/Events):
 

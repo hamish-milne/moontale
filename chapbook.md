@@ -50,7 +50,8 @@ The following syntax is identical in both Chapbook and Moontale:
     </tr>
     <tr>
       <td style="text-align:left"><code>[align center]</code> and friends</td>
-      <td style="text-align:left"><code>$right[</code>, <code>$center[</code>, <code>$justify[</code>, and <code>$left[</code> &#x1F6A7;</td>
+      <td style="text-align:left"><code>$align.right[</code>, <code>$align.center[</code>, <code>$align.justify[</code>,
+        and <code>$align.left[</code> &#x1F6A7;</td>
     </tr>
     <tr>
       <td style="text-align:left"><code>[after 1 second]</code>
@@ -96,7 +97,7 @@ The following syntax is identical in both Chapbook and Moontale:
       <td style="text-align:left">
         <p><code>$revealBefore[something odd occurred]<br />$revealAfter[I saw five deer...]</code>
         </p>
-        <p>Note that this will re-run any non-frozen Lua code! &#x1F6A7;</p>
+        <p>Note that this will reload the passage. &#x1F6A7;</p>
       </td>
     </tr>
     <tr>

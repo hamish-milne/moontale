@@ -71,8 +71,7 @@ The following syntax is identical in Sugarcube and Moontale:
     </tr>
     <tr>
       <td style="text-align:left"><code>[img[Image][Link]]</code> etc.</td>
-      <td style="text-align:left">&#x26A0;&#xFE0F; <b>Not supported</b>
-      </td>
+      <td style="text-align:left"><code>[[$img(&apos;path/to/image&apos;)-&gt;Target]]</code>&#x1F6A7;</td>
     </tr>
     <tr>
       <td style="text-align:left">
@@ -129,7 +128,7 @@ The following syntax is identical in Sugarcube and Moontale:
     <tr>
       <td style="text-align:left"><code>__Underline__</code>
       </td>
-      <td style="text-align:left"><code>$u[Underline]</code>
+      <td style="text-align:left"><code>$style.u[Underline]</code>
       </td>
     </tr>
     <tr>
@@ -169,7 +168,7 @@ The following syntax is identical in Sugarcube and Moontale:
       <td style="text-align:left">Templates, e.g. <code>?He was always willing to lend ?his ear to anyone.</code>
       </td>
       <td style="text-align:left">
-        <p><code>$name(&apos;myTemplate&apos;)[$He was always willing to lend $his ear to anyone.]</code>
+        <p><code>$name.myTemplate[$He was always willing to lend $his ear to anyone.]</code>
         </p>
         <p><code>$with{He = &apos;She&apos;, his = &apos;her&apos;}[$myTemplate]</code>&#x1F6A7;</p>
       </td>

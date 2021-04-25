@@ -30,3 +30,38 @@ The following definitions are equivalent:
 2. {$ function foo() text('Some text ') em('with markup') end $}
 ```
 
+## Overriding
+
+Many of Moontale's standard functions can be overridden by simply replacing their definitions. This is especially useful because Moontale's markdown syntax will refer to Lua expressions instead of a hard-coded style. For example:
+
+```lua
+function link()
+    show('Instead of a link, have some text!')
+end
+```
+
+If a function is defined in a table, like `style`, you can override it by overwriting it:
+
+```lua
+style.em = color.blue -- *Text* will be blue instead of italicised
+style.em = nil -- Revert to the default behaviour
+```
+
+You can use the 'base' definitions as well:
+
+```lua
+style.em = combine(style.em, color.blue) -- *Text* will be blue as well as italicised
+```
+
+For 'free' functions, if you want to access the 'base' definition you'll need to save it first:
+
+```lua
+local _link = link
+function link(target)
+    -- Make all links red (while keeping their normal behaviour)
+    return combine(color.red, _link(target)
+end
+```
+
+🚧 When defining overrides, you should put them in a `startup`-tagged passage if they're common to your story. If they're specific to a passage, you should use the `with` changer; if you put them in a code block, the overrides will be permanent!
+

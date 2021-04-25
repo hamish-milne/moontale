@@ -240,9 +240,9 @@ The Twine editor looks for links like these, and uses them to draw pretty lines 
 
 Whitespace on either side of the label and target will be stripped, so `[[  Label  ->  Target  ]]` is the same as `[[Label->Target]]`.
 
-You can also use code to create a link: `<$ link('Passage') $>[ Label ]` - but the link lines and auto-updating won't work in this case, so you should use the standard syntax wherever possible.
+You can also use code to create a link: `$link('Passage')[ Label ]` - but the link lines and auto-updating won't work in this case, so you should use the standard syntax wherever possible.
 
-In links with a separate label and target, the label can contain any inline syntax: bold/italics, variables, expressions, etc. It cannot contain line-based syntax such as headers or lists. The target is _not_ parsed further, so `[[Label -> $foo]]` will look for a passage named `$foo`, not the value of the `foo` variable. To calculate the target dynamically, use `<$ link(foo) $>[ Label ]`.
+In links with a separate label and target, the label can contain any inline syntax: bold/italics, variables, expressions, etc. It cannot contain line-based syntax such as headers or lists. The target is _not_ parsed further, so `[[Label -> $foo]]` will look for a passage named `$foo`, not the value of the `foo` variable. To calculate the target dynamically, use `$link(foo)[ Label ]`.
 
 ## Scripting
 

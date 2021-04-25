@@ -14,7 +14,7 @@ Harlowe and Moontale have fundamentally different use-cases! This guide is not e
 
 In Harlowe, a Hook is a specific _instance_ of content in a passage. A Hook can be hidden or shown at will, causing it to be inserted/removed from the passage text. A Hook name, when used in code, acts like a selector and is used to modify all Hooks with that name.
 
-In contrast, Moontale render functions are a set of instructions for displaying content. Render functions can be combined with Changers, stored and retrieved like normal variables, and used in-line with other text as many times as desired. It is not possible to select and mutate text segments that have already been outputted.
+In contrast, Moontale render functions are a set of instructions for displaying content. Render functions can be combined with Changers, stored and retrieved like normal variables, and used in-line with other text as many times as desired. It is not possible to select and mutate text segments that have already been outputted; instead, use a variable to control what is outputted in a given block and call `reload()` to make the changes visible.
 
 ## Syntax
 
@@ -58,19 +58,29 @@ The following syntax is identical in both Harlowe and Moontale:
     <tr>
       <td style="text-align:left"><code>&lt;custom-tag&gt;Text&lt;/custom-tag&gt;</code>
       </td>
-      <td style="text-align:left"><code>$tag(&apos;custom-tag&apos;)[Text]</code>
+      <td style="text-align:left"><code>$style.custom_tag[Text]</code>
       </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>|foo)[Text]</code> or <code>[Text](foo|</code>
       </td>
-      <td style="text-align:left"><code>$name(&apos;foo&apos;)[Text]</code>
+      <td style="text-align:left"><code>$name.foo[Text]</code>
       </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>|foo&gt;[Text]</code> or <code>[Text]&lt;foo|</code>
       </td>
-      <td style="text-align:left"><code>$name(&apos;foo&apos;)[Text] $foo</code>
+      <td style="text-align:left"><code>$name.foo[Text] $foo</code>
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align:left"><code>(show: ?foo)</code>
+      </td>
+      <td style="text-align:left">
+        <p><code>$If(foo)[ ... ]</code>
+        </p>
+        <p><code>{$ foo = true; reload() $}</code>
+        </p>
       </td>
     </tr>
     <tr>
@@ -150,7 +160,9 @@ The following syntax is identical in both Harlowe and Moontale:
     <tr>
       <td style="text-align:left"><code>==&gt;</code>, <code>=&gt;&lt;=</code>, <code>&lt;==&gt;</code>, and <code>&lt;==</code>
       </td>
-      <td style="text-align:left"><code>$right[</code>, <code>$center[</code>, <code>$justify[</code>, and <code>$left[</code> &#x1F6A7;</td>
+      <td style="text-align:left"><code>$align.right[</code>, <code>$align.center[</code>, <code>$align.justify[</code>,
+        and <code>$align.left[</code> 
+      </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>===&gt;&lt;=</code>, <code>=&gt;&lt;=====</code> etc.</td>
@@ -256,7 +268,7 @@ The following syntax is identical in both Harlowe and Moontale:
     <tr>
       <td style="text-align:left"><code>(set: $foo to (print: $bar))</code>
       </td>
-      <td style="text-align:left"><code>$name(&apos;foo&apos;)[$bar]</code> or <code>{$ foo = function() show(bar) end $}</code>
+      <td style="text-align:left"><code>$name.foo[$bar]</code> or <code>{$ foo = function() show(bar) end $}</code>
       </td>
     </tr>
     <tr>
@@ -287,7 +299,8 @@ The following syntax is identical in both Harlowe and Moontale:
     <tr>
       <td style="text-align:left"><code>(for: each _value, 2, 4, 6, 8)</code>
       </td>
-      <td style="text-align:left"><code>$forEach{2, 4, 6, 8}</code>&#x1F6A7;</td>
+      <td style="text-align:left"><code>$forEach{2, 4, 6, 8}</code>
+      </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>(for: _ingredient where it contains &quot;petal&quot;, ...$reagents)</code>
@@ -349,19 +362,20 @@ The following syntax is identical in both Harlowe and Moontale:
       <td style="text-align:left"><code>(enchant: &apos;gold&apos;, (text-colour: yellow))</code>
       </td>
       <td style="text-align:left">
-        <p><code>$enchant(&apos;gold&apos;, color(&apos;yellow&apos;))[</code>
+        <p><code>$enchant(&apos;gold&apos;, color.yellow)[</code>
         </p>
         <p>Note the rules on <a href="conventions-and-caveats.md#immutability">Immutability</a>;
-          this must be done <em>before</em> the text you want to change</p>
+          this must be done <em>before</em> the text you want to change &#x1F6A7;</p>
       </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>(enchant: ?ghost, (text-style: &apos;outline&apos;))</code>
       </td>
       <td style="text-align:left">
-        <p><code>{$ ghost = textStyle(&apos;outline&apos;) $}</code>
+        <p><code>{$ ghost = style.outline $}</code>
         </p>
-        <p>This must be done <em>before </em>using <code>ghost</code> as a changer.</p>
+        <p>This must be done <em>before </em>using <code>ghost</code> as a changer.
+          &#x1F6A7;</p>
       </td>
     </tr>
     <tr>
@@ -377,13 +391,13 @@ The following syntax is identical in both Harlowe and Moontale:
       <td style="text-align:left"><code>(enchant-in: ?frog, (text-colour: green))</code>
       </td>
       <td style="text-align:left">
-        <p><code>$augment(&apos;frog&apos;, color(&apos;green&apos;))[</code>
+        <p><code>$with{frog = combine(frog, color.green)}[</code>
         </p>
         <p>&#x1F6A7;</p>
       </td>
     </tr>
     <tr>
-      <td style="text-align:left"><code>(show: (hooks-named:</code>  <code>$companionType))</code>
+      <td style="text-align:left"><code>(print: (hooks-named:</code>  <code>$companionType))</code>
       </td>
       <td style="text-align:left"><code>&lt;$ _G[companionType] $&gt;</code>
       </td>

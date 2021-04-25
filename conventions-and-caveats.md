@@ -14,7 +14,7 @@ Errors are never shown 'inline' to the end user.
 
 ## Block repetition
 
-When a block or passage is executed, it is always _actually_ executed - any code within will run, even if it has been run before. To stop this from happening, you can use the `freeze` function.
+When a block or passage is executed, it is always _actually_ executed - any code within will run, even if it has been run before. This is obviously undesirable if you want to perform a stateful action - for example, increasing the player's gold or experience count. In these cases you can use the `freeze` or `once` functions.
 
 ## Immutability
 
@@ -56,6 +56,8 @@ That's it! The upshot is that whether you're targeting HTML, Rich Text, or direc
 
 Note that in this example, `clear()` doesn't actually clear the screen; if our output is plain HTML, this is of course impossible. In your application you can use the appropriate APIs to clear any existing text - perhaps saving it first to a 'conversation history' system, if desired.
 
+Functions like `hover` work by forcing the passage to be re-rendered whenever the cursor's target changes.
+
 ## Text output is not re-parsed
 
 When emitting text through code, e.g. `<$ '*foo*$bar' $>`, it is emitted 'verbatim', without any additional parsing. In the example shown, the literal string `*foo*$bar` will be printed.
@@ -64,8 +66,8 @@ The reason for this is that a second parsing step, in addition to placing a lot 
 
 Fortunately, there are a number of options to achieve a very similar effect:
 
-* Use Lua directly, which is almost as terse as Markdown, e.g. `<$ em('foo'),bar $>`
-* Wrap the content in a `name()` changer, and refer to it later, e.g. `$name('x')[ *foo*$bar ] ... $x`
+* Use Lua directly, which is almost as terse as Markdown, e.g. `<$ style.em('foo'),bar $>`
+* Wrap the content in a `name[]` changer, and refer to it later, e.g. `$name.x[ *foo*$bar ] ... $x`
 * Use the content directly in the passage, and add any code before/after, e.g. `<$ code() $> *foo*$bar <$ moreCode() $>`
 
 ## The parser is dumb
@@ -89,6 +91,10 @@ Moontale has no special syntax to differentiate between local and global variabl
 Moontale does not guard against infinite loops \(because of the [Halting Problem](https://en.wikipedia.org/wiki/Halting_problem) this isn't possible to do without severe restrictions\). If you call `jump` or `display` unconditionally, and it ends up back at the same passage you called it from, your app will lock up.
 
 If this is a concern, a host implementation may deliberately limit the number of instructions executed as a result of any user interaction - perhaps using `debug.sethook`.
+
+## Render function reuse
+
+Almost all values, including render functions, can be safely saved and reused in later passages. The exceptions are the results of `freeze`, `once`, and any values that depend on them. This is because these functions rely on an internal table that gets cleared when a new passage is loaded, so they may behave strangely if kept beyond their intended lifespan!
 
 
 
