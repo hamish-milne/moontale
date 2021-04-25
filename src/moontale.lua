@@ -1,19 +1,71 @@
 
 local _events = {}
 local _clear = clear
+local _hovering = {}
+local _reloadOnHover = false
+local _linkPushed = false
+
+local function _empty(content)
+end
+
 function clear()
     _clear()
     _events = {}
+    _linkPushed = false
+    _reloadOnHover = false
 end
 
-function makeEvent(fn)
-    _events[#_events + 1] = fn
-    return #_events
+function event(fn)
+    return function(content)
+        if _linkPushed then
+            local old = _events[#_events]
+            _events[#_events] = function(...) old(...); fn(...) end
+            show(content)
+        else 
+            _events[#_events + 1] = fn or _empty
+            push('a', #_events)
+            _linkPushed = true
+            show(content)
+            pop()
+            _linkPushed = false
+        end
+    end
+end
+
+function hover(hovering, normal)
+    return function(content)
+        _reloadOnHover = true
+        local doPush = not _linkPushed
+        local eid = #_events
+        if doPush then
+            push('a', eid)
+        end
+        if _hovering[eid] then
+            (hovering or show)(content)
+        else
+            (normal or show)(content)
+        end
+        if doPush then
+            pop()
+        end
+    end
 end
 
 function raiseEvent(event, idx)
-    local fn = _events[idx]
-    if fn then fn(event) end
+    if event == 'mouseover' then
+        _hovering[idx] = true
+        if _reloadOnHover then
+            reload()
+        end
+    elseif event == 'mouseout' then
+        _hovering[idx] = nil
+        if _reloadOnHover then
+            reload()
+        end
+    else
+        local fn = _events[idx]
+        if fn then fn(event) end
+    end
 end
 
 function asChanger(fn)
@@ -35,10 +87,13 @@ function show(value)
     end
 end
 
+local _firstRender = false
 function jump(target)
     clear()
     passageName = target
+    _firstRender = true
     display(target)
+    _firstRender = false
 end
 
 function reload()
@@ -63,15 +118,16 @@ local function _ifFalse(content)
     _ifTaken = false
 end
 
-local function _empty(content)
-end
-
 function If(condition)
     if condition then
         return _ifTrue
     else
         return _ifFalse
     end
+end
+
+function once(content)
+    return If(_firstRender)(content)
 end
 
 function Else(content)
@@ -278,19 +334,13 @@ function img(src)
     object('img', src)
 end
 
-function a(id)
-    return function(content)
-        push('a', id)
-        show(content)
-        pop()
-    end
-end
-
 function click(fn)
-    return a(makeEvent(fn))
+    return event(function(e)
+        if e == "click" then fn() end
+    end)
 end
 
-function link(target)
+function _link(target)
     return click(function() jump(target) end)
 end
 
@@ -335,3 +385,7 @@ function combine(...)
     return agg
 end
 
+local _linkStyle = hover(color.blue, color.darkred)
+function link(target)
+    return combine(_link(target), _linkStyle)
+end
