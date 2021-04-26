@@ -1,19 +1,27 @@
-import { lua, lauxlib, lualib, lua_State, lua_CFunction } from 'fengari'
-
-import moontaleLib from './moontale.lua'
+import { lua, lauxlib, lualib, lua_State } from 'fengari'
 
 const enc = new TextEncoder()
-const dec = new TextDecoder()
 let L: lua_State | null = null
 let tags: string[] = []
 let buf: string[] = []
 let emit: (html: string)=>void | undefined
 let wasChanged = false
 
-export function loadStory(src: string, emitFn: (html: string)=>void) {
+export function loadStory(src: string[], emitFn: (html: string)=>void, logFn: (error: string, trace: string)=>void) {
     emit = emitFn
     L = lauxlib.luaL_newstate()
+
+    lua.lua_atpanic(L, _ => {
+        logFn(lua.lua_tojsstring(L, 1), "TODO")
+        return 0
+    })
+
     lualib.luaL_openlibs(L)
+
+    lua.lua_register(L, "log", _ => {
+        logFn(lua.lua_tojsstring(L, 1), lua.lua_tojsstring(L, 2))
+        return 0
+    })
 
     lua.lua_register(L, "push", _ => {
         let str = lua.lua_tojsstring(L, 1)
@@ -53,15 +61,13 @@ export function loadStory(src: string, emitFn: (html: string)=>void) {
         return 0
     })
 
-    lauxlib.luaL_dostring(L, enc.encode(moontaleLib))
-    console.log(src)
-    lauxlib.luaL_dostring(L, enc.encode(src))
+    src.map(x => lauxlib.luaL_dostring(L, enc.encode(x)))
 }
 
 export function raiseEvent(event: string, id: string) {
     lua.lua_getglobal(L, 'raiseEvent')
     lua.lua_pushstring(L, event)
-    lua.lua_pushnumber(L, Number(id))
+    lua.lua_pushstring(L, id)
     lua.lua_call(L, 2, 0)
     if (wasChanged) {
         wasChanged = false

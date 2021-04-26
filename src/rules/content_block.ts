@@ -8,7 +8,7 @@ export default function (state: StateInline, silent: boolean): boolean {
         // If we immediately followed a variable or expression, use it as a Changer for this content:
         const prevToken = state.tokens[state.tokens.length - 1]
         let changer: string | null
-        if (prevToken.type == 'code_variable' || prevToken.type == 'code_expression') {
+        if (prevToken && (prevToken.type == 'code_variable' || prevToken.type == 'code_expression')) {
             // Remove the expression token; we don't want it to be printed in the output
             state.tokens.splice(state.tokens.length - 1, 1)
             changer = prevToken.content

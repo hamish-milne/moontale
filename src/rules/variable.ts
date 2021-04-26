@@ -37,11 +37,10 @@ function callExpression(state: StateInline, begin: number, end: number): boolean
             level++
         } else if (code == end) {
             level--
-            pos++
         }
     } while (level > 0 && code != 0x0A && pos < state.src.length)
     if (level == 0) {
-        state.pos = pos
+        state.pos = pos + 1
         return true
     }
     return false

@@ -23,7 +23,7 @@ function event(fn)
             show(content)
         else 
             _events[#_events + 1] = fn or _empty
-            push('a', #_events)
+            push('a', tostring(#_events))
             _linkPushed = true
             show(content)
             pop()
@@ -340,7 +340,7 @@ function click(fn)
     end)
 end
 
-function _link(target)
+function link(target)
     return click(function() jump(target) end)
 end
 
@@ -383,9 +383,4 @@ function combine(...)
         agg = function(c) outer(function() inner(c) end) end 
     end
     return agg
-end
-
-local _linkStyle = hover(color.blue, color.darkred)
-function link(target)
-    return combine(_link(target), _linkStyle)
 end

@@ -1,8 +1,8 @@
 {
     "compilerOptions": {
         "outDir": "./dist/",
-        "noImplicitAny": true,
-        "module": "es6",
+        "noImplicitAny": false,
+        "module": "commonjs",
         "target": "es5",
         "allowJs": true,
         "allowSyntheticDefaultImports": true,

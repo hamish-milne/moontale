@@ -1,5 +1,4 @@
 // Handle [[passage->links]], all three forms
-import markdownit from 'markdown-it'
 import StateInline from 'markdown-it/lib/rules_inline/state_inline'
 
 export default function (state: StateInline, silent: boolean): boolean {

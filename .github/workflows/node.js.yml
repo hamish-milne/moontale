@@ -22,7 +22,7 @@ jobs:
         node-version: 14.x
     - run: npm ci
     - run: npm run build
-    - run: npm test
+    - run: npx nyc npm test
     - name: Deploy to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@4.1.1
       with:

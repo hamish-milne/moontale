@@ -1,8 +1,8 @@
-import content_block from './content_block'
-import expression from './expression'
-import passage_link from './passage_link'
-import variable from './variable'
-import script_block from './script_block'
+import content_block from './rules/content_block'
+import expression from './rules/expression'
+import passage_link from './rules/passage_link'
+import variable from './rules/variable'
+import script_block from './rules/script_block'
 import Token from 'markdown-it/lib/token'
 import ParserInline from 'markdown-it/lib/parser_inline'
 import ParserBlock from 'markdown-it/lib/parser_block'
@@ -62,7 +62,9 @@ function renderOne(input: Token, output: string[], state: {level: number}) {
         }
         break
     case 'text':
-        add(`text('${escape(input.content)}')`)
+        if (input.content.length > 0) {
+            add(`text('${escape(input.content)}')`)
+        }
         break
     case 'link_open':
         add(`link('${escape(input.attrGet('href'))}')(function()`)
