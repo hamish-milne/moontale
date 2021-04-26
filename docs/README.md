@@ -4,8 +4,6 @@ description: 'Learn what we''re about, and get started!'
 
 # Introduction
 
-**This documentation is best read on** [**GitBook**](https://moontale.hmilne.cc/)\*\*\*\*
-
 {% hint style="danger" %}
 Moontale is currently in an 'alpha' state; expect a lot of bugs! Add your issues and feature requests on [GitHub](https://github.com/hamish-milne/moontale/issues)
 {% endhint %}
