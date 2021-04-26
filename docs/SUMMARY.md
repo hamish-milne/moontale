@@ -1,6 +1,6 @@
 # Table of contents
 
-* [Introduction](README.md)
+* [Introduction](introduction.md)
 * [Concepts](concepts.md)
 * [Syntax](syntax.md)
 * [Built-in Functions](built-in-functions.md)
