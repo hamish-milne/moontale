@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - run: apt-get install luarocks
-    - run: luarocks install busted
+    - run: sudo apt-get install luarocks
+    - run: sudo luarocks install busted
     - working-directory: ./lua
       run: busted .
     - uses: actions/setup-node@v2
