@@ -16,9 +16,7 @@ jobs:
         node-version: 14.x
     - run: npm ci
       working-directory: ./web
-    - uses: artiomtr/jest-coverage-report-action@v1.2
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        test_script: npm run --prefix web test --silent --ci --coverage --coverageReporters="text" --coverageReporters="text-summary"
+    - run: npm run test
+      working-directory: ./web
     - run: npm run build
       working-directory: ./web
