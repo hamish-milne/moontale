@@ -18,15 +18,12 @@ jobs:
       with:
         node-version: 14.x
     - run: npm ci
-      working-directory: ./web
     - uses: luk-schweizer/jest-code-coverage-badge-action@v1.0.1
       with:
         kvaas-key-url: 'https://api.keyvalue.xyz/444ccf6f/coverage'
-        test-command: npm run --prefix ./web test
     - run: npm run build
-      working-directory: ./web
     - name: Deploy to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@4.1.1
       with:
         branch: gh-pages
-        folder: web/build
+        folder: build
