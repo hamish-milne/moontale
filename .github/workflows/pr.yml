@@ -19,4 +19,3 @@ jobs:
       with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
     - run: npm run build
-      working-directory: ./web
