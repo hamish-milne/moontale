@@ -1,9 +1,7 @@
-import chai from "chai";
 import { loadStory, raiseEvent, start } from "./runtime" 
 import { readFileSync } from "fs"
 
-const assert = chai.assert
-let moontaleLib = readFileSync(`${__dirname}/moontale.lua`, "utf-8")
+let moontaleLib = readFileSync(`${__dirname}/../../lua/moontale.lua`, "utf-8")
 
 describe("JS runtime", () => {
 
@@ -13,7 +11,7 @@ describe("JS runtime", () => {
             `function softReset() clear(); push('p'); text('text'); object('hr'); pop() end`
         ], x => html = x, () => {})
         start()
-        assert.equal(html, "<p>text<hr></p>")
+        expect(html).toBe("<p>text<hr></p>")
     })
 
     it("responds to events from link tags", () => {
@@ -23,8 +21,8 @@ describe("JS runtime", () => {
             function raiseEvent(event, id) clear(); text(event); text('='); text(id) end`
         ], x => html = x, () => {})
         start()
-        assert.equal(html, `<a href="#" id="1">text</a>`)
+        expect(html).toBe(`<a href="#" id="1">text</a>`)
         raiseEvent("click", "1")
-        assert.equal(html, "click=1")
+        expect(html).toBe("click=1")
     })
 })

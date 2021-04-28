@@ -1,0 +1,30 @@
+name: Moontale Deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: apt-get install luarocks
+    - run: luarocks install busted
+    - working-directory: ./lua
+      run: busted .
+    - uses: actions/setup-node@v2
+      with:
+        node-version: 14.x
+    - run: cd ./web
+    - run: npm ci
+    - uses: luk-schweizer/jest-code-coverage-badge-action@v1.0.1
+      with:
+        kvaas-key-url: 'https://api.keyvalue.xyz/444ccf6f/coverage'
+    - run: npm run build
+    - name: Deploy to GitHub Pages
+      uses: JamesIves/github-pages-deploy-action@4.1.1
+      with:
+        branch: gh-pages
+        folder: web/build

@@ -1,8 +1,5 @@
-import chai from "chai";
 import { markdownToLua, storyToLua } from "./convert"
 import { JSDOM } from "jsdom"
-
-const assert = chai.assert
 
 describe("Compiler", () => {
 
@@ -13,7 +10,7 @@ describe("Compiler", () => {
             markdownToLua(input, out, {level: 0})
             output.splice(0, 0, "push('p')")
             output.push("pop()")
-            assert.deepEqual(out.map(x => x.trim()), output)
+            expect(out.map(x => x.trim())).toEqual(output)
         }
 
         it("renders plain text", () => {
@@ -78,7 +75,7 @@ describe("Compiler", () => {
         function check(input: string, output: string) {
             let div = new JSDOM().window.document.createElement('div')
             div.innerHTML = input
-            assert.equal(storyToLua(div.firstElementChild), `-- Generated with Moontale\n${output}`)
+            expect(storyToLua(div.firstElementChild)).toBe(`-- Generated with Moontale\n${output}`)
         }
 
         it('can convert simple story', () => {
