@@ -2,61 +2,53 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using TMPro;
 
-[RequireComponent(typeof(TMP_Text), typeof(MoontaleStory))]
-class MoontaleTMPro : MonoBehaviour, MoontaleOutput, IPointerClickHandler
-{
-    private TMP_Text text;
-    private RectTransform rectTransform;
-    private MoontaleStory story;
-    private StringBuilder buffer = new StringBuilder();
-    private Stack<string> tags = new Stack<string>();
+public abstract class MoontaleRichText : MoontaleOutput, IPointerClickHandler, IPointerMoveHandler {
+
+    public MoontaleStory story;
+    protected StringBuilder buffer = new StringBuilder();
+    protected readonly Stack<string> tags = new Stack<string>();
+    private string lastLink = null;
 
     public int[] headerSizes = {
         96, 60, 48, 34, 24, 20
     };
     public int paragraphSpace = 12;
-    public Color32 linkColor = new Color32(139, 0, 0, 255);
 
-    private void OpenTag(string tag) {
+    protected void OpenTag(string tag) {
         buffer.Append('<').Append(tag).Append('>'); 
     }
 
-    private void OpenTag(string tag, string value) {
-        if (tag == "color") {
-            buffer.Append('<').Append(tag).Append("=").Append(value).Append(">");
-        } else {
-            buffer.Append('<').Append(tag).Append("=\"").Append(value).Append("\">");
-        }
+    protected void OpenTag(string tag, string value) {
+        buffer.Append('<').Append(tag).Append("=\"").Append(value).Append("\">");
     }
 
-    private void CloseTag(string tag) {
+    protected void OpenTagNoQuotes(string tag, string value) {
+        buffer.Append('<').Append(tag).Append("=").Append(value).Append(">");
+    }
+
+    protected void CloseTag(string tag) {
         buffer.Append("</").Append(tag).Append('>');
     }
 
-    private void Space(int px) {
-        OpenTag("line-height", px.ToString());
-        Text("\n");
-        CloseTag("line-height");
-    }
+    protected abstract void Space(int px);
 
-    protected void Awake() {
-        text = GetComponent<TMP_Text>();
-        rectTransform = GetComponent<RectTransform>();
-        story = GetComponent<MoontaleStory>();
-    }
-
-    public void Object(string tag, string arg)
+    public override void Object(string tag, string arg)
     {
         switch (tag) {
-        case "br": buffer.Append('\n'); break;
+        case "br":
+            buffer.Append('\n');
+            break;
         }
     }
 
-    public void Pop()
+    public override void Pop()
     {
-        var tag = tags.Pop();
+        Pop(tags.Pop());
+    }
+
+    protected virtual void Pop(string tag)
+    {
         switch (tag) {
         case "p":
             Space(paragraphSpace);
@@ -64,10 +56,6 @@ class MoontaleTMPro : MonoBehaviour, MoontaleOutput, IPointerClickHandler
         case "h":
             CloseTag("size");
             Space(paragraphSpace);
-            break;
-        case "a":
-            CloseTag("color");
-            CloseTag("link");
             break;
         case null:
             break;
@@ -77,18 +65,13 @@ class MoontaleTMPro : MonoBehaviour, MoontaleOutput, IPointerClickHandler
         }
     }
 
-    private static string HexColor(Color32 c) {
+    protected static string HexColor(Color32 c) {
         return $"#{c.r:X2}{c.g:X2}{c.b:X2}{c.a:X2}";
     }
 
-    public void Push(string tag, string arg)
+    public override void Push(string tag, string arg)
     {
         switch (tag) {
-        case "a":
-            tags.Push(tag);
-            OpenTag("link", arg);
-            OpenTag("color", HexColor(linkColor));
-            break;
         case "p":
             tags.Push(tag);
             break;
@@ -119,8 +102,11 @@ class MoontaleTMPro : MonoBehaviour, MoontaleOutput, IPointerClickHandler
             tags.Push(tag);
             OpenTag(tag);
             break;
-        case "font":
         case "color":
+            tags.Push(tag);
+            OpenTagNoQuotes(tag, arg);
+            break;
+        case "font":
         case "size":
         case "align":
             tags.Push(tag);
@@ -137,25 +123,38 @@ class MoontaleTMPro : MonoBehaviour, MoontaleOutput, IPointerClickHandler
         }
     }
 
-    public void Text(string text)
+    public override void Text(string text)
     {
         buffer.Append(text);
     }
 
-    public void Clear()
+    public override void Clear()
     {
         buffer.Clear();
         tags.Clear();
     }
 
-    public void Flush() {
-        text.text = buffer.ToString();
-    }
+    protected abstract string GetLinkId(PointerEventData eventData);
 
     public void OnPointerClick(PointerEventData eventData) {
-        var linkId = TMP_TextUtilities.FindIntersectingLink(text, eventData.position, eventData.pressEventCamera);
-        if (linkId >= 0) {
-            story.RaiseEvent("click", text.textInfo.linkInfo[linkId].GetLinkID());
+        var linkId = GetLinkId(eventData);
+        if (!string.IsNullOrEmpty(linkId)) {
+            story.RaiseEvent("click", linkId);
         }
+    }
+
+    public void OnPointerMove(PointerEventData eventData)
+    {
+        var linkId = GetLinkId(eventData);
+        if (linkId == lastLink) {
+            return;
+        }
+        if (!string.IsNullOrEmpty(lastLink)) {
+            story.RaiseEvent("mouseout", lastLink);
+        }
+        if (!string.IsNullOrEmpty(linkId)) {
+            story.RaiseEvent("mouseover", linkId);
+        }
+        lastLink = linkId;
     }
 }
