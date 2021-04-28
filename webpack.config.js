@@ -57,7 +57,7 @@ module.exports = {
                 compiler.hooks.done.tap('BuildStoryFormat', function() {
 
                     let package = JSON.parse(fs.readFileSync("package.json", "utf-8"))
-                    let html = fs.readFileSync("dist/index.html", "utf-8")
+                    let html = fs.readFileSync(`${__dirname}/dist/index.html`, "utf-8")
                     let outputJson = {
                         name: "Moontale",
                         version: package.version,
