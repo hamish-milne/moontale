@@ -1,13 +1,72 @@
+---@diagnostic disable: lowercase-global
 
-local _events = {}
+--[[
+    Moontale standard library
+    https://moontale.hmilne.cc
+]]
+
+---@alias renderFn fun()
+---@alias content renderFn|string|boolean|number|nil
+---@alias changer fun(content:content):nil
+
+---Saved output functions
+---@type fun()
 local _clear = clear
+
+---Array of event registrations
+---@type fun(event:string)[]
+local _events = {}
+
+---Set of hovered-over elements
+---@type table<string, boolean>
 local _hovering = {}
+
+---If true, call reload() whenever the hover state changes
 local _reloadOnHover = false
+
+---If true, an 'a' tag has been pushed, and we shouldn't push another one until 'pop' is called
 local _linkPushed = false
 
+---If true, we're rendering as a result of a jump() call rather than any subsequent reload()
+local _firstRender = false
+
+---If true, one of the branches in an If()/ElseIf() chain has been taken
+local _ifTaken = false
+
+---Dummy render function to avoid dealing with 'nil' values
+---@param content function
 local function _empty(content)
 end
 
+---Used by If()
+local function _ifTrue(content)
+    _ifTaken = true
+    show(content)
+end
+
+---Used by If()
+local function _ifFalse(content)
+    _ifTaken = false
+end
+
+---The top-level passage currently being rendered
+---@type string
+passageName = "(No passage)"
+
+---The name of the global start passage
+---@type string
+startPassage = "(No start passage)"
+
+---@class Passage
+---@field public content renderFn  The passage's content as a function
+---@field public tags table<string, boolean>  The set of passage tags
+---@field public position number[]  The passage's position in the editor as a pixel coordinate
+
+---The table of all passages in the story, keyed by their name
+---@type table<string, Passage>
+passages = {}
+
+---Override of the host function; clears out any internal state
 function clear()
     _clear()
     _events = {}
@@ -15,13 +74,16 @@ function clear()
     _reloadOnHover = false
 end
 
+---Generates a Changer that registers a callback for its content
+---@param fn fun(event:string):nil
+---@return changer
 function event(fn)
     return function(content)
         if _linkPushed then
             local old = _events[#_events]
             _events[#_events] = function(...) old(...); fn(...) end
             show(content)
-        else 
+        else
             _events[#_events + 1] = fn or _empty
             push('a', tostring(#_events))
             _linkPushed = true
@@ -32,13 +94,19 @@ function event(fn)
     end
 end
 
+---Applies the hovering changer when the cursor is over the content, and the normal one when it is not.
+---@param hovering changer
+---@param normal changer|nil
+---@return changer
 function hover(hovering, normal)
     return function(content)
         _reloadOnHover = true
         local doPush = not _linkPushed
         local eid = #_events
         if doPush then
-            push('a', eid)
+            eid = #_events + 1
+            _events[eid] = _empty
+            push('a', tostring(eid))
         end
         if _hovering[eid] then
             (hovering or show)(content)
@@ -51,7 +119,11 @@ function hover(hovering, normal)
     end
 end
 
+---Called when the named event occurs on the content with the given ID
+---@param event string
+---@param idx string
 function raiseEvent(event, idx)
+    idx = tonumber(idx)
     if event == 'mouseover' then
         _hovering[idx] = true
         if _reloadOnHover then
@@ -68,26 +140,35 @@ function raiseEvent(event, idx)
     end
 end
 
+---Checks that its argument can be used as a changer
+---@param fn changer
+---@return changer
 function asChanger(fn)
     if type(fn) == 'function' then
         return fn
     else
         log('Error: '..tostring(fn)..' cannot be used as a changer')
+        return show
     end
 end
 
+---Displays its argument
+---@param value content
 function show(value)
     local t = type(value)
     if t == 'string' or t == 'number' or t == 'boolean' then
         text(tostring(value))
-    elseif t == 'function' then
-        value()
+    elseif t == 'function' or t == 'table' then
+        show(value())
+    elseif t == 'nil' then
+        -- Do nothing
     else
         log('Error: '..tostring(value)..' cannot be displayed')
     end
 end
 
-local _firstRender = false
+---Clears the screen and renders the passage with the given name.
+---@param target string
 function jump(target)
     clear()
     passageName = target
@@ -96,28 +177,26 @@ function jump(target)
     _firstRender = false
 end
 
+---Causes the current passage to be re-rendered.
 function reload()
-    jump(passageName)
+    clear()
+    display(passageName)
 end
 
+---Renders the passage with the given name in-line with the text.
+---@param passage string
 function display(passage)
     show(passages[passage].content)
 end
 
+---Jumps back to the start, without resetting any variables.
 function softReset()
     jump(startPassage)
 end
 
-local _ifTaken = false
-local function _ifTrue(content)
-    _ifTaken = true
-    show(content)
-end
-
-local function _ifFalse(content)
-    _ifTaken = false
-end
-
+---Renders its content if the condition is truthy
+---@param condition boolean
+---@return changer
 function If(condition)
     if condition then
         return _ifTrue
@@ -126,10 +205,24 @@ function If(condition)
     end
 end
 
+---Ensures that the given function is executed when the passage is reached,
+---and not on any subsequent reloads. If a Table is passed, it treats each
+---key-value pair as an instruction to set a variable.
+---@param content table|content
 function once(content)
-    return If(_firstRender)(content)
+    if _firstRender then
+        if type(content) == 'table' then
+            for k,v in next, content do
+                _G[k] = v
+            end
+        else
+            show(content)
+        end
+    end
 end
 
+---Renders its content if neither the previous If or any of the ElseIf calls following it were entered
+---@type changer
 function Else(content)
     if not _ifTaken then
         _ifTaken = true
@@ -137,18 +230,19 @@ function Else(content)
     end
 end
 
+---Renders its content if condition is truthy and neither the previous If or any of the ElseIf calls following it were entered
+---@param condition boolean
+---@return changer
 function ElseIf(condition)
     if condition then
-        return _else
+        return Else
     else
         return _empty
     end
 end
 
-function EndIf()
-    _ifTaken = false
-end
-
+---Wraps the content in the named tag
+---@type table<string, changer>
 style = setmetatable({}, {
     __index = function(t, k)
         return function(content)
@@ -159,6 +253,8 @@ style = setmetatable({}, {
     end
 })
 
+---Sets the named text alignment for the content.
+---@type table<string, changer>
 align = setmetatable({}, {
     __index = function(t, k)
         return function(content)
@@ -169,6 +265,8 @@ align = setmetatable({}, {
     end
 })
 
+---A table of the named colours in CSS3
+---@type table<string, string>
 colors = {
     aliceblue = "#f0f8ff",
     antiquewhite = "#faebd7",
@@ -319,6 +417,8 @@ colors = {
     yellowgreen = "#9acd32",
 }
 
+---Colours the text with the given colour name (not case sensitive).
+---@type table<string, changer>
 color = setmetatable({}, {
     __index = function(t, k)
         local c = colors[string.lower(k)] or k
@@ -330,20 +430,31 @@ color = setmetatable({}, {
     end
 })
 
-function img(src)
+---Draws an image ('img' entity) with the given path
+---@param src string
+function image(src)
     object('img', src)
 end
 
+---Executes a function when the content is clicked
+---@param fn function
+---@return changer
 function click(fn)
     return event(function(e)
         if e == "click" then fn() end
     end)
 end
 
+---Jumps to a passage when the content is clicked
+---@param target string
+---@return changer
 function link(target)
     return click(function() jump(target) end)
 end
 
+---Renders the content multiple times in a row, with the number of the current iteration (1 indexed) assigned to index
+---@param count number
+---@return changer
 function Repeat(count)
     return function(content)
         for i=1,count do
@@ -353,34 +464,47 @@ function Repeat(count)
     end
 end
 
+---Renders the content for each item in iterable, mapping each entry to variables with the names given in the subsequent arguments.
+---The default variable names are 'key' and 'value'
+---@param iterable table
+---@vararg string
+---@return changer
 function forEach(iterable, ...)
     local vars = {...}
+    if #vars == 0 then
+        vars = {'key', 'value'}
+    end
     return function(content)
         local frame = {next(iterable)}
         while frame[1] do
             for i=1,#vars do
                 _G[vars[i]] = frame[i]
             end
+            show(content)
+            frame = {next(iterable, frame[1])}
         end
     end
 end
 
-function forEach(iterable)
-    forEach(iterable, 'key', 'value')
-end
-
-function name(name)
-    return function(content)
-        _G[name] = content
+---Hides the block, and assigns it to a variable with the given name.
+---@type table<string, changer>
+name = setmetatable({}, {
+    __index = function(t, k)
+        return function(content)
+            _G[k] = content
+        end
     end
-end
+})
 
+---Creates a Changer that combines each of its Changer arguments in order of outer-most to inner-most.
+---@vararg changer
+---@return changer
 function combine(...)
     local agg = select(-1, ...)
     for i=2,select('#', ...) do
         local outer = select(-i, ...)
         local inner = agg
-        agg = function(c) outer(function() inner(c) end) end 
+        agg = function(c) outer(function() inner(c) end) end
     end
     return agg
 end

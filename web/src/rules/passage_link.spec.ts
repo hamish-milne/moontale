@@ -1,10 +1,7 @@
-import chai from "chai";
 import MarkdownIt from "markdown-it";
 import StateInline from "markdown-it/lib/rules_inline/state_inline";
 import Token from "markdown-it/lib/token";
 import rule from "./passage_link"
-
-const assert = chai.assert
 
 describe("Passage link rule", () => {
     function newState(src: string) {
@@ -20,7 +17,7 @@ describe("Passage link rule", () => {
     function testWith(src: string) {
         let state = newState(`abc${src}def`)
         state.pos = 3
-        assert.isTrue(rule(state, false), "Rule didn't match")
+        expect(rule(state, false)).toBeTruthy()
         let expected = [
             new Token('link_open', 'a', 1),
             new Token('text', '', 0),
@@ -28,7 +25,7 @@ describe("Passage link rule", () => {
         ]
         expected[0].attrs = [['href', 'Target']]
         expected[1].level = 1
-        assert.deepEqual(state.tokens, expected)
+        expect(state.tokens).toEqual(expected)
     }
 
     it("matches on [[Label->Target]]", () => {

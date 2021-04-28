@@ -1,10 +1,7 @@
-import chai from "chai";
 import MarkdownIt from "markdown-it";
 import StateInline from "markdown-it/lib/rules_inline/state_inline";
 import Token from "markdown-it/lib/token";
 import rule from "./variable"
-
-const assert = chai.assert
 
 describe("Lua variable rule", () => {
     function newState(src: string) {
@@ -20,10 +17,10 @@ describe("Lua variable rule", () => {
     function testWith(src: string) {
         let state = newState(`abc$${src} def`)
         state.pos = 3
-        assert.isTrue(rule(state, false), "Rule didn't match")
+        expect(rule(state, false)).toBeTruthy()
         let expected = new Token('code_variable', '', 0)
         expected.content = src
-        assert.deepEqual(state.tokens, [expected])
+        expect(state.tokens).toEqual([expected])
     }
 
     it("matches short variables", () => {

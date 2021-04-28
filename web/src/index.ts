@@ -2,7 +2,7 @@
 import { storyToLua } from './convert'
 import { loadStory, start, raiseEvent } from './runtime'
 import './style.css'
-import moontaleLib from './moontale.lua'
+import moontaleLib from '../../lua/moontale.lua'
 
 let luaSrc = storyToLua(document.getElementById('storyData').children[0])
 let output = document.getElementById('output')
