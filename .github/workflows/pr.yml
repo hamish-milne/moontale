@@ -1,4 +1,4 @@
-name: Moontale PR
+name: Pull request
 
 on: pull_request
 
@@ -19,3 +19,12 @@ jobs:
     - uses: artiomtr/jest-coverage-report-action@v1.2
       with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+  unity:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: game-ci/unity-test-runner@v2
+      env:
+        UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+      with:
+        projectPath: moontale-unity
+        githubToken: ${{ secrets.GITHUB_TOKEN }}

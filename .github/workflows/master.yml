@@ -1,4 +1,4 @@
-name: Moontale Deploy
+name: Build
 
 on:
   push:
