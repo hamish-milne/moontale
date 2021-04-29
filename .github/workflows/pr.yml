@@ -28,3 +28,4 @@ jobs:
       with:
         projectPath: moontale-unity
         githubToken: ${{ secrets.GITHUB_TOKEN }}
+        unityVersion: 2019.2.11f1
