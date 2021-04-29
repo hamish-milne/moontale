@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 
 [RequireComponent(typeof(Text))]
-class MoontaleUIText : MoontaleRichText, IPointerClickHandler, IPointerMoveHandler
+public class MoontaleUIText : MoontaleRichText
 {
     private Text text;
     private RectTransform rectTransform;
@@ -23,7 +23,7 @@ class MoontaleUIText : MoontaleRichText, IPointerClickHandler, IPointerMoveHandl
         charIdRegions.Add((buffer.Length, eventId.Count > 0 ? eventId.Peek() : null));
     }
 
-    protected void Awake() {
+    internal void Awake() {
         text = GetComponent<Text>();
         rectTransform = GetComponent<RectTransform>();
     }

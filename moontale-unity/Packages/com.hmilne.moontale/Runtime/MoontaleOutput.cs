@@ -1,6 +1,7 @@
 using UnityEngine;
 
-public abstract class MoontaleOutput : MonoBehaviour {
+public abstract class MoontaleSink : MonoBehaviour {
+    public virtual MoontaleSource Source { get; set; }
     public abstract void Push(string tag, string arg);
     public abstract void Pop();
     public abstract void Text(string text);
@@ -9,6 +10,6 @@ public abstract class MoontaleOutput : MonoBehaviour {
     public abstract void Clear();
 }
 
-public interface MoontaleInput {
-    void RaiseEvent(string tag, string id);
+public abstract class MoontaleSource : MonoBehaviour {
+    public abstract void RaiseEvent(string tag, string id);
 }

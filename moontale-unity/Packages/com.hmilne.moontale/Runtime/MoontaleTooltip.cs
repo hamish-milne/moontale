@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MoontaleTooltip : MoontaleOutput
+public class MoontaleTooltip : MoontaleSink
 {
-    public MoontaleOutput mainScreen;
-    public MoontaleOutput subScreen;
+    public MoontaleSink mainScreen;
+    public MoontaleSink subScreen;
     public bool isSubScreen = false;
 
     private Stack<string> tags = new Stack<string>();
@@ -17,6 +17,8 @@ public class MoontaleTooltip : MoontaleOutput
 
     public override void Flush()
     {
+        mainScreen.Source = Source;
+        subScreen.Source = Source;
         mainScreen.Flush();
         subScreen.Flush();
     }

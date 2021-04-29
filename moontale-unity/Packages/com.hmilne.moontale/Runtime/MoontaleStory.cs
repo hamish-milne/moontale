@@ -1,42 +1,48 @@
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using MoonSharp.Interpreter;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 
-[RequireComponent(typeof(MoontaleOutput))]
-public class MoontaleStory : MonoBehaviour
+[assembly: InternalsVisibleTo("Moontale.EditorTests")]
+
+[RequireComponent(typeof(MoontaleSink))]
+public class MoontaleStory : MoontaleSource
 {
-    public string storyPath = "main.lua";
+    public TextAsset stdlib;
+    public List<TextAsset> scriptAssets = new List<TextAsset>();
+    public List<string> scriptStreamingAssets = new List<string>();
     private Script script = new Script();
-    private MoontaleOutput output;
+    public MoontaleSink sink;
 
     private DynValue Push(ScriptExecutionContext context, CallbackArguments args) {
-        output.Push(args[0].String, args.Count > 0 ? args[1].CastToString() : null);
+        sink.Push(args[0].String, args.Count > 0 ? args[1].CastToString() : null);
         return DynValue.Nil;
     }
 
     private DynValue Pop(ScriptExecutionContext context, CallbackArguments args) {
-        output.Pop();
+        sink.Pop();
         return DynValue.Nil;
     }
 
     private DynValue Text(ScriptExecutionContext context, CallbackArguments args) {
-        output.Text(args[0].String);
+        sink.Text(args[0].String);
         return DynValue.Nil;
     }
 
     private DynValue Clear(ScriptExecutionContext context, CallbackArguments args) {
-        output.Clear();
+        sink.Clear();
         return DynValue.Nil;
     }
 
     private DynValue Object(ScriptExecutionContext context, CallbackArguments args) {
-        output.Object(args[0].String, args.Count > 0 ? args[1].CastToString() : null);
+        sink.Object(args[0].String, args.Count > 0 ? args[1].CastToString() : null);
         return DynValue.Nil;
     }
 
-    protected void Awake() {
-        output = GetComponent<MoontaleOutput>();
+    internal void Awake() {
+        sink = GetComponent<MoontaleSink>();
         script.Globals.Set("push", DynValue.NewCallback(Push));
         script.Globals.Set("pop", DynValue.NewCallback(Pop));
         script.Globals.Set("text", DynValue.NewCallback(Text));
@@ -44,24 +50,32 @@ public class MoontaleStory : MonoBehaviour
         script.Globals.Set("object", DynValue.NewCallback(Object));
     }
 
-    protected void Start()
+    internal void Start()
     {
+        sink.Source = this;
         try {
-            script.DoString(File.ReadAllText(Application.streamingAssetsPath + "/moontale.lua"), null, "StdLib");
-            script.DoString(File.ReadAllText(Application.streamingAssetsPath + "/" + storyPath), null, "MainStory");
+            script.DoString(stdlib.text, null, stdlib.name);
+            foreach (var asset in scriptAssets) {
+                script.DoString(asset.text, null, asset.name);
+            }
+            foreach (var path in scriptStreamingAssets) {
+                script.DoString(File.ReadAllText(Application.streamingAssetsPath + "/" + path), null, path);
+            }
             script.Call(script.Globals["softReset"]);
         } catch (ScriptRuntimeException e) {
             Debug.LogError(e.Message + "\n" + string.Join("\n    ", e.CallStack.Select(x => $"{x.Name}:{x.Location}")));
         }
-        output.Flush();
+        sink.Flush();
     }
 
-    public void RaiseEvent(string eventType, string id) {
+    public override void RaiseEvent(string eventType, string id)
+    {
+        sink.Source = this;
         try {
             script.Call(script.Globals["raiseEvent"], eventType, int.Parse(id));
         } catch (ScriptRuntimeException e) {
             Debug.LogError(e.Message + "\n" + string.Join("\n    ", e.CallStack.Select(x => $"{x.Name}:{x.Location}")));
         }
-        output.Flush();
-    }    
+        sink.Flush();
+    }
 }

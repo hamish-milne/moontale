@@ -14,7 +14,7 @@ class MoontaleTMPro : MoontaleRichText, IPointerClickHandler, IPointerMoveHandle
         CloseTag("line-height");
     }
 
-    protected void Awake() {
+    internal void Awake() {
         text = GetComponent<TMP_Text>();
         rectTransform = GetComponent<RectTransform>();
     }

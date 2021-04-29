@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class MoontaleTypewriter : MoontaleOutput
+public class MoontaleTypewriter : MoontaleSink
 {
-    public MoontaleOutput inner;
+    public MoontaleSink sink;
     public int charsPerSecond = 50;
     public bool typeOn = true;
     private int charsEmitted = 0;
@@ -28,9 +28,10 @@ public class MoontaleTypewriter : MoontaleOutput
 
     public override void Clear()
     {
+        sink.Source = Source;
         charsEmitted = 0;
         queue.Clear();
-        inner.Clear();
+        sink.Clear();
     }
 
     public override void Flush()
@@ -83,22 +84,23 @@ public class MoontaleTypewriter : MoontaleOutput
 
     private IEnumerator DoFlush()
     {
+        sink.Source = Source;
         while (queue.Count > 0) {
             var item = queue.Dequeue();
             switch (item.type) {
             case ItemType.Push:
-                inner.Push(item.arg1, item.arg2);
+                sink.Push(item.arg1, item.arg2);
                 break;
             case ItemType.Pop:
-                inner.Pop();
+                sink.Pop();
                 break;
             case ItemType.Text:
-                inner.Text(item.arg1);
-                inner.Flush();
+                sink.Text(item.arg1);
+                sink.Flush();
                 break;
             case ItemType.Char:
-                inner.Text(item.arg1);
-                inner.Flush();
+                sink.Text(item.arg1);
+                sink.Flush();
                 charsEmitted++;
                 if (charsEmitted > totalCharsEmitted) {
                     yield return new WaitForSeconds(1f / charsPerSecond);

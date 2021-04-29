@@ -1,0 +1,18 @@
+{
+    "name": "Moontale.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:8da7dcd6eee119843962831ab5348e3f"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -3,9 +3,8 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public abstract class MoontaleRichText : MoontaleOutput, IPointerClickHandler, IPointerMoveHandler {
-
-    public MoontaleStory story;
+public abstract class MoontaleRichText : MoontaleSink, IPointerClickHandler, IPointerMoveHandler
+{
     protected StringBuilder buffer = new StringBuilder();
     protected readonly Stack<string> tags = new Stack<string>();
     private string lastLink = null;
@@ -139,7 +138,7 @@ public abstract class MoontaleRichText : MoontaleOutput, IPointerClickHandler, I
     public void OnPointerClick(PointerEventData eventData) {
         var linkId = GetLinkId(eventData);
         if (!string.IsNullOrEmpty(linkId)) {
-            story.RaiseEvent("click", linkId);
+            Source.RaiseEvent("click", linkId);
         }
     }
 
@@ -150,10 +149,10 @@ public abstract class MoontaleRichText : MoontaleOutput, IPointerClickHandler, I
             return;
         }
         if (!string.IsNullOrEmpty(lastLink)) {
-            story.RaiseEvent("mouseout", lastLink);
+            Source.RaiseEvent("mouseout", lastLink);
         }
         if (!string.IsNullOrEmpty(linkId)) {
-            story.RaiseEvent("mouseover", linkId);
+            Source.RaiseEvent("mouseover", linkId);
         }
         lastLink = linkId;
     }
