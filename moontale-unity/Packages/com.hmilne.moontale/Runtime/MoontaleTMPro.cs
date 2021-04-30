@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 using TMPro;
 
 [RequireComponent(typeof(TMP_Text))]
-class MoontaleTMPro : MoontaleRichText, IPointerClickHandler, IPointerMoveHandler
+public class MoontaleTMPro : MoontaleRichText
 {
     private TMP_Text text;
     private RectTransform rectTransform;

@@ -5,6 +5,7 @@
   "description": "Integration for Twine Moontale stories",
   "unity": "2020.1",
   "dependencies": {
+    "com.unity.test-framework": "1.1.0",
     "com.unity.textmeshpro": "3.0.0",
     "com.unity.ugui": "1.0.0",
     "moonsharp": "2.0.0"
