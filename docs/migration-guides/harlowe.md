@@ -86,7 +86,7 @@ The following syntax is identical in both Harlowe and Moontale:
     <tr>
       <td style="text-align:left"><code>?Passage</code>
       </td>
-      <td style="text-align:left"><code>passage.content</code> (a <a href="concepts.md#render-functions">Render Function</a>)</td>
+      <td style="text-align:left"><code>passage.content</code> (a <a href="../concepts.md#render-functions">Render Function</a>)</td>
     </tr>
     <tr>
       <td style="text-align:left"><code>?Page</code>, <code>?Sidebar</code>, <code>?Link</code>
@@ -117,7 +117,7 @@ The following syntax is identical in both Harlowe and Moontale:
       <td style="text-align:left">
         <p><code>&lt;$ &apos;&lt;$ $&apos;..&apos;&gt; {$ $}&apos; $&gt;</code>
         </p>
-        <p>See <a href="conventions-and-caveats.md#the-parser-is-dumb">The parser is dumb</a>
+        <p>See <a href="../conventions-and-caveats.md#the-parser-is-dumb">The parser is dumb</a>
         </p>
       </td>
     </tr>
@@ -345,7 +345,7 @@ The following syntax is identical in both Harlowe and Moontale:
     <tr>
       <td style="text-align:left"><code>(print: &quot;**foo**&quot;)</code>
       </td>
-      <td style="text-align:left">See <a href="conventions-and-caveats.md#text-output-is-not-re-parsed">Text output is not re-parsed</a>
+      <td style="text-align:left">See <a href="../conventions-and-caveats.md#text-output-is-not-re-parsed">Text output is not re-parsed</a>
       </td>
     </tr>
     <tr>
@@ -364,7 +364,7 @@ The following syntax is identical in both Harlowe and Moontale:
       <td style="text-align:left">
         <p><code>$enchant(&apos;gold&apos;, color.yellow)[</code>
         </p>
-        <p>Note the rules on <a href="conventions-and-caveats.md#immutability">Immutability</a>;
+        <p>Note the rules on <a href="../conventions-and-caveats.md#immutability">Immutability</a>;
           this must be done <em>before</em> the text you want to change &#x1F6A7;</p>
       </td>
     </tr>

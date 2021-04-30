@@ -8,9 +8,11 @@
 
 ## Migration guides
 
----
+* [Chapbook](migration-guides/chapbook.md)
+* [Harlowe](migration-guides/harlowe.md)
+* [Sugarcube](migration-guides/sugarcube.md)
 
-* [Chapbook](chapbook.md)
-* [Harlowe](harlowe.md)
-* [Sugarcube](sugarcube.md)
+## Integrations
+
+* [Unity](integrations/unity.md)
 
