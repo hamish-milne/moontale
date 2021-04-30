@@ -58,7 +58,7 @@ public class MoontaleTests
         sink.Clear();
     }
 
-    [UnityTest]
+    // [UnityTest]
     public IEnumerator TypewriterEffect()
     {
         yield return new EnterPlayMode();
