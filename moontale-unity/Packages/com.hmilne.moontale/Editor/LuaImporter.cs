@@ -2,7 +2,9 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.AssetImporters;
 using System.IO;
- 
+
+namespace Moontale {
+
 [ScriptedImporter(1, "lua")]
 public class LuaImporter : ScriptedImporter {
     public override void OnImportAsset(AssetImportContext ctx) {
@@ -10,4 +12,6 @@ public class LuaImporter : ScriptedImporter {
         ctx.AddObjectToAsset( "text", subAsset );
         ctx.SetMainObject( subAsset );
     }
+}
+
 }

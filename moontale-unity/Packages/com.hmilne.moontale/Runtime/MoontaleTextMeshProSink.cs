@@ -2,8 +2,10 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using TMPro;
 
+namespace Moontale {
+
 [RequireComponent(typeof(TMP_Text))]
-public class MoontaleTMPro : MoontaleRichText
+public class MoontaleTextMeshProSink : RichTextSink
 {
     private TMP_Text text;
     private RectTransform rectTransform;
@@ -59,4 +61,6 @@ public class MoontaleTMPro : MoontaleRichText
             return null;
         }
     }
+}
+
 }

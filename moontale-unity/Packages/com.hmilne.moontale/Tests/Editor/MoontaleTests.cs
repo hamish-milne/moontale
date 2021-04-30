@@ -6,13 +6,15 @@ using UnityEngine.TestTools;
 using UnityEngine.UI;
 using UnityEditor;
 
-public class MoontaleTests
+namespace Moontale {
+
+public class Tests
 {
     [Test]
     public void StartStory()
     {
         var go = new GameObject();
-        var sink = go.AddComponent<MoontaleUIText>();
+        var sink = go.AddComponent<MoontaleTextSink>();
         sink.Awake();
         var source = new GameObject().AddComponent<MoontaleStory>();
         source.Awake();
@@ -31,7 +33,7 @@ public class MoontaleTests
     public void OutputToUIText()
     {
         var go = new GameObject();
-        var sink = go.AddComponent<MoontaleUIText>();
+        var sink = go.AddComponent<MoontaleTextSink>();
         sink.Awake();
         sink.Push("color", "#123456");
         sink.Text("Hello");
@@ -48,7 +50,7 @@ public class MoontaleTests
     {
         var go = new GameObject();
         go.AddComponent<TMPro.TextMeshProUGUI>();
-        var sink = go.AddComponent<MoontaleTMPro>();
+        var sink = go.AddComponent<MoontaleTextMeshProSink>();
         sink.Awake();
         sink.Push("color", "#123456");
         sink.Text("Hello");
@@ -63,7 +65,7 @@ public class MoontaleTests
     {
         yield return new EnterPlayMode();
         var go = new GameObject();
-        var sink = go.AddComponent<MoontaleUIText>();
+        var sink = go.AddComponent<MoontaleTextSink>();
         var text = go.GetComponent<Text>();
         var tw = go.AddComponent<MoontaleTypewriter>();
         tw.charsPerSecond = 1000; // Force one char per frame
@@ -87,12 +89,12 @@ public class MoontaleTests
     public void Tooltip()
     {
         var go1 = new GameObject();
-        var sink1 = go1.AddComponent<MoontaleUIText>();
+        var sink1 = go1.AddComponent<MoontaleTextSink>();
         var text1 = go1.GetComponent<Text>();
         sink1.Awake();
 
         var go2 = new GameObject();
-        var sink2 = go2.AddComponent<MoontaleUIText>();
+        var sink2 = go2.AddComponent<MoontaleTextSink>();
         var text2 = go2.GetComponent<Text>();
         sink2.Awake();
 
@@ -111,4 +113,6 @@ public class MoontaleTests
         Assert.AreEqual("Hello!", text1.text);
         Assert.AreEqual("World", text2.text);
     }
+}
+
 }

@@ -7,14 +7,22 @@ using System.Collections.Generic;
 
 [assembly: InternalsVisibleTo("Moontale.EditorTests")]
 
-[RequireComponent(typeof(MoontaleSink))]
-public class MoontaleStory : MoontaleSource
+namespace Moontale {
+
+public class MoontaleStory : Source
 {
-    public TextAsset stdlib;
+    [HideInInspector, SerializeField]
+    public TextAsset standardLibrary;
+
+    [Tooltip("Your story scripts, stored as TextAssets")]
     public List<TextAsset> scriptAssets = new List<TextAsset>();
+
+    [Tooltip("Your story scripts, stored in StreamingAssets")]
     public List<string> scriptStreamingAssets = new List<string>();
+    
+    public Sink sink;
+
     private Script script = new Script();
-    public MoontaleSink sink;
 
     private DynValue Push(ScriptExecutionContext context, CallbackArguments args) {
         sink.Push(args[0].String, args.Count > 0 ? args[1].CastToString() : null);
@@ -42,7 +50,6 @@ public class MoontaleStory : MoontaleSource
     }
 
     internal void Awake() {
-        sink = GetComponent<MoontaleSink>();
         script.Globals.Set("push", DynValue.NewCallback(Push));
         script.Globals.Set("pop", DynValue.NewCallback(Pop));
         script.Globals.Set("text", DynValue.NewCallback(Text));
@@ -54,7 +61,7 @@ public class MoontaleStory : MoontaleSource
     {
         sink.Source = this;
         try {
-            script.DoString(stdlib.text, null, stdlib.name);
+            script.DoString(standardLibrary.text, null, standardLibrary.name);
             foreach (var asset in scriptAssets) {
                 script.DoString(asset.text, null, asset.name);
             }
@@ -78,4 +85,6 @@ public class MoontaleStory : MoontaleSource
         }
         sink.Flush();
     }
+}
+
 }

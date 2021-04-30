@@ -3,7 +3,9 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public abstract class MoontaleRichText : MoontaleSink, IPointerClickHandler, IPointerMoveHandler
+namespace Moontale {
+
+public abstract class RichTextSink : Sink, IPointerClickHandler, IPointerMoveHandler
 {
     protected StringBuilder buffer = new StringBuilder();
     protected readonly Stack<string> tags = new Stack<string>();
@@ -156,4 +158,6 @@ public abstract class MoontaleRichText : MoontaleSink, IPointerClickHandler, IPo
         }
         lastLink = linkId;
     }
+}
+
 }
