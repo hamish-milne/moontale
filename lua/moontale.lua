@@ -155,13 +155,12 @@ end
 ---Displays its argument
 ---@param value content
 function show(value)
+    if value == nil then return end
     local t = type(value)
     if t == 'string' or t == 'number' or t == 'boolean' then
         text(tostring(value))
     elseif t == 'function' or t == 'table' then
         show(value())
-    elseif t == 'nil' then
-        -- Do nothing
     else
         log('Error: '..tostring(value)..' cannot be displayed')
     end
