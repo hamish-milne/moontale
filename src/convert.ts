@@ -63,30 +63,25 @@ function renderOne(input: Token, output: string[], state: {level: number}) {
         break
     case 'text':
         if (input.content.length > 0) {
-            add(`text('${escape(input.content)}')`)
+            add(`Text('${escape(input.content)}')`)
         }
         break
     case 'link_open':
-        add(`link('${escape(input.attrGet('href'))}')(function()`)
+        add(`Link('${escape(input.attrGet('href'))}')(function()`)
         state.level++
         break
     case 'content_open':
         const changer = input.attrGet('changer')
         if (changer == null) {
-            add(`show(function()`)
+            add(`Show(function()`)
         } else {
-            add(`asChanger(${changer})(function()`)
+            add(`AsChanger(${changer})(function()`)
         }
         state.level++
         break
-    case 'content_close':
-    case 'link_close':
-        state.level--
-        add(`end)`)
-        break
     case 'code_variable':
     case 'code_expression':
-        add(`show(${input.content})`)
+        add(`Show(${input.content})`)
         break
     case 'code_block':
         add(input.content)
@@ -94,15 +89,15 @@ function renderOne(input: Token, output: string[], state: {level: number}) {
     default: 
         switch (input.nesting) {
         case 1:
-            add(`push('${input.tag}')`)
+            add(`Style.${input.tag}(function()`)
             state.level++
             break
         case -1:
             state.level--
-            add(`pop()`)
+            add(`end)`)
             break
         case 0:
-            add(`object('${input.tag}')`)
+            add(`Object('${input.tag}')`)
             break
         }
     }

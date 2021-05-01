@@ -1,5 +1,3 @@
----@diagnostic disable: lowercase-global
-
 --[[
     Moontale standard library
     https://moontale.hmilne.cc
@@ -11,7 +9,7 @@
 
 ---Saved output functions
 ---@type fun()
-local _clear = clear
+local _clear = Clear
 
 ---Array of event registrations
 ---@type fun(event:string)[]
@@ -41,7 +39,7 @@ end
 ---Used by If()
 local function _ifTrue(content)
     _ifTaken = true
-    show(content)
+    Show(content)
 end
 
 ---Used by If()
@@ -51,11 +49,11 @@ end
 
 ---The top-level passage currently being rendered
 ---@type string
-passageName = "(No passage)"
+PassageName = "(No passage)"
 
 ---The name of the global start passage
 ---@type string
-startPassage = "(No start passage)"
+StartPassage = "(No start passage)"
 
 ---@class Passage
 ---@field public content renderFn  The passage's content as a function
@@ -64,10 +62,10 @@ startPassage = "(No start passage)"
 
 ---The table of all passages in the story, keyed by their name
 ---@type table<string, Passage>
-passages = {}
+Passages = {}
 
 ---Override of the host function; clears out any internal state
-function clear()
+function Clear()
     _clear()
     _events = {}
     _linkPushed = false
@@ -77,18 +75,18 @@ end
 ---Generates a Changer that registers a callback for its content
 ---@param fn fun(event:string):nil
 ---@return changer
-function event(fn)
+function Event(fn)
     return function(content)
         if _linkPushed then
             local old = _events[#_events]
             _events[#_events] = function(...) old(...); fn(...) end
-            show(content)
+            Show(content)
         else
             _events[#_events + 1] = fn or _empty
-            push('a', tostring(#_events))
+            Push('a', tostring(#_events))
             _linkPushed = true
-            show(content)
-            pop()
+            Show(content)
+            Pop()
             _linkPushed = false
         end
     end
@@ -98,7 +96,7 @@ end
 ---@param hovering changer
 ---@param normal changer|nil
 ---@return changer
-function hover(hovering, normal)
+function Hover(hovering, normal)
     return function(content)
         _reloadOnHover = true
         local doPush = not _linkPushed
@@ -106,15 +104,15 @@ function hover(hovering, normal)
         if doPush then
             eid = #_events + 1
             _events[eid] = _empty
-            push('a', tostring(eid))
+            Push('a', tostring(eid))
         end
         if _hovering[eid] then
-            (hovering or show)(content)
+            (hovering or Show)(content)
         else
-            (normal or show)(content)
+            (normal or Show)(content)
         end
         if doPush then
-            pop()
+            Pop()
         end
     end
 end
@@ -122,17 +120,17 @@ end
 ---Called when the named event occurs on the content with the given ID
 ---@param event string
 ---@param idx string
-function raiseEvent(event, idx)
+function RaiseEvent(event, idx)
     idx = tonumber(idx)
     if event == 'mouseover' then
         _hovering[idx] = true
         if _reloadOnHover then
-            reload()
+            Reload()
         end
     elseif event == 'mouseout' then
         _hovering[idx] = nil
         if _reloadOnHover then
-            reload()
+            Reload()
         end
     else
         local fn = _events[idx]
@@ -143,54 +141,54 @@ end
 ---Checks that its argument can be used as a changer
 ---@param fn changer
 ---@return changer
-function asChanger(fn)
+function AsChanger(fn)
     if type(fn) == 'function' then
         return fn
     else
-        log('Error: '..tostring(fn)..' cannot be used as a changer')
-        return show
+        Log('Error: '..tostring(fn)..' cannot be used as a changer')
+        return Show
     end
 end
 
 ---Displays its argument
 ---@param value content
-function show(value)
+function Show(value)
     if value == nil then return end
     local t = type(value)
     if t == 'string' or t == 'number' or t == 'boolean' then
-        text(tostring(value))
+        Text(tostring(value))
     elseif t == 'function' or t == 'table' then
-        show(value())
+        Show(value())
     else
-        log('Error: '..tostring(value)..' cannot be displayed')
+        Log('Error: '..tostring(value)..' cannot be displayed')
     end
 end
 
 ---Clears the screen and renders the passage with the given name.
 ---@param target string
-function jump(target)
-    clear()
-    passageName = target
+function Jump(target)
+    Clear()
+    PassageName = target
     _firstRender = true
-    display(target)
+    Display(target)
     _firstRender = false
 end
 
 ---Causes the current passage to be re-rendered.
-function reload()
-    clear()
-    display(passageName)
+function Reload()
+    Clear()
+    Display(PassageName)
 end
 
 ---Renders the passage with the given name in-line with the text.
 ---@param passage string
-function display(passage)
-    show(passages[passage].content)
+function Display(passage)
+    Show(Passages[passage].content)
 end
 
 ---Jumps back to the start, without resetting any variables.
-function softReset()
-    jump(startPassage)
+function SoftReset()
+    Jump(StartPassage)
 end
 
 ---Renders its content if the condition is truthy
@@ -208,14 +206,14 @@ end
 ---and not on any subsequent reloads. If a Table is passed, it treats each
 ---key-value pair as an instruction to set a variable.
 ---@param content table|content
-function once(content)
+function Once(content)
     if _firstRender then
         if type(content) == 'table' then
             for k,v in next, content do
                 _G[k] = v
             end
         else
-            show(content)
+            Show(content)
         end
     end
 end
@@ -225,7 +223,7 @@ end
 function Else(content)
     if not _ifTaken then
         _ifTaken = true
-        show(content)
+        Show(content)
     end
 end
 
@@ -242,31 +240,31 @@ end
 
 ---Wraps the content in the named tag
 ---@type table<string, changer>
-style = setmetatable({}, {
+Style = setmetatable({}, {
     __index = function(t, k)
         return function(content)
-            push(k)
-            show(content)
-            pop()
+            Push(k)
+            Show(content)
+            Pop()
         end
     end
 })
 
 ---Sets the named text alignment for the content.
 ---@type table<string, changer>
-align = setmetatable({}, {
+Align = setmetatable({}, {
     __index = function(t, k)
         return function(content)
-            push('align', k)
-            show(content)
-            pop()
+            Push('align', k)
+            Show(content)
+            Pop()
         end
     end
 })
 
 ---A table of the named colours in CSS3
 ---@type table<string, string>
-colors = {
+Colors = {
     aliceblue = "#f0f8ff",
     antiquewhite = "#faebd7",
     aqua = "#00ffff",
@@ -418,37 +416,40 @@ colors = {
 
 ---Colours the text with the given colour name (not case sensitive).
 ---@type table<string, changer>
-color = setmetatable({}, {
+Color = setmetatable({}, {
     __index = function(t, k)
-        local c = colors[string.lower(k)] or k
+        local c = Colors[string.lower(k)] or k
         return function(content)
-            push('color', c)
-            show(content)
-            pop()
+            Push('color', c)
+            Show(content)
+            Pop()
         end
     end
 })
 
 ---Draws an image ('img' entity) with the given path
 ---@param src string
-function image(src)
-    object('img', src)
+function Image(src)
+    Object('img', src)
 end
 
----Executes a function when the content is clicked
----@param fn function
----@return changer
-function click(fn)
-    return event(function(e)
-        if e == "click" then fn() end
-    end)
-end
+---Executes a function when the named event occurs
+---@type table<string, fun(callback:function):changer>
+On = setmetatable({}, {
+    __index = function(t, k)
+        return function(callback)
+            return Event(function(e)
+                if e == k then callback() end
+            end)
+        end
+    end
+})
 
 ---Jumps to a passage when the content is clicked
 ---@param target string
 ---@return changer
-function link(target)
-    return click(function() jump(target) end)
+function Link(target)
+    return On.click(function() Jump(target) end)
 end
 
 ---Renders the content multiple times in a row, with the number of the current iteration (1 indexed) assigned to index
@@ -457,8 +458,8 @@ end
 function Repeat(count)
     return function(content)
         for i=1,count do
-            index = i
-            show(content)
+            _G.index = i
+            Show(content)
         end
     end
 end
@@ -468,7 +469,7 @@ end
 ---@param iterable table
 ---@vararg string
 ---@return changer
-function forEach(iterable, ...)
+function ForEach(iterable, ...)
     local vars = {...}
     if #vars == 0 then
         vars = {'key', 'value'}
@@ -479,7 +480,7 @@ function forEach(iterable, ...)
             for i=1,#vars do
                 _G[vars[i]] = frame[i]
             end
-            show(content)
+            Show(content)
             frame = {next(iterable, frame[1])}
         end
     end
@@ -487,7 +488,7 @@ end
 
 ---Hides the block, and assigns it to a variable with the given name.
 ---@type table<string, changer>
-name = setmetatable({}, {
+Name = setmetatable({}, {
     __index = function(t, k)
         return function(content)
             _G[k] = content
@@ -498,7 +499,7 @@ name = setmetatable({}, {
 ---Creates a Changer that combines each of its Changer arguments in order of outer-most to inner-most.
 ---@vararg changer
 ---@return changer
-function combine(...)
+function Combine(...)
     local agg = select(-1, ...)
     for i=2,select('#', ...) do
         local outer = select(-i, ...)

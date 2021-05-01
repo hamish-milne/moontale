@@ -8,64 +8,64 @@ describe("Compiler", () => {
         function check(input: string, output: string[]) {
             let out: string[] = []
             markdownToLua(input, out, {level: 0})
-            output.splice(0, 0, "push('p')")
-            output.push("pop()")
+            output.splice(0, 0, "Style.p(function()")
+            output.push("end)")
             expect(out.map(x => x.trim())).toEqual(output)
         }
 
         it("renders plain text", () => {
             check(
                 "Some plain text",
-                ["text('Some plain text')"]
+                ["Text('Some plain text')"]
             )
         })
 
         it("renders normal markup", () => {
             check(
                 "*italics*, **bold**",
-                ["push('em')", "text('italics')", "pop()", "text(', ')", "push('strong')", "text('bold')", "pop()"]
+                ["Style.em(function()", "Text('italics')", "end)", "Text(', ')", "Style.strong(function()", "Text('bold')", "end)"]
             )
         })
 
         it('renders Lua variables', () => {
             check(
                 'foo: $foo',
-                ["text('foo: ')", "show(foo)"]
+                ["Text('foo: ')", "Show(foo)"]
             )
         })
 
         it('renders Lua expression blocks', () => {
             check(
                 "foo: <$ foo(\n) $>",
-                ["text('foo: ')", "show( foo(\n) )"]
+                ["Text('foo: ')", "Show( foo(\n) )"]
             )
         })
 
         it('renders Lua script blocks', () => {
             check(
                 "foo: {$ foo(\n) $}",
-                ["text('foo: ')", 'foo(\n)']
+                ["Text('foo: ')", 'foo(\n)']
             )
         })
 
         it('renders Lua variables as changers', () => {
             check(
                 "$foo.bar[Text]",
-                ["asChanger(foo.bar)(function()", "text('Text')", "end)"]
+                ["AsChanger(foo.bar)(function()", "Text('Text')", "end)"]
             )
         })
 
         it('renders Lua expressions as changers', () => {
             check(
                 "<$ foo.\nbar $>[Text]",
-                ["asChanger( foo.\nbar )(function()", "text('Text')", "end)"]
+                ["AsChanger( foo.\nbar )(function()", "Text('Text')", "end)"]
             )
         })
 
         it('renders passage links', () => {
             check(
                 "a link: [[*Label*->Target]]",
-                ["text('a link: ')", "link('Target')(function()", "push('em')", "text('Label')", "pop()", "end)"]
+                ["Text('a link: ')", "Link('Target')(function()", "Style.em(function()", "Text('Label')", "end)", "end)"]
             )
         })
     })
@@ -90,9 +90,9 @@ passages = {
     tags = {  },
     position = {1,2},
     content = function()
-      push('p')
-        text('Text')
-      pop()
+      Style.p(function()
+        Text('Text')
+      end)
     end
   },
 }
