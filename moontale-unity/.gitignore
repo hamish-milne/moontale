@@ -1,0 +1,10 @@
+Library
+*.sln
+*.csproj
+UserSettings
+Logs
+Temp
+obj
+Packages/packages-lock.json
+ProjectSettings
+Assets/TextMesh Pro*

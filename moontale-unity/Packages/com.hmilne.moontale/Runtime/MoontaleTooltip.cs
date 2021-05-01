@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MoontaleTooltip : MoontaleSink
+namespace Moontale {
+
+public class MoontaleTooltip : Sink
 {
-    public MoontaleSink mainScreen;
-    public MoontaleSink subScreen;
+    public Sink mainScreen;
+    public Sink subScreen;
     public bool isSubScreen = false;
 
     private Stack<string> tags = new Stack<string>();
@@ -52,4 +54,6 @@ public class MoontaleTooltip : MoontaleSink
     {
         (isSubScreen ? subScreen : mainScreen).Text(text);
     }
+}
+
 }

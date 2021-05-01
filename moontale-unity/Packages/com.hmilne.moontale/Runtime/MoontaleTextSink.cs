@@ -5,8 +5,10 @@ using UnityEngine.EventSystems;
 using System.Linq;
 using System.Text;
 
+namespace Moontale {
+
 [RequireComponent(typeof(Text))]
-public class MoontaleUIText : MoontaleRichText
+public class MoontaleTextSink : RichTextSink
 {
     private Text text;
     private RectTransform rectTransform;
@@ -128,4 +130,6 @@ public class MoontaleUIText : MoontaleRichText
         // Look up the event ID from the character index
         return CharacterIdxToEventId(character.i);
     }
+}
+
 }

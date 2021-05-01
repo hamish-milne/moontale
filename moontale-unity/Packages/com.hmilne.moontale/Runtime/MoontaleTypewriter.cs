@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class MoontaleTypewriter : MoontaleSink
+namespace Moontale {
+
+public class MoontaleTypewriter : Sink
 {
-    public MoontaleSink sink;
+    public Sink sink;
     public int charsPerSecond = 50;
     public bool typeOn = true;
     private int charsEmitted = 0;
@@ -110,4 +112,6 @@ public class MoontaleTypewriter : MoontaleSink
             }
         }
     }
+}
+
 }
