@@ -57,10 +57,26 @@ export default function (state: StateInline, silent: boolean): boolean {
         state.posMax = endPos
     }
 
-    // The label can contain tokens itself, so we need to call 'tokenize' here
-    state.push('link_open', 'a', 1).attrs = [ ['href', target] ]
-    state.md.inline.tokenize(state)
-    state.push('link_close', 'a', -1)
+    // If we immediately followed a variable or expression, use it as a Changer for this content:
+    const prevToken = state.tokens[state.tokens.length - 1]
+    let changer: string | null
+    if (prevToken && (prevToken.type == 'code_variable' || prevToken.type == 'code_expression')) {
+        // Remove the expression token; we don't want it to be printed in the output
+        state.tokens.splice(state.tokens.length - 1, 1)
+        changer = prevToken.content
+    } else {
+        changer = null
+    }
+
+    // If the link matches [[ ->Foo]], then just display Foo inline
+    if (ltrLink !== -1 && state.src.slice(state.pos, state.posMax).trim() == "") {
+        state.push('link_inline', '', 0).attrs = [ ['href', target], ['changer', changer] ]
+    } else {
+        // The label can contain tokens itself, so we need to call 'tokenize' here
+        state.push('link_open', 'a', 1).attrs = [ ['href', target], ['changer', changer] ]
+        state.md.inline.tokenize(state)
+        state.push('link_close', 'a', -1)
+    }
 
     // Restore the state to its original... state
     state.pos = endPos + markerLength

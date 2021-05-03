@@ -55,6 +55,8 @@ function renderOne(input: Token, output: string[], state: {level: number}) {
     function add(str: string) {
         output.push(`${'  '.repeat(state.level)}${str}`)
     }
+    const changer = input.attrGet('changer')
+    const href = escape(input.attrGet('href') ?? '')
     switch (input.type) {
     case 'inline':
         for (const child of input.children) {
@@ -67,11 +69,21 @@ function renderOne(input: Token, output: string[], state: {level: number}) {
         }
         break
     case 'link_open':
-        add(`Link('${escape(input.attrGet('href'))}')(function()`)
+        if (changer == null) {
+            add(`Link('${href}')(function()`)
+        } else {
+            add(`Combine(AsChanger(${changer}), Link('${href}'))(function()`)
+        }
         state.level++
         break
+    case 'link_inline':
+        if (changer == null) {
+            add(`Display('${href}')`)
+        } else {
+            add(`AsChanger(${changer})(function() Display('${href}') end)`)
+        }
+        break
     case 'content_open':
-        const changer = input.attrGet('changer')
         if (changer == null) {
             add(`Show(function()`)
         } else {
@@ -97,7 +109,11 @@ function renderOne(input: Token, output: string[], state: {level: number}) {
             add(`end)`)
             break
         case 0:
-            add(`Object('${input.tag}')`)
+            if (input.type == 'softbreak') {
+                add(`Text(' ')`)
+            } else if (input.tag != "") {
+                add(`Object('${input.tag}')`)
+            }
             break
         }
     }

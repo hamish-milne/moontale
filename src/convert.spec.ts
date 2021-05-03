@@ -75,6 +75,27 @@ describe("Compiler", () => {
                 ["Text('a link: ')", "Link('Target')(function()", "Style.em(function()", "Text('Label')", "end)", "end)"]
             )
         })
+
+        it('handles hard and soft line breaks', () => {
+            check(
+                "A\nB  \nC",
+                ["Text('A')", "Text(' ')", "Text('B')", "Object('br')", "Text('C')"]
+            )
+        })
+
+        it("can apply changers to links", () => {
+            check(
+                "$foo[[Label->Target]]",
+                ["Combine(AsChanger(foo), Link('Target'))(function()", "Text('Label')", "end)"]
+            )
+        })
+
+        it("can render inline links", () => {
+            check(
+                "[[ ->Target]]",
+                ["Display('Target')"]
+            )
+        })
     })
 
     describe("Story to Lua conversion", () => {

@@ -6,9 +6,9 @@ Build the format.json file:
     ✔ Build format.json from dist/index.html @done(21-04-17 00:18)
 
 Markup niceties:
-    ☐ Changers applied to links
-    ☐ Newlines -> spaces
-    ☐ 'Inline' changer: replace 'link' with 'display' in text
+    ✔ Changers applied to links @done(21-05-03 23:16)
+    ✔ Newlines -> spaces @done(21-05-03 22:15)
+    ✔ 'Inline' link syntax @done(21-05-03 23:16)
 
 Error handling:
     ☐ Show an error log in the browser player
@@ -36,6 +36,7 @@ Library:
     ✔ combine() @done(21-04-18 00:33)
     ☐ freeze
     ☐ Special passage tags
+    ☐ random
 
 Player features:
     ☐ Back button
