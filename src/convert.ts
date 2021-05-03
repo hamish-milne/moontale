@@ -7,6 +7,7 @@ import Token from 'markdown-it/lib/token'
 import ParserInline from 'markdown-it/lib/parser_inline'
 import ParserBlock from 'markdown-it/lib/parser_block'
 import ParserCore from 'markdown-it/lib/parser_core'
+import { isWhiteSpace } from 'markdown-it/lib/common/utils'
 
 // We construct our own MarkdownIt instance here to exclude the features we don't use
 // (which saves on the bundle size)
@@ -64,8 +65,12 @@ function renderOne(input: Token, output: string[], state: {level: number}) {
         }
         break
     case 'text':
-        if (input.content.length > 0) {
-            add(`Text('${escape(input.content)}')`)
+        let content = input.content
+        if (content.length > 0) {
+            if (!isWhiteSpace(content.charCodeAt(content.length - 1))) {
+                content = content + ' '
+            }
+            add(`Text('${escape(content)}')`)
         }
         break
     case 'link_open':
@@ -110,7 +115,6 @@ function renderOne(input: Token, output: string[], state: {level: number}) {
             break
         case 0:
             if (input.type == 'softbreak') {
-                add(`Text(' ')`)
             } else if (input.tag != "") {
                 add(`Object('${input.tag}')`)
             }
