@@ -126,6 +126,7 @@ end
 ---@param idx string
 function RaiseEvent(event, idx)
     idx = tonumber(idx)
+    if idx == nil then return end
     if event == 'mouseover' then
         _hovering[idx] = true
         if _reloadOnHover then
@@ -449,13 +450,6 @@ On = setmetatable({}, {
     end
 })
 
----Jumps to a passage when the content is clicked
----@param target string
----@return changer
-function Link(target)
-    return On.click(function() Jump(target) end)
-end
-
 ---Renders the content multiple times in a row, with the number of the current iteration (1 indexed) assigned to index
 ---@param count number
 ---@return changer
@@ -511,4 +505,13 @@ function Combine(...)
         agg = function(c) outer(function() inner(c) end) end
     end
     return agg
+end
+
+LinkStyle = Hover(Color.red, Color.darkred)
+
+---Jumps to a passage when the content is clicked
+---@param target string
+---@return changer
+function Link(target)
+    return Combine(On.click(function() Jump(target) end), LinkStyle)
 end

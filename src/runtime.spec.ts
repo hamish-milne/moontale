@@ -17,6 +17,7 @@ describe("JS runtime", () => {
     it("responds to events from link tags", () => {
         let html: string
         loadStory([moontaleLib, `
+            LinkStyle = Show
             function SoftReset() Clear(); Link('Target')('text') end
             function RaiseEvent(event, id) Clear(); Text(event); Text('='); Text(id) end`
         ], x => html = x, () => {})

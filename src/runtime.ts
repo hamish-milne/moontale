@@ -27,8 +27,10 @@ export function loadStory(src: string[], emitFn: (html: string)=>void, logFn: (e
         let str = lua.lua_tojsstring(L, 1)
         tags.push(str)
         if (str == 'a') {
-            buf.push(`<${str} href="#" id="${lua.lua_tonumber(L, 2)}">`)
+            buf.push(`<a href="#" id="${lua.lua_tonumber(L, 2)}">`)
             lua.lua_pop(L, 1)
+        } else if (str == 'color') {
+            buf.push(`<span style="color: ${lua.lua_tojsstring(L, 2)};">`)
         } else {
             buf.push(`<${str}>`)
         }
@@ -36,9 +38,13 @@ export function loadStory(src: string[], emitFn: (html: string)=>void, logFn: (e
         return 0
     })
     lua.lua_register(L, "Pop", _ => {
-        let str = tags.splice(tags.length - 1, 1)
+        let str = tags.splice(tags.length - 1, 1)[0]
         if (str) {
-            buf.push(`</${str}>`)
+            if (str === "color") {
+                buf.push(`</span>`)
+            } else {
+                buf.push(`</${str}>`)
+            }
         }
         wasChanged = true
         return 0
