@@ -20,7 +20,7 @@ const md = {
         breaks:       false,
         langPrefix:   'language-',
         linkify:      false,
-        typographer:  false,
+        typographer:  true,
         quotes: '\u201c\u201d\u2018\u2019', /* “”‘’ */
         highlight: null as null,
         maxNesting:   100

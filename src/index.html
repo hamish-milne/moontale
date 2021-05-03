@@ -7,8 +7,24 @@
 </head>
 
 <body>
-    <div id="output" style="opacity: 0;"></div>
-    <div id="storyData" style="display: none;">{{STORY_DATA}}</div>
+    <span id="outputToggle">
+        <img inline class="toggleIcon" src="dist/icons/book-open.svg">
+        <label class="switch">
+            <input id="outputToggleInput" type="checkbox">
+            <span class="slider round"></span>
+        </label>
+        <img class="toggleIcon" inline src="dist/icons/code.svg">
+    </span>
+    <a id="download" href="#">
+        <img inline src="dist/icons/file-download.svg">
+    </a>
+    <div id="wrapper">
+        <div id="outputContainer">
+            <div id="output"></div>
+        </div>
+        <pre id="lua"></pre>
+    </div>
+    <div id="storyData">{{STORY_DATA}}</div>
 </body>
 
 </html>

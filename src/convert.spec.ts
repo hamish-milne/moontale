@@ -20,6 +20,13 @@ describe("Compiler", () => {
             )
         })
 
+        it("renders smartquotes", () => {
+            check(
+                "\"Quoted!\"",
+                ["Text('\u201cQuoted!\u201d')"]
+            )
+        })
+
         it("renders normal markup", () => {
             check(
                 "*italics*, **bold**",

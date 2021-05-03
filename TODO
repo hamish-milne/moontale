@@ -1,8 +1,14 @@
+-- file:///C:/Workspace/moontale/build/format-dev.js
 Build the format.json file:
     ✔ Inline the JS @done(21-04-17 00:18)
     ✔ Inline the CSS @done(21-04-17 00:18)
     ✔ Minify the HTML @done(21-04-17 00:18)
     ✔ Build format.json from dist/index.html @done(21-04-17 00:18)
+
+Markup niceties:
+    ☐ Changers applied to links
+    ☐ Newlines -> spaces
+    ☐ 'Inline' changer: replace 'link' with 'display' in text
 
 Error handling:
     ☐ Show an error log in the browser player
@@ -34,7 +40,7 @@ Library:
 Player features:
     ☐ Back button
     ☐ Save/load
-    ☐ Show/download Lua code
+    ✔ Show/download Lua code @done(21-05-03 17:54)
     ☐ Distinguish between 'debug' and 'not debug' modes
 
 Debugging:

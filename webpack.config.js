@@ -5,8 +5,12 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const HTMLInlineCSSWebpackPlugin = require("html-inline-css-webpack-plugin").default
+const HtmlWebpackInlineSVGPlugin = require('html-webpack-inline-svg-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
-module.exports = {
+function isProduction(options) { return options.mode === 'production' }
+
+module.exports = (env, options) => { return {
     mode: 'development',
     devtool: "source-map",
     entry: './src/index.ts',
@@ -27,6 +31,10 @@ module.exports = {
             {
                 test: /\.css$/i,
                 use: [MiniCssExtractPlugin.loader, 'css-loader'],
+            },
+            {
+                test: /\.(ttf|eot|svg|png|jpg|gif|ico|woff|woff2)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                type: 'asset/resource'
             }
         ],
     },
@@ -44,12 +52,21 @@ module.exports = {
             "process.env.FENGARICONF": "void 0",
             "typeof process": JSON.stringify("undefined")
         }),
+        new CopyWebpackPlugin({'patterns': [
+            {
+                from:'./node_modules/@fortawesome/fontawesome-free/svgs/solid',
+                to:'icons'
+            }
+        ]}),
         new MiniCssExtractPlugin(),
         new HtmlWebpackPlugin({
             template: "src/index.html",
             inject: "body"
         }),
         new HTMLInlineCSSWebpackPlugin(),
+        new HtmlWebpackInlineSVGPlugin({
+            runPreEmit: true
+        }),
         {
             apply: function(compiler) {
                 compiler.hooks.done.tap('BuildStoryFormat', function() {
@@ -93,7 +110,12 @@ module.exports = {
         compress: true,
         port: 9000,
         inline: true,
-        hot: true
+        hot: true,
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+            "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
+        }
     },
     ignoreWarnings: [{
         message: /size limit/
@@ -101,4 +123,4 @@ module.exports = {
         message: /You can limit the size of your bundles/
     }],
     devtool: 'source-map'
-};
+} };
