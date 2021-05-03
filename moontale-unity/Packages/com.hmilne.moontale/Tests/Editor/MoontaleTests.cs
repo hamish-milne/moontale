@@ -21,8 +21,8 @@ public class Tests
         source.sink = sink;
         source.scriptAssets.Add(new TextAsset(@"
         
-        startPassage = 'foo';
-        passages = {foo = {content = function() style.b('Hello world!') end}}
+        StartPassage = 'foo';
+        Passages = {foo = {content = function() Style.b('Hello world!') end}}
 
         "));
         source.Start();

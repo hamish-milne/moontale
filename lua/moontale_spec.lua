@@ -1,15 +1,15 @@
 ---@diagnostic disable: lowercase-global, undefined-global
 
 before_each(function()
-    _G.log = print
+    _G.Log = print
     _text = spy.new(function() end)
     _clear = spy.new(function() end)
     _push = spy.new(function() end)
     _pop = spy.new(function() end)
-    _G.clear = _clear
-    _G.text = _text
-    _G.push = _push
-    _G.pop = _pop
+    _G.Clear = _clear
+    _G.Text = _text
+    _G.Push = _push
+    _G.Pop = _pop
     require('moontale')
 end)
 
@@ -19,14 +19,14 @@ end)
 
 describe("clear()", function()
     it("calls parent", function()
-        clear()
+        Clear()
         assert.spy(_clear).was.called(1)
     end)
 end)
 
 describe("event()", function()
     it("pushes a link tag", function()
-        event(function() end)("Foo")
+        Event(function() end)("Foo")
         assert.spy(_push).was.called_with('a', '1')
         assert.spy(_text).was.called_with('Foo')
         assert.spy(_pop).was.called(1)
@@ -34,14 +34,14 @@ describe("event()", function()
 
     it("responds to raised event", function()
         local s = spy.new(function() end)
-        event(s)("Foo")
-        raiseEvent("eventType", "1")
+        Event(s)("Foo")
+        RaiseEvent("eventType", "1")
         assert.spy(s).was.called_with("eventType")
     end)
 
     it("merges nested events into one tag", function()
-        event(function() end)(function()
-            event(function() end)("Foo")
+        Event(function() end)(function()
+            Event(function() end)("Foo")
         end)
         assert.spy(_push).was.called(1)
         assert.spy(_pop).was.called(1)
@@ -50,37 +50,37 @@ end)
 
 describe("show()", function()
     it("can accept strings", function()
-        show("Foo")
+        Show("Foo")
         assert.spy(_text).was.called_with("Foo")
     end)
 
     it("can accept numbers", function()
-        show(123)
+        Show(123)
         assert.spy(_text).was.called_with("123")
     end)
 
     it("can accept render functions", function()
-        show(function() text("Foo") end)
+        Show(function() Text("Foo") end)
         assert.spy(_text).was.called_with("Foo")
     end)
 end)
 
 describe("display()", function()
     it("shows passage content", function()
-        _G.passages = {foo = {content = function() text("Bar") end}}
-        display("foo")
+        _G.Passages = {foo = {content = function() Text("Bar") end}}
+        Display("foo")
         assert.spy(_text).was.called_with("Bar")
     end)
 end)
 
 describe("hover()", function()
     it("switches changers on mouseover", function()
-        _G.passages = {p = {content = function() hover(style.foo, style.bar)("Foo") end}}
-        jump('p')
+        _G.Passages = {p = {content = function() Hover(Style.foo, Style.bar)("Foo") end}}
+        Jump('p')
         assert.spy(_clear).was.called(1)
         assert.spy(_push).was.called_with("bar")
         assert.spy(_push).was.called_with("a", "1")
-        raiseEvent("mouseover", "1")
+        RaiseEvent("mouseover", "1")
         assert.spy(_clear).was.called(2)
         assert.spy(_push).was.called_with("foo")
     end)
@@ -89,18 +89,18 @@ end)
 describe("once()", function()
     it("executes only the first time", function()
         local s = spy.new(function() end)
-        _G.passages = {p = { content = function() once(function() s() end) end } }
-        jump('p')
+        _G.Passages = {p = { content = function() Once(function() s() end) end } }
+        Jump('p')
         assert.spy(s).was.called(1)
-        reload()
+        Reload()
         assert.spy(s).was.called(1)
     end)
 
     it("accepts a table value to set variables", function()
         _G.x = nil
         _G.y = nil
-        _G.passages = {p = { content = function() once { x = 1, y = 2 } end } }
-        jump('p')
+        _G.Passages = {p = { content = function() Once { x = 1, y = 2 } end } }
+        Jump('p')
         assert.is_equal(_G.x, 1)
         assert.is_equal(_G.y, 2)
     end)
@@ -167,7 +167,7 @@ end)
 
 describe("style", function ()
     it("pushes the named tag", function ()
-        style.foo("Bar")
+        Style.foo("Bar")
         assert.spy(_push).was.called_with("foo")
         assert.spy(_text).was.called_with("Bar")
         assert.spy(_pop).was.called_with()
@@ -175,16 +175,16 @@ describe("style", function ()
 
     it("can be overridden", function ()
         local s = spy.new(function() end)
-        style.foo = s
-        style.foo("Bar")
-        style.foo = nil
+        Style.foo = s
+        Style.foo("Bar")
+        Style.foo = nil
         assert.spy(s).was.called(1)
     end)
 end)
 
 describe("align", function ()
     it("pushes the named alignment", function ()
-        align.foo("Bar")
+        Align.foo("Bar")
         assert.spy(_push).was.called_with("align", "foo")
         assert.spy(_text).was.called_with("Bar")
         assert.spy(_pop).was.called_with()
@@ -193,14 +193,14 @@ end)
 
 describe("color", function ()
     it("pushes the named colour", function ()
-        color.lightgrey("Bar")
+        Color.lightgrey("Bar")
         assert.spy(_push).was.called_with("color", "#d3d3d3")
         assert.spy(_text).was.called_with("Bar")
         assert.spy(_pop).was.called_with()
     end)
 
     it("pushes the given hex colour", function ()
-        color["#123456"]("Bar")
+        Color["#123456"]("Bar")
         assert.spy(_push).was.called_with("color", "#123456")
         assert.spy(_text).was.called_with("Bar")
         assert.spy(_pop).was.called_with()
@@ -210,10 +210,10 @@ end)
 describe("click()", function()
     it("only responds to click events", function ()
         local s = spy.new(function() end)
-        click(s)("Foo")
-        raiseEvent("not-click", "1")
+        On.click(s)("Foo")
+        RaiseEvent("not-click", "1")
         assert.spy(s).was_not.called()
-        raiseEvent("click", "1")
+        RaiseEvent("click", "1")
         assert.spy(s).was.called(1)
     end)
 end)
@@ -221,9 +221,9 @@ end)
 describe("link()", function ()
     it("jumps to the given passage on click", function ()
         local s = spy.new(function() end)
-        _G.passages = {q = { content = s}}
-        link('q')("Foo")
-        raiseEvent("click", "1")
+        _G.Passages = {q = { content = s}}
+        Link('q')("Foo")
+        RaiseEvent("click", "1")
         assert.spy(s).was.called(1)
     end)
 end)
@@ -238,14 +238,14 @@ end)
 
 describe("forEach()", function ()
     it("iterates over table literal", function ()
-        forEach {a = 1, b = 2, c = 3}(function() text(key..value) end)
+        ForEach {a = 1, b = 2, c = 3}(function() Text(key..value) end)
         assert.spy(_text).was.called_with('a1')
         assert.spy(_text).was.called_with('b2')
         assert.spy(_text).was.called_with('c3')
     end)
 
     it("accepts names for iteration variables", function ()
-        forEach({a = 1, b = 2, c = 3}, 'x', 'y')(function() text(x..y) end)
+        ForEach({a = 1, b = 2, c = 3}, 'x', 'y')(function() Text(x..y) end)
         assert.spy(_text).was.called_with('a1')
         assert.spy(_text).was.called_with('b2')
         assert.spy(_text).was.called_with('c3')
@@ -254,15 +254,15 @@ end)
 
 describe("name", function ()
     it("can be used to store and retrieve content", function ()
-        name.foo("Bar")
-        show(foo)
+        Name.foo("Bar")
+        Show(foo)
         assert.spy(_text).was.called_with("Bar")
     end)
 end)
 
 describe("combine()", function ()
     it("combines multiple changers into one", function ()
-        combine(style.foo, style.bar)("Baz")
+        Combine(Style.foo, Style.bar)("Baz")
         assert.spy(_push).was.called_with('foo')
         assert.spy(_push).was.called_with('bar')
         assert.spy(_text).was.called_with('Baz')
@@ -270,7 +270,7 @@ describe("combine()", function ()
     end)
 
     it("accepts a single argument", function ()
-        combine(style.foo)("Baz")
+        Combine(Style.foo)("Baz")
         assert.spy(_push).was.called_with('foo')
         assert.spy(_text).was.called_with('Baz')
         assert.spy(_pop).was.called(1)

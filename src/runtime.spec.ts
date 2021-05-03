@@ -8,7 +8,7 @@ describe("JS runtime", () => {
     it("emits HTML for push/pop/text/object", () => {
         let html: string
         loadStory([moontaleLib,
-            `function softReset() clear(); push('p'); text('text'); object('hr'); pop() end`
+            `function SoftReset() Clear(); Push('p'); Text('text'); Object('hr'); Pop() end`
         ], x => html = x, () => {})
         start()
         expect(html).toBe("<p>text<hr></p>")
@@ -17,8 +17,8 @@ describe("JS runtime", () => {
     it("responds to events from link tags", () => {
         let html: string
         loadStory([moontaleLib, `
-            function softReset() clear(); link('Target')('text') end
-            function raiseEvent(event, id) clear(); text(event); text('='); text(id) end`
+            function SoftReset() Clear(); Link('Target')('text') end
+            function RaiseEvent(event, id) Clear(); Text(event); Text('='); Text(id) end`
         ], x => html = x, () => {})
         start()
         expect(html).toBe(`<a href="#" id="1">text</a>`)

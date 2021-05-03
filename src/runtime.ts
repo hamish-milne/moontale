@@ -12,18 +12,18 @@ export function loadStory(src: string[], emitFn: (html: string)=>void, logFn: (e
     L = lauxlib.luaL_newstate()
 
     lua.lua_atpanic(L, _ => {
-        logFn(lua.lua_tojsstring(L, 1), "TODO")
+        logFn(lua.lua_tojsstring(L, 1), "Panic")
         return 0
     })
 
     lualib.luaL_openlibs(L)
 
-    lua.lua_register(L, "log", _ => {
+    lua.lua_register(L, "Log", _ => {
         logFn(lua.lua_tojsstring(L, 1), lua.lua_tojsstring(L, 2))
         return 0
     })
 
-    lua.lua_register(L, "push", _ => {
+    lua.lua_register(L, "Push", _ => {
         let str = lua.lua_tojsstring(L, 1)
         tags.push(str)
         if (str == 'a') {
@@ -35,7 +35,7 @@ export function loadStory(src: string[], emitFn: (html: string)=>void, logFn: (e
         wasChanged = true
         return 0
     })
-    lua.lua_register(L, "pop", _ => {
+    lua.lua_register(L, "Pop", _ => {
         let str = tags.splice(tags.length - 1, 1)
         if (str) {
             buf.push(`</${str}>`)
@@ -43,19 +43,19 @@ export function loadStory(src: string[], emitFn: (html: string)=>void, logFn: (e
         wasChanged = true
         return 0
     })
-    lua.lua_register(L, "text", _ => {
+    lua.lua_register(L, "Text", _ => {
         let str = lua.lua_tojsstring(L, 1)
         buf.push(str)
         wasChanged = true
         return 0
     })
-    lua.lua_register(L, "object", _ => {
+    lua.lua_register(L, "Object", _ => {
         let str = lua.lua_tojsstring(L, 1)
         buf.push(`<${str}>`)
         wasChanged = true
         return 0
     })
-    lua.lua_register(L, "clear", _ => {
+    lua.lua_register(L, "Clear", _ => {
         buf = []
         wasChanged = true
         return 0
@@ -65,7 +65,7 @@ export function loadStory(src: string[], emitFn: (html: string)=>void, logFn: (e
 }
 
 export function raiseEvent(event: string, id: string) {
-    lua.lua_getglobal(L, 'raiseEvent')
+    lua.lua_getglobal(L, 'RaiseEvent')
     lua.lua_pushstring(L, event)
     lua.lua_pushstring(L, id)
     lua.lua_call(L, 2, 0)
@@ -76,7 +76,7 @@ export function raiseEvent(event: string, id: string) {
 }
 
 export function start() {
-    lua.lua_getglobal(L, 'softReset')
+    lua.lua_getglobal(L, 'SoftReset')
     lua.lua_call(L, 0, 0)
     emit?.(buf.join(''))
     wasChanged = false
