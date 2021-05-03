@@ -22,7 +22,7 @@ pre {
 }
 
 #lua {
-    visibility: hidden;
+    display: none;
 }
 
 #storyData {
@@ -73,12 +73,8 @@ p {
 }
 
 a {
-    color: darkred;
+    color: auto;
     text-decoration: none;
-}
-
-a:hover {
-    color: red
 }
 
 /* The switch - the box around the slider */
