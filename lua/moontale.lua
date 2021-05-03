@@ -62,7 +62,11 @@ StartPassage = "(No start passage)"
 
 ---The table of all passages in the story, keyed by their name
 ---@type table<string, Passage>
-Passages = {}
+Passages = setmetatable({}, {
+    __index = function (t, k)
+        error("Passage `"..tostring(k).."` does not exist")
+    end
+})
 
 ---Override of the host function; clears out any internal state
 function Clear()

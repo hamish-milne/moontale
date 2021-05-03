@@ -50,11 +50,11 @@ public class MoontaleStory : Source
     }
 
     internal void Awake() {
-        script.Globals.Set("push", DynValue.NewCallback(Push));
-        script.Globals.Set("pop", DynValue.NewCallback(Pop));
-        script.Globals.Set("text", DynValue.NewCallback(Text));
-        script.Globals.Set("clear", DynValue.NewCallback(Clear));
-        script.Globals.Set("object", DynValue.NewCallback(Object));
+        script.Globals.Set("Push", DynValue.NewCallback(Push));
+        script.Globals.Set("Pop", DynValue.NewCallback(Pop));
+        script.Globals.Set("Text", DynValue.NewCallback(Text));
+        script.Globals.Set("Clear", DynValue.NewCallback(Clear));
+        script.Globals.Set("Object", DynValue.NewCallback(Object));
     }
 
     internal void Start()
@@ -68,7 +68,7 @@ public class MoontaleStory : Source
             foreach (var path in scriptStreamingAssets) {
                 script.DoString(File.ReadAllText(Application.streamingAssetsPath + "/" + path), null, path);
             }
-            script.Call(script.Globals["softReset"]);
+            script.Call(script.Globals["SoftReset"]);
         } catch (ScriptRuntimeException e) {
             Debug.LogError(e.Message + "\n" + string.Join("\n    ", e.CallStack.Select(x => $"{x.Name}:{x.Location}")));
         }
@@ -79,7 +79,7 @@ public class MoontaleStory : Source
     {
         sink.Source = this;
         try {
-            script.Call(script.Globals["raiseEvent"], eventType, int.Parse(id));
+            script.Call(script.Globals["RaiseEvent"], eventType, int.Parse(id));
         } catch (ScriptRuntimeException e) {
             Debug.LogError(e.Message + "\n" + string.Join("\n    ", e.CallStack.Select(x => $"{x.Name}:{x.Location}")));
         }
