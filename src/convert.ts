@@ -114,7 +114,7 @@ export function storyToLua(story: Element): string {
     let startNodeName: string | null = null
     const buf: string[] = ['-- Generated with Moontale']
     buf.push(`story = '${escape(story.getAttribute('name'))}'`)
-    buf.push(`passages = {`)
+    buf.push(`Passages = {`)
     for (let i = 0; i < story.children.length; i++) {
         let node = story.children[i]
         if (node.tagName.toLowerCase() === "tw-passagedata") {
@@ -135,7 +135,7 @@ export function storyToLua(story: Element): string {
         }
     }
     buf.push(`}`)
-    buf.push(`startPassage = '${escape(startNodeName)}'`)
+    buf.push(`StartPassage = '${escape(startNodeName)}'`)
 
     return buf.join('\n')
 }

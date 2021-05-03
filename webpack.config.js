@@ -2,7 +2,6 @@ const path = require('path');
 const webpack = require('webpack');
 const fs = require('fs')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const HtmlInlineScriptPlugin = require('html-inline-script-webpack-plugin')
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const HTMLInlineCSSWebpackPlugin = require("html-inline-css-webpack-plugin").default
@@ -50,7 +49,6 @@ module.exports = {
             template: "src/index.html",
             inject: "body"
         }),
-        new HtmlInlineScriptPlugin(),
         new HTMLInlineCSSWebpackPlugin(),
         {
             apply: function(compiler) {
@@ -58,20 +56,28 @@ module.exports = {
 
                     let package = JSON.parse(fs.readFileSync("package.json", "utf-8"))
                     let html = fs.readFileSync(`${__dirname}/dist/index.html`, "utf-8")
-                    let outputJson = {
-                        name: "Moontale",
-                        version: package.version,
-                        author: package.author,
-                        description: package.description,
-                        proofing: false,
-                        url: package.repository.url,
-                        license: package.license,
-                        image: 'icon.svg',
-                        source: html
-                    }
-                    let outputString = `window.storyFormat(${JSON.stringify(outputJson)});`
-                    fs.writeFileSync("build/format.js", outputString)
-                        // fs.copyFileSync("dist/bundle.js.map", "build/bundle.js.map")
+                    let js = fs.readFileSync(`${__dirname}/dist/bundle.js`, "utf-8")
+                    let scriptTag = `<script defer="defer" src="bundle.js"></script>`;
+                    [
+                        ['offline', package.version, html.replace(scriptTag, `<script defer="defer">${js}</script>`)],
+                        ['dev', '0.0.0', html.replace(scriptTag, `<script defer="defer" src="http://localhost:9000/bundle.js"></script>`)],
+                        ['latest', '1.0.0', html.replace(scriptTag, `<script defer="defer" src="https://moontale.hmilne.cc/bundle.js"></script>`)]
+                    ].map(tuple => {
+                        let outputJson = {
+                            name: "Moontale",
+                            version: tuple[1],
+                            author: package.author,
+                            description: package.description,
+                            proofing: false,
+                            url: package.repository.url,
+                            license: package.license,
+                            image: 'icon.svg',
+                            source: tuple[2]
+                        }
+                        let outputString = `window.storyFormat(${JSON.stringify(outputJson)});`
+                        fs.writeFileSync(`build/format-${tuple[0]}.js`, outputString)
+                    })
+                    fs.copyFileSync("dist/bundle.js.map", "build/bundle.js.map")
                 })
             },
         },
@@ -90,7 +96,7 @@ module.exports = {
         hot: true
     },
     ignoreWarnings: [{
-        message: /asset size limit/
+        message: /size limit/
     }, {
         message: /You can limit the size of your bundles/
     }],

@@ -5,6 +5,7 @@ import './style.css'
 import moontaleLib from '../lua/moontale.lua'
 
 let luaSrc = storyToLua(document.getElementById('storyData').children[0])
+console.log(luaSrc)
 let output = document.getElementById('output')
 
 function onNewText(html: string) {
@@ -15,6 +16,6 @@ function onNewText(html: string) {
 loadStory([moontaleLib, luaSrc], html => {
     output.style.opacity = '0'
     setTimeout(onNewText, 200, html)
-}, () => {})
+}, (message) => console.error(message))
 document.addEventListener('click', event => raiseEvent(event.type, (event.target as Element).id))
 start()

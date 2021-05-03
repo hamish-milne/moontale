@@ -85,7 +85,7 @@ describe("Compiler", () => {
 </tw-storydata>
 `,
 `story = 'Test'
-passages = {
+Passages = {
   ['Foo'] = {
     tags = {  },
     position = {1,2},
@@ -96,7 +96,7 @@ passages = {
     end
   },
 }
-startPassage = 'Foo'`
+StartPassage = 'Foo'`
             )
         })
     })
