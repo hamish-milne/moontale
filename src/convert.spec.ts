@@ -96,6 +96,13 @@ describe("Compiler", () => {
                 ["Display('Target')"]
             )
         })
+
+        it("auto-closes content blocks", () => {
+            check(
+                "$foo[$bar[Text",
+                ["AsChanger(foo)(function()", "AsChanger(bar)(function()", "Text('Text')", "end)", "end)"]
+            )
+        })
     })
 
     describe("Story to Lua conversion", () => {

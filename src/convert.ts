@@ -120,8 +120,12 @@ function renderOne(input: Token, output: string[], state: {level: number}) {
 }
 
 export function markdownToLua(src: string, outputBuffer: string[], state: {level: number}) {
+    let startLevel = state.level
     for(const token of md.parse(src, {})) {
         renderOne(token, outputBuffer, state)
+    }
+    while (state.level > startLevel) {
+        renderOne(new Token('content_close', '', -1), outputBuffer, state)
     }
 }
 
