@@ -81,7 +81,13 @@ window.addEventListener('mouseover', event => {
         return
     }
     let id = getEventId(event)
-    if (id !== null && hovering === null) {
+    if (id === hovering) {
+        return
+    }
+    if (id !== null) {
+        if (hovering !== null) {
+            raiseEvent('mouseout', hovering)
+        }
         hovering = id
         raiseEvent(event.type, id)
     }
