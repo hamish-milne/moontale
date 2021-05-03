@@ -27,6 +27,7 @@ public class MoontaleTypewriter : Sink
     }
 
     private Queue<QueueItem> queue = new Queue<QueueItem>();
+    private Coroutine coroutine;
 
     public override void Clear()
     {
@@ -38,8 +39,10 @@ public class MoontaleTypewriter : Sink
 
     public override void Flush()
     {
-        StopAllCoroutines();
-        StartCoroutine(DoFlush());
+        if (coroutine != null) {
+            StopCoroutine(coroutine);
+        }
+        coroutine = StartCoroutine(DoFlush());
     }
 
     public override void Object(string tag, string arg)
@@ -98,19 +101,19 @@ public class MoontaleTypewriter : Sink
                 break;
             case ItemType.Text:
                 sink.Text(item.arg1);
-                sink.Flush();
                 break;
             case ItemType.Char:
                 sink.Text(item.arg1);
-                sink.Flush();
                 charsEmitted++;
                 if (charsEmitted > totalCharsEmitted) {
+                    sink.Flush();
                     yield return new WaitForSeconds(1f / charsPerSecond);
                     totalCharsEmitted++;
                 }
                 break;
             }
         }
+        sink.Flush();
     }
 }
 
