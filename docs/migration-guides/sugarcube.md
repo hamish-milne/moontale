@@ -36,7 +36,7 @@ The following syntax is identical in Sugarcube and Moontale:
     <tr>
       <td style="text-align:left"><code>&lt;&lt;print $name&gt;&gt;</code>
       </td>
-      <td style="text-align:left"><code>{$ show(name) $}</code> 
+      <td style="text-align:left"><code>{$ Show(name) $}</code> 
       </td>
     </tr>
     <tr>
@@ -66,12 +66,12 @@ The following syntax is identical in Sugarcube and Moontale:
     <tr>
       <td style="text-align:left"><code>[[Go buy milk|Grocery][$bought to &quot;milk&quot;]]</code>
       </td>
-      <td style="text-align:left"><code>$click(function() bought = &apos;milk&apos;; jump(&apos;Grocery&apos;) end)[Go buy milk]</code>
+      <td style="text-align:left"><code>$On.click&lt;&lt;bought = &apos;milk&apos;; Jump(&apos;Grocery&apos;) end&gt;&gt;[Go buy milk]</code>
       </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>[img[Image][Link]]</code> etc.</td>
-      <td style="text-align:left"><code>[[$img(&apos;path/to/image&apos;)-&gt;Target]]</code>&#x1F6A7;</td>
+      <td style="text-align:left"><code>[[$Image(&apos;path/to/image&apos;)-&gt;Target]]</code>&#x1F6A7;</td>
     </tr>
     <tr>
       <td style="text-align:left">
@@ -89,10 +89,11 @@ The following syntax is identical in Sugarcube and Moontale:
         </p>
         <p><code>Line</code>
         </p>
-        <p><code>text \</code>
+        <p><code>text </code>
         </p>
         <p><code>New line</code>
         </p>
+        <p>Note the extra space to force a line break</p>
       </td>
     </tr>
     <tr>
@@ -128,7 +129,7 @@ The following syntax is identical in Sugarcube and Moontale:
     <tr>
       <td style="text-align:left"><code>__Underline__</code>
       </td>
-      <td style="text-align:left"><code>$style.u[Underline]</code>
+      <td style="text-align:left"><code>$Style.u[Underline]</code>
       </td>
     </tr>
     <tr>
@@ -168,9 +169,9 @@ The following syntax is identical in Sugarcube and Moontale:
       <td style="text-align:left">Templates, e.g. <code>?He was always willing to lend ?his ear to anyone.</code>
       </td>
       <td style="text-align:left">
-        <p><code>$name.myTemplate[$He was always willing to lend $his ear to anyone.]</code>
+        <p><code>$Name.myTemplate[$He was always willing to lend $his ear to anyone.]</code>
         </p>
-        <p><code>$with{He = &apos;She&apos;, his = &apos;her&apos;}[$myTemplate]</code>&#x1F6A7;</p>
+        <p><code>$With{He = &apos;She&apos;, his = &apos;her&apos;}[$myTemplate]</code>&#x1F6A7;</p>
       </td>
     </tr>
     <tr>
@@ -215,7 +216,7 @@ The following syntax is identical in Sugarcube and Moontale:
     <tr>
       <td style="text-align:left"><code>&lt;&lt;include &quot;Go West&quot;&gt;&gt;</code>
       </td>
-      <td style="text-align:left"><code>$display(&quot;Go West&quot;)</code>
+      <td style="text-align:left"><code>[[ -&gt;Go West]]</code>
       </td>
     </tr>
     <tr>
@@ -227,7 +228,7 @@ The following syntax is identical in Sugarcube and Moontale:
     <tr>
       <td style="text-align:left"><code>&lt;&lt;for i, name range $dwarves&gt;&gt;</code>
       </td>
-      <td style="text-align:left"><code>$forEach(dwarves)[</code>
+      <td style="text-align:left"><code>$ForEach(dwarves)[</code>
       </td>
     </tr>
     <tr>
@@ -249,8 +250,8 @@ The following syntax is identical in Sugarcube and Moontale:
         </p>
       </td>
       <td style="text-align:left">
-        <p><code>$switch(hairColor)</code> 
-          <br /><code>$case(&apos;black&apos;, &apos;brown&apos;)[ Dark haired, eh? ]</code>
+        <p><code>$Switch(hairColor)</code> 
+          <br /><code>$Case(&apos;black&apos;, &apos;brown&apos;)[ Dark haired, eh? ]</code>
         </p>
         <p><code>$Else[  ]</code>&#x1F6A7;</p>
       </td>

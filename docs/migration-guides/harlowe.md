@@ -21,8 +21,8 @@ In contrast, Moontale render functions are a set of instructions for displaying 
 The following syntax is identical in both Harlowe and Moontale:
 
 * `[[Passage]]`
-* `[[Link -> Target]]`
-* `[[Target <- Link]]`
+* `[[Link->Target]]`
+* `[[Target<-Link]]`
 * `~~Strike through~~`
 * `*Emphasis*`
 * `**Strong emphasis**`
@@ -40,7 +40,7 @@ The following syntax is identical in both Harlowe and Moontale:
     <tr>
       <td style="text-align:left"><code>[[Label -&gt; $target]]</code>
       </td>
-      <td style="text-align:left"><code>$link(target)[Label]</code>
+      <td style="text-align:left"><code>$Link(target)[Label]</code>
       </td>
     </tr>
     <tr>
@@ -58,19 +58,19 @@ The following syntax is identical in both Harlowe and Moontale:
     <tr>
       <td style="text-align:left"><code>&lt;custom-tag&gt;Text&lt;/custom-tag&gt;</code>
       </td>
-      <td style="text-align:left"><code>$style.custom_tag[Text]</code>
+      <td style="text-align:left"><code>$Style.custom_tag[Text]</code>
       </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>|foo)[Text]</code> or <code>[Text](foo|</code>
       </td>
-      <td style="text-align:left"><code>$name.foo[Text]</code>
+      <td style="text-align:left"><code>$Name.foo[Text]</code>
       </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>|foo&gt;[Text]</code> or <code>[Text]&lt;foo|</code>
       </td>
-      <td style="text-align:left"><code>$name.foo[Text] $foo</code>
+      <td style="text-align:left"><code>$Name.foo[Text] $foo</code>
       </td>
     </tr>
     <tr>
@@ -79,14 +79,14 @@ The following syntax is identical in both Harlowe and Moontale:
       <td style="text-align:left">
         <p><code>$If(foo)[ ... ]</code>
         </p>
-        <p><code>{$ foo = true; reload() $}</code>
+        <p><code>{$ foo = true; Reload() $}</code>
         </p>
       </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>?Passage</code>
       </td>
-      <td style="text-align:left"><code>passage.content</code> (a <a href="../concepts.md#render-functions">Render Function</a>)</td>
+      <td style="text-align:left"><code>Passage.content</code> (a <a href="../concepts.md#render-functions">Render Function</a>)</td>
     </tr>
     <tr>
       <td style="text-align:left"><code>?Page</code>, <code>?Sidebar</code>, <code>?Link</code>
@@ -97,7 +97,7 @@ The following syntax is identical in both Harlowe and Moontale:
     <tr>
       <td style="text-align:left"><code>[==</code>
       </td>
-      <td style="text-align:left"><code>[</code> - Content blocks are closed automatically &#x1F6A7;</td>
+      <td style="text-align:left"><code>[</code> - Content blocks are closed automatically</td>
     </tr>
     <tr>
       <td style="text-align:left"><code>`[[ ]]`</code>
@@ -160,8 +160,8 @@ The following syntax is identical in both Harlowe and Moontale:
     <tr>
       <td style="text-align:left"><code>==&gt;</code>, <code>=&gt;&lt;=</code>, <code>&lt;==&gt;</code>, and <code>&lt;==</code>
       </td>
-      <td style="text-align:left"><code>$align.right[</code>, <code>$align.center[</code>, <code>$align.justify[</code>,
-        and <code>$align.left[</code> 
+      <td style="text-align:left"><code>$Align.right[</code>, <code>$Align.center[</code>, <code>$Align.justify[</code>,
+        and <code>$Align.left[</code> 
       </td>
     </tr>
     <tr>
@@ -268,7 +268,7 @@ The following syntax is identical in both Harlowe and Moontale:
     <tr>
       <td style="text-align:left"><code>(set: $foo to (print: $bar))</code>
       </td>
-      <td style="text-align:left"><code>$name.foo[$bar]</code> or <code>{$ foo = function() show(bar) end $}</code>
+      <td style="text-align:left"><code>$Name.foo[$bar]</code> or <code>{$ foo = function() Show(bar) end $}</code>
       </td>
     </tr>
     <tr>
@@ -293,19 +293,19 @@ The following syntax is identical in both Harlowe and Moontale:
     <tr>
       <td style="text-align:left"><code>(for: each _item, ...$array)</code>
       </td>
-      <td style="text-align:left"><code>$forEach(array)</code> with <code>value</code> as the iterator, or <code>$forEach(array, &apos;key&apos;, &apos;item&apos;)</code>
+      <td style="text-align:left"><code>$ForEach(array)</code> with <code>value</code> as the iterator, or <code>$ForEach(array, &apos;key&apos;, &apos;item&apos;)</code>
       </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>(for: each _value, 2, 4, 6, 8)</code>
       </td>
-      <td style="text-align:left"><code>$forEach{2, 4, 6, 8}</code>
+      <td style="text-align:left"><code>$ForEach{2, 4, 6, 8}</code>
       </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>(for: _ingredient where it contains &quot;petal&quot;, ...$reagents)</code>
       </td>
-      <td style="text-align:left"><code>$forEach(reagents)[$If(string.find(value, &apos;petal&apos;) [ ... ]]</code>
+      <td style="text-align:left"><code>$ForEach(reagents)[$If(string.find(value, &apos;petal&apos;) [ ... ]]</code>
       </td>
     </tr>
     <tr>
@@ -317,12 +317,12 @@ The following syntax is identical in both Harlowe and Moontale:
     <tr>
       <td style="text-align:left"><code>(either: &quot;a&quot;, &quot;b&quot;, &quot;c&quot;)</code>
       </td>
-      <td style="text-align:left"><code>$random(&apos;a&apos;, &apos;b&apos;, &apos;c&apos;)</code>&#x1F6A7;</td>
+      <td style="text-align:left"><code>$Random(&apos;a&apos;, &apos;b&apos;, &apos;c&apos;)</code>&#x1F6A7;</td>
     </tr>
     <tr>
       <td style="text-align:left"><code>(either: ...$array)</code>
       </td>
-      <td style="text-align:left"><code>$random(table.unpack(array))</code>&#x1F6A7;</td>
+      <td style="text-align:left"><code>$Random(table.unpack(array))</code>&#x1F6A7;</td>
     </tr>
     <tr>
       <td style="text-align:left"><code>(cond: x is 1, &quot;a&quot;, x is 2, &quot;b&quot;)</code>
@@ -362,7 +362,7 @@ The following syntax is identical in both Harlowe and Moontale:
       <td style="text-align:left"><code>(enchant: &apos;gold&apos;, (text-colour: yellow))</code>
       </td>
       <td style="text-align:left">
-        <p><code>$enchant(&apos;gold&apos;, color.yellow)[</code>
+        <p><code>$Enchant(&apos;gold&apos;, color.yellow)[</code>
         </p>
         <p>Note the rules on <a href="../conventions-and-caveats.md#immutability">Immutability</a>;
           this must be done <em>before</em> the text you want to change &#x1F6A7;</p>
@@ -372,7 +372,7 @@ The following syntax is identical in both Harlowe and Moontale:
       <td style="text-align:left"><code>(enchant: ?ghost, (text-style: &apos;outline&apos;))</code>
       </td>
       <td style="text-align:left">
-        <p><code>{$ ghost = style.outline $}</code>
+        <p><code>{$ ghost = Style.outline $}</code>
         </p>
         <p>This must be done <em>before </em>using <code>ghost</code> as a changer.
           &#x1F6A7;</p>
@@ -391,7 +391,7 @@ The following syntax is identical in both Harlowe and Moontale:
       <td style="text-align:left"><code>(enchant-in: ?frog, (text-colour: green))</code>
       </td>
       <td style="text-align:left">
-        <p><code>$with{frog = combine(frog, color.green)}[</code>
+        <p><code>$With{frog = Combine(frog, Color.green)}[</code>
         </p>
         <p>&#x1F6A7;</p>
       </td>
@@ -424,7 +424,7 @@ The following syntax is identical in both Harlowe and Moontale:
       <td style="text-align:left"><code>(all-pass: _num where _num &gt; 1 and &lt; 14, 6, 8, 12, 10, 9)</code>
       </td>
       <td style="text-align:left">
-        <p><code>all({6, 8, 12, 10, 9}, function(it) it &gt; 1 and num &lt; 14 end)</code>
+        <p><code>All({6, 8, 12, 10, 9}, function(it) it &gt; 1 and num &lt; 14 end)</code>
         </p>
         <p>&#x1F6A7;</p>
       </td>
@@ -439,7 +439,7 @@ The following syntax is identical in both Harlowe and Moontale:
       <td style="text-align:left"><code>(history:) contains &quot;Cellar&quot;</code>
       </td>
       <td style="text-align:left">
-        <p><code>visited[&quot;Cellar&quot;]</code>
+        <p><code>Visited[&quot;Cellar&quot;]</code>
         </p>
         <p>&#x1F6A7;</p>
       </td>
@@ -447,20 +447,20 @@ The following syntax is identical in both Harlowe and Moontale:
     <tr>
       <td style="text-align:left"><code>(metadata: &quot;rarity&quot;, 5)</code>
       </td>
-      <td style="text-align:left"><code>{$ passage.rarity = 5 $}</code>
+      <td style="text-align:left"><code>{$ Passage.rarity = 5 $}</code>
       </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>(passage: &quot;Cellar&quot;)</code>
       </td>
-      <td style="text-align:left"><code>passages[&quot;Cellar&quot;]</code>
+      <td style="text-align:left"><code>Passages[&quot;Cellar&quot;]</code>
       </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>(passages:)</code>
       </td>
       <td style="text-align:left">
-        <p><code>passages</code>
+        <p><code>Passages</code>
         </p>
         <p>Note that this is a map keyed by the passage name</p>
       </td>

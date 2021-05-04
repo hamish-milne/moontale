@@ -17,7 +17,7 @@ Moontale is a [Twine ](https://twinery.org/)story format that uses Lua as its sc
 ## Quick start
 
 ```bash
-https://hamish-milne.github.io/moontale/format.js
+https://hamish-milne.github.io/moontale/format-offline.js
 ```
 
 From the [**Twine 2**](https://twinery.org/2/#!/stories) editor, go to **Formats** on the sidebar, then **Add a New Format** and paste in the URL above. Make sure to select **Moontale** from the format list!
