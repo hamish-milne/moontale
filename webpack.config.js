@@ -10,6 +10,11 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 function isProduction(options) { return options.mode === 'production' }
 
+function stringReplace(haystack, needle, replacement) {
+    let idx = haystack.indexOf(needle)
+    return haystack.substring(0, idx) + replacement + haystack.substring(idx + needle.length)
+}
+
 module.exports = (env, options) => { return {
     mode: 'development',
     devtool: "source-map",
@@ -43,6 +48,7 @@ module.exports = (env, options) => { return {
     },
     output: {
         filename: 'bundle.js',
+        publicPath: '',
         path: path.resolve(__dirname, 'dist'),
     },
     node: false,
@@ -74,12 +80,13 @@ module.exports = (env, options) => { return {
                     let package = JSON.parse(fs.readFileSync("package.json", "utf-8"))
                     let html = fs.readFileSync(`${__dirname}/dist/index.html`, "utf-8")
                     let js = fs.readFileSync(`${__dirname}/dist/bundle.js`, "utf-8")
-                    let scriptTag = `<script defer="defer" src="bundle.js"></script>`;
-                    [
-                        ['', package.version, html.replace(scriptTag, `<script defer="defer">${js.replace('bundle.js.map', 'https://moontale.hmilne.cc/bundle.js.map')}</script>`)],
-                        ['-dev', '0.0.0', html.replace(scriptTag, `<script defer="defer" src="http://localhost:9000/bundle.js"></script>`)],
-                        ['-latest', '1.0.0', html.replace(scriptTag, `<script defer="defer" src="https://moontale.hmilne.cc/bundle.js"></script>`)]
-                    ].map(tuple => {
+                    let scriptTag = `<script defer="defer" src="bundle.js"></script>`
+                    let formats = [
+                        ['', package.version, stringReplace(html, scriptTag, `<script defer="defer">${stringReplace(js, 'bundle.js.map', 'https://moontale.hmilne.cc/bundle.js.map')}</script>`)],
+                        ['-dev', '0.0.0', stringReplace(html, scriptTag, `<script defer="defer" src="http://localhost:9000/bundle.js"></script>`)],
+                        ['-latest', '1.0.0', stringReplace(html, scriptTag, `<script defer="defer" src="https://moontale.hmilne.cc/bundle.js"></script>`)]
+                    ]
+                    formats.map(tuple => {
                         let outputJson = {
                             name: "Moontale",
                             version: tuple[1],
