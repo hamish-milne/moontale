@@ -6,7 +6,6 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const HTMLInlineCSSWebpackPlugin = require("html-inline-css-webpack-plugin").default
 const HtmlWebpackInlineSVGPlugin = require('html-webpack-inline-svg-plugin')
-const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 function isProduction(options) { return options.mode === 'production' }
 
@@ -58,12 +57,6 @@ module.exports = (env, options) => { return {
             "process.env.FENGARICONF": "void 0",
             "typeof process": JSON.stringify("undefined")
         }),
-        new CopyWebpackPlugin({'patterns': [
-            {
-                from:'./node_modules/@fortawesome/fontawesome-free/svgs/solid',
-                to:'icons'
-            }
-        ]}),
         new MiniCssExtractPlugin(),
         new HtmlWebpackPlugin({
             template: "src/index.html",
