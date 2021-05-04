@@ -7,6 +7,7 @@ import Token from 'markdown-it/lib/token'
 import ParserInline from 'markdown-it/lib/parser_inline'
 import ParserBlock from 'markdown-it/lib/parser_block'
 import ParserCore from 'markdown-it/lib/parser_core'
+import { isWhiteSpace } from 'markdown-it/lib/common/utils'
 
 // We construct our own MarkdownIt instance here to exclude the features we don't use
 // (which saves on the bundle size)
@@ -55,6 +56,8 @@ function renderOne(input: Token, output: string[], state: {level: number}) {
     function add(str: string) {
         output.push(`${'  '.repeat(state.level)}${str}`)
     }
+    const changer = input.attrGet('changer')
+    const href = escape(input.attrGet('href') ?? '')
     switch (input.type) {
     case 'inline':
         for (const child of input.children) {
@@ -62,16 +65,30 @@ function renderOne(input: Token, output: string[], state: {level: number}) {
         }
         break
     case 'text':
-        if (input.content.length > 0) {
-            add(`Text('${escape(input.content)}')`)
+        let content = input.content
+        if (content.length > 0) {
+            if (!isWhiteSpace(content.charCodeAt(content.length - 1))) {
+                content = content + ' '
+            }
+            add(`Text('${escape(content)}')`)
         }
         break
     case 'link_open':
-        add(`Link('${escape(input.attrGet('href'))}')(function()`)
+        if (changer == null) {
+            add(`Link('${href}')(function()`)
+        } else {
+            add(`Combine(AsChanger(${changer}), Link('${href}'))(function()`)
+        }
         state.level++
         break
+    case 'link_inline':
+        if (changer == null) {
+            add(`Display('${href}')`)
+        } else {
+            add(`AsChanger(${changer})(function() Display('${href}') end)`)
+        }
+        break
     case 'content_open':
-        const changer = input.attrGet('changer')
         if (changer == null) {
             add(`Show(function()`)
         } else {
@@ -97,15 +114,22 @@ function renderOne(input: Token, output: string[], state: {level: number}) {
             add(`end)`)
             break
         case 0:
-            add(`Object('${input.tag}')`)
+            if (input.type == 'softbreak') {
+            } else if (input.tag != "") {
+                add(`Object('${input.tag}')`)
+            }
             break
         }
     }
 }
 
 export function markdownToLua(src: string, outputBuffer: string[], state: {level: number}) {
+    let startLevel = state.level
     for(const token of md.parse(src, {})) {
         renderOne(token, outputBuffer, state)
+    }
+    while (state.level > startLevel) {
+        renderOne(new Token('content_close', '', -1), outputBuffer, state)
     }
 }
 

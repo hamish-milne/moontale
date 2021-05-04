@@ -135,6 +135,11 @@ public abstract class RichTextSink : Sink, IPointerClickHandler, IPointerMoveHan
         tags.Clear();
     }
 
+    public override void Invalidate()
+    {
+        lastLink = null;
+    }
+
     protected abstract string GetLinkId(PointerEventData eventData);
 
     public void OnPointerClick(PointerEventData eventData) {

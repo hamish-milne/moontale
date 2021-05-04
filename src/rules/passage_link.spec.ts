@@ -23,7 +23,7 @@ describe("Passage link rule", () => {
             new Token('text', '', 0),
             new Token('link_close', 'a', -1)
         ]
-        expected[0].attrs = [['href', 'Target']]
+        expected[0].attrs = [['href', 'Target'], ['changer', null]]
         expected[1].level = 1
         expect(state.tokens).toEqual(expected)
     }
@@ -38,5 +38,13 @@ describe("Passage link rule", () => {
 
     it("matches on [[Target]]", () => {
         testWith("[[Target]]")
+    })
+
+    it("emits an inline display on [[ ->Target]]", () => {
+        let state = newState("[[ ->Target]]")
+        expect(rule(state, false)).toBeTruthy()
+        let expected = new Token('link_inline', '', 0)
+        expected.attrs = [['href', 'Target'], ['changer', null]]
+        expect(state.tokens).toEqual([expected])
     })
 })

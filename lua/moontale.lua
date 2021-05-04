@@ -11,6 +11,9 @@
 ---@type fun()
 local _clear = Clear
 
+---@type fun()
+local _invalidate = Invalidate
+
 ---Array of event registrations
 ---@type fun(event:string)[]
 local _events = {}
@@ -74,6 +77,12 @@ function Clear()
     _events = {}
     _linkPushed = false
     _reloadOnHover = false
+end
+
+---Override of the host function; invalidates any event IDs
+function Invalidate()
+    _invalidate()
+    _hovering = {}
 end
 
 ---Generates a Changer that registers a callback for its content
@@ -173,6 +182,7 @@ end
 ---@param target string
 function Jump(target)
     Clear()
+    Invalidate()
     PassageName = target
     _firstRender = true
     Display(target)

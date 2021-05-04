@@ -4,10 +4,11 @@ const enc = new TextEncoder()
 let L: lua_State | null = null
 let tags: string[] = []
 let buf: string[] = []
-let emit: (html: string)=>void | undefined
+let emit: (html: string, invalidate: boolean)=>void | undefined
 let wasChanged = false
+let invalidated = false
 
-export function loadStory(src: string[], emitFn: (html: string)=>void, logFn: (error: string, trace: string)=>void) {
+export function loadStory(src: string[], emitFn: (html: string, invalidate: boolean)=>void, logFn: (error: string, trace: string)=>void) {
     emit = emitFn
     L = lauxlib.luaL_newstate()
 
@@ -66,6 +67,11 @@ export function loadStory(src: string[], emitFn: (html: string)=>void, logFn: (e
         wasChanged = true
         return 0
     })
+    lua.lua_register(L, "Invalidate", _ => {
+        invalidated = true
+        wasChanged = true
+        return 0
+    })
 
     src.map(x => lauxlib.luaL_dostring(L, enc.encode(x)))
 }
@@ -77,13 +83,15 @@ export function raiseEvent(event: string, id: string) {
     lua.lua_call(L, 2, 0)
     if (wasChanged) {
         wasChanged = false
-        emit?.(buf.join(''))
+        emit?.(buf.join(''), invalidated)
+        invalidated = false;
     }
 }
 
 export function start() {
     lua.lua_getglobal(L, 'SoftReset')
     lua.lua_call(L, 0, 0)
-    emit?.(buf.join(''))
+    emit?.(buf.join(''), invalidated)
+    invalidated = false
     wasChanged = false
 }

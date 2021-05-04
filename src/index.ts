@@ -36,10 +36,8 @@ function onNewText(html: string) {
     inputDisabled = false
 }
 
-let invalidate = true
-loadStory([moontaleLib, luaSrc], html => {
+loadStory([moontaleLib, luaSrc], (html, invalidate) => {
     if (invalidate) {
-        invalidate = false
         inputDisabled = true
         output.style.opacity = '0'
         setTimeout(onNewText, transitionTime, html)
@@ -69,10 +67,7 @@ window.addEventListener('click', event => {
     }
     let id = getEventId(event)
     if (id !== null) {
-        console.log("Invalidated "+hovering)
         hovering = null
-        raiseEvent('mouseout', id)
-        invalidate = true
         raiseEvent(event.type, id)
     }
 })
