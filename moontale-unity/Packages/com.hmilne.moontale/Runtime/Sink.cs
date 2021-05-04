@@ -10,6 +10,7 @@ public abstract class Sink : MonoBehaviour {
     public abstract void Object(string tag, string arg);
     public abstract void Flush();
     public abstract void Clear();
+    public abstract void Invalidate();
 }
 
 }

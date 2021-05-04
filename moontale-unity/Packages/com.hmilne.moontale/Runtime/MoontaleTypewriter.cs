@@ -31,11 +31,16 @@ public class MoontaleTypewriter : Sink
 
     public override void Clear()
     {
-        sink.Source = Source;
         charsEmitted = 0;
         queue.Clear();
         sink.Clear();
     }
+
+    public override void Invalidate()
+    {
+        totalCharsEmitted = 0;
+        sink.Invalidate();
+    }    
 
     public override void Flush()
     {

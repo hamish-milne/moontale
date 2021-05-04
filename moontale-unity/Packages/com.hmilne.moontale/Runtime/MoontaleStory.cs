@@ -44,6 +44,11 @@ public class MoontaleStory : Source
         return DynValue.Nil;
     }
 
+    private DynValue Invalidate(ScriptExecutionContext context, CallbackArguments args) {
+        sink.Invalidate();
+        return DynValue.Nil;
+    }
+
     private DynValue Object(ScriptExecutionContext context, CallbackArguments args) {
         sink.Object(args[0].String, args.Count > 0 ? args[1].CastToString() : null);
         return DynValue.Nil;
@@ -55,6 +60,7 @@ public class MoontaleStory : Source
         script.Globals.Set("Text", DynValue.NewCallback(Text));
         script.Globals.Set("Clear", DynValue.NewCallback(Clear));
         script.Globals.Set("Object", DynValue.NewCallback(Object));
+        script.Globals.Set("Invalidate", DynValue.NewCallback(Invalidate));
     }
 
     internal void Start()

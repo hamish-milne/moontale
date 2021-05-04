@@ -17,6 +17,12 @@ public class MoontaleTooltip : Sink
         subScreen.Clear();
     }
 
+    public override void Invalidate()
+    {
+        mainScreen.Invalidate();
+        subScreen.Invalidate();
+    }    
+
     public override void Flush()
     {
         mainScreen.Source = Source;
