@@ -20,10 +20,6 @@ When a block or passage is executed, it is always _actually_ executed - any code
 
 Once content is emitted to the host \(with `Push()`, `Pop()`, `Object()`, and `Text()`\), it stays there 'forever' and cannot be changed by any subsequent code. Think of the host as a typewriter: it can add letters, switch fonts and styles, but can't change what's on the page without tearing it up and starting over - in other words, calling `Clear()`.
 
-{% hint style="info" %}
-It's possible to add custom emission functions to deal with modification if you _really_ need it, but that's out of scope for this guide!
-{% endhint %}
-
 The advantage here is that the implementation of these 'emission' functions is _much_ easier than if modification was allowed. Let's make a basic HTML emitter now:
 
 ```lua
@@ -50,13 +46,20 @@ end
 function Clear()
     print('<hr />')
 end
+
+function Invalidate()
+end
 ```
 
 That's it! The upshot is that whether you're targeting HTML, Rich Text, or direct API calls, integration into your engine of choice should be 'stupid simple'.
 
-Note that in this example, `Clear()` doesn't actually clear the screen; if our output is plain HTML, this is of course impossible. In your application you can use the appropriate APIs to clear any existing text - perhaps saving it first to a 'conversation history' system, if desired.
+Note that in this example, `Clear()` doesn't actually clear the screen; if our output is plain HTML, this is of course impossible. In your application you can use the appropriate APIs to clear any existing text.
 
-Functions like `Hover` work by forcing the passage to be re-rendered whenever the cursor's target changes.
+Fortunately the immutability of the on-page text doesn't hinder our ability to modify the output of a passage after a user interaction - the `Hover` changer exists, after all! When something changes that would affect the output, we can simply call `Reload()` which will 're-render' the current passage. Lua is fast enough that you could do this every frame, meaning that smooth animations described entirely in a Moontale passage aren't out of the question.
+
+{% hint style="info" %}
+It's possible to add custom emission functions to deal with on-page mutation if you _really_ need it, but that's out of scope for this guide!
+{% endhint %}
 
 ## Text output is not re-parsed
 

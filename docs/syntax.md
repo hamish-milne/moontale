@@ -37,7 +37,7 @@ Moontale supports most standard Markdown syntax.
     </tr>
     <tr>
       <td style="text-align:left">
-        <p><code>Line 1</code>
+        <p><code>Line 1    </code>
         </p>
         <p><code>Line 2</code>
         </p>
@@ -286,5 +286,5 @@ If a short-form variable or expression immediately precedes a 'content block' - 
 
 A content block without an attached changer expression will generate a warning \(because there is no reason to do this\) but will otherwise be shown normally. So `[Text]` will display as `Text`.
 
-You can also apply changers to any of the link syntaxes, e.g. `$Style.bold[[Label->Target]]`.
+You can also apply changers to any of the link syntaxes, e.g. `$Color.red[[Label->Target]]`.
 

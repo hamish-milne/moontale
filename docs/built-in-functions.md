@@ -8,6 +8,8 @@ description: Moontale's standard library
 
 | Name | Type | Description |
 | :--- | :--- | :--- |
+| `Host` | String | 🚧 A String variable identifying the current Host as a dot-separated sequence of names. For example `RichText.Unity.TMP`, `HTML`, `RichText.LOVE.SYSL` |
+| `Story` | String | The title of the current story |
 | `Passages` | Map of string to table | The set of all passages in the story, keyed by their name. |
 | `Passages[name].tags` | Set of string | The set of tags assigned to the passage; you can use `if(tags['my-tag'])` to check for a tag's presence |
 | `Passages[name].content` | Function | The rendering function for the passage's content. |
@@ -25,8 +27,8 @@ All functions in this section do not return a value.
 | `Jump(passage)` | String | Clears the screen and renders the passage with the given name. This will change the value of `PassageName` . |
 | `Once(fn)` | Function or Table | Ensures that the given function is executed when the passage is reached, and not on any subsequent `Reload`s. If a Table is passed, it treats each key-value pair as an instruction to set a variable. For example `$Once{ gold = gold + 5 }` |
 | `Reload()` | None | Causes the current passage to be re-rendered. |
-| `Display(passage)` | String | Renders the passage with the given name in-line with the text. Note that this does _not_ change the value of `passageName`. |
-| `SoftReset()` | None | Jumps to `startPassage`, re-running any `startup`-tagged passages. |
+| `Display(passage)` | String | Renders the passage with the given name in-line with the text. Note that this does _not_ change the value of `PassageName`. |
+| `SoftReset()` | None | Jumps to `StartPassage`, re-running any `startup`-tagged passages. |
 | `HardReset()` | None | 🚧 Clears all user-defined variables, then does a `SoftReset()`. This is a 'best effort' function - it is possible to 'leak' state into places that this function won't touch, such as the `Passages` table. If this is a concern, the host should destroy and re-create the Lua VM. |
 
 ## Entities
@@ -83,7 +85,7 @@ When nesting interactivity changers, the resulting callbacks will all be applied
 
 | Name | Arguments | Description |
 | :--- | :--- | :--- |
-| `On[event](callback)` | String, Function | Executes `callback` when `event` occurs over the content; for example \`$On.click |
+| `On[event](callback)` | String, Function | Executes `callback` when `event` occurs over the content; for example `$On.click<<x = x + 1>>` |
 | `Link(passage)` | String | Jumps to `passage` when the content is clicked |
 | `Hover(hovering, normal)` | Changer, Changer \(optional\) | Applies the `hovering` changer when the cursor is over the content, and `normal` when it is not. For example, `Hover(Color.red, Color.blue)` . Note that any use of this function will cause a `Reload` to happen when the cursor position changes; make sure to use `Once` where appropriate! |
 
@@ -117,12 +119,12 @@ These are the low-level functions that produce user-visible text, and need to be
 
 | Name | Arguments | Description |
 | :--- | :--- | :--- |
-| `Host` |  | A String variable identifying the current Host as a dot-separated sequence of names. For example `RichText.Unity.TMP`, `HTML`, `RichText.LOVE.SYSL` |
 | `Push(tag, ...)` | String, Any \(multiple\) | Encloses all further output in `tag`, until `pop()` is called. |
 | `Pop()` | None | Ends the tag from the last un-popped `push()` instruction. `push()` and `pop()` must be balanced. |
 | `Text(text)` | String | Outputs the given text string \(the argument _must_ be a string; use `show` if the argument might not be one\) |
 | `Object(tag, ...)` | String, Any \(multiple\) | Outputs the given non-text object \(e.g. `hr`\). |
-| `Clear()` | None | Clears the screen; normally called just before rendering a passage |
+| `Clear()` | None | Clears the screen; normally called just before rendering the passage. |
+| `Invalidate()` | None | Tells the host that previously rendered text is no longer valid, typically because a new passage has been jumped to. |
 | `Log(message, trace)` | String, String | Emits a diagnostic message, such as a rendering error |
 
 {% hint style="danger" %}

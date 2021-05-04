@@ -5,7 +5,7 @@ description: Things you should know before beginning
 # Concepts
 
 {% hint style="info" %}
-This guide assumes some familiarity with Lua! If you're new to Lua, I'd recommend skimming chapters 1 through 5 of [Programming in Lua](https://www.lua.org/pil/1.html)
+This guide assumes some familiarity with Lua! Consider skimming chapters 1 through 5 of [Programming in Lua](https://www.lua.org/pil/1.html) if you're new to the language.
 {% endhint %}
 
 ## Markdown
@@ -40,7 +40,7 @@ function Link()
 end
 ```
 
-If a function is defined in a table, like `style`, you can override it by overwriting it:
+If a function is defined in a table, like `Style`, you can override it by overwriting it:
 
 ```lua
 Style.em = Color.blue -- *Text* will be blue instead of italicised
