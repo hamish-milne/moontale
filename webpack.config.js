@@ -76,9 +76,9 @@ module.exports = (env, options) => { return {
                     let js = fs.readFileSync(`${__dirname}/dist/bundle.js`, "utf-8")
                     let scriptTag = `<script defer="defer" src="bundle.js"></script>`;
                     [
-                        ['offline', package.version, html.replace(scriptTag, `<script defer="defer">${js}</script>`)],
-                        ['dev', '0.0.0', html.replace(scriptTag, `<script defer="defer" src="http://localhost:9000/bundle.js"></script>`)],
-                        ['latest', '1.0.0', html.replace(scriptTag, `<script defer="defer" src="https://moontale.hmilne.cc/bundle.js"></script>`)]
+                        ['', package.version, html.replace(scriptTag, `<script defer="defer">${js.replace('bundle.js.map', 'https://moontale.hmilne.cc/bundle.js.map')}</script>`)],
+                        ['-dev', '0.0.0', html.replace(scriptTag, `<script defer="defer" src="http://localhost:9000/bundle.js"></script>`)],
+                        ['-latest', '1.0.0', html.replace(scriptTag, `<script defer="defer" src="https://moontale.hmilne.cc/bundle.js"></script>`)]
                     ].map(tuple => {
                         let outputJson = {
                             name: "Moontale",
@@ -92,7 +92,7 @@ module.exports = (env, options) => { return {
                             source: tuple[2]
                         }
                         let outputString = `window.storyFormat(${JSON.stringify(outputJson)});`
-                        fs.writeFileSync(`build/format-${tuple[0]}.js`, outputString)
+                        fs.writeFileSync(`build/format${tuple[0]}.js`, outputString)
                     })
                     fs.copyFileSync("dist/bundle.js.map", "build/bundle.js.map")
                 })
