@@ -26,4 +26,8 @@ describe("JS runtime", () => {
         raiseEvent("click", "1")
         expect(html).toBe("click=1")
     })
+    
+    it("can log multiple values with print()", () => {
+        loadStory([moontaleLib, `print('abc', 'def', 1, 2, 3, true)`], () => {}, () => {})
+    })
 })

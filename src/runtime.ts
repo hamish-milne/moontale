@@ -19,6 +19,16 @@ export function loadStory(src: string[], emitFn: (html: string, invalidate: bool
 
     lualib.luaL_openlibs(L)
 
+    lua.lua_register(L, "print", _ => {
+        let l = lua.lua_gettop(L)
+        let args = []
+        for (let i = 1; i <= l; i++) {
+            args.push(lua.lua_tojsstring(L, i))
+        }
+        console.log(...args)
+        return 0
+    })
+
     lua.lua_register(L, "Log", _ => {
         logFn(lua.lua_tojsstring(L, 1), lua.lua_tojsstring(L, 2))
         return 0
