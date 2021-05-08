@@ -1,7 +1,7 @@
 import { loadStory, raiseEvent, start } from "./runtime" 
 import { readFileSync } from "fs"
 
-let moontaleLib = readFileSync(`${__dirname}/../lua/moontale.lua`, "utf-8")
+let moontaleLib = readFileSync(`${__dirname}/../moontale-unity/Packages/com.hmilne.moontale/Runtime/moontale.lua`, "utf-8")
 
 describe("JS runtime", () => {
 

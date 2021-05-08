@@ -2,7 +2,7 @@
 import { storyToLua } from './convert'
 import { loadStory, start, raiseEvent } from './runtime'
 import './style.css'
-import moontaleLib from '../lua/moontale.lua'
+import moontaleLib from '../moontale-unity/Packages/com.hmilne.moontale/Runtime/moontale.lua'
 import "@fortawesome/fontawesome-free/svgs/solid/code.svg"
 
 const transitionTime = 200
