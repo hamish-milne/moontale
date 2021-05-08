@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Moontale {
 
-public abstract class Sink : MonoBehaviour {
+public abstract class Sink : Source {
     public virtual Source Source { get; set; }
     public abstract void Push(string tag, string arg);
     public abstract void Pop();
@@ -11,6 +11,11 @@ public abstract class Sink : MonoBehaviour {
     public abstract void Flush();
     public abstract void Clear();
     public abstract void Invalidate();
+
+    public override void RaiseEvent(string tag, string id)
+    {
+        Source.RaiseEvent(tag, id);
+    }
 }
 
 }

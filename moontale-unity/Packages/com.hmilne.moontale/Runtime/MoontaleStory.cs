@@ -22,7 +22,7 @@ public class MoontaleStory : Source
     
     public Sink sink;
 
-    private Script script = new Script();
+    public Script script = new Script();
 
     private DynValue Push(ScriptExecutionContext context, CallbackArguments args) {
         sink.Push(args[0].String, args.Count > 0 ? args[1].CastToString() : null);

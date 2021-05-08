@@ -1,5 +1,7 @@
 ---@diagnostic disable: lowercase-global, undefined-global
 
+package.path = '../moontale-unity/Packages/com.hmilne.moontale/Runtime/?.lua;' .. package.path
+
 before_each(function()
     _G.Log = print
     _text = spy.new(function() end)
