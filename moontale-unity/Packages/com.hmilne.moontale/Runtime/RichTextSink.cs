@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 namespace Moontale {
 
-public abstract class RichTextSink : Sink, IPointerClickHandler, IPointerMoveHandler
+public abstract class RichTextSink : Sink, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
     protected StringBuilder buffer = new StringBuilder();
     protected readonly Stack<string> tags = new Stack<string>();
@@ -149,9 +149,23 @@ public abstract class RichTextSink : Sink, IPointerClickHandler, IPointerMoveHan
         }
     }
 
-    public void OnPointerMove(PointerEventData eventData)
+    private PointerEventData lastPointerEvent = null;
+
+    public void OnPointerEnter(PointerEventData eventData) {
+        lastPointerEvent = eventData;
+    }
+
+    public void OnPointerExit(PointerEventData eventData) {
+        lastPointerEvent = null;
+    }
+
+    protected virtual void Update()
     {
-        var linkId = GetLinkId(eventData);
+        if (lastPointerEvent == null) {
+            return;
+        }
+        lastPointerEvent.position = Input.mousePosition;
+        var linkId = GetLinkId(lastPointerEvent);
         if (linkId == lastLink) {
             return;
         }
