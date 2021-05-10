@@ -24,6 +24,8 @@ public class MoontaleStory : Source
 
     public Script script = new Script();
 
+    private bool _changed = false;
+
     private DynValue Push(ScriptExecutionContext context, CallbackArguments args) {
         sink.Push(args[0].String, args.Count > 0 ? args[1].CastToString() : null);
         return DynValue.Nil;
@@ -35,21 +37,25 @@ public class MoontaleStory : Source
     }
 
     private DynValue Text(ScriptExecutionContext context, CallbackArguments args) {
+        _changed = true;
         sink.Text(args[0].String);
         return DynValue.Nil;
     }
 
     private DynValue Clear(ScriptExecutionContext context, CallbackArguments args) {
+        _changed = true;
         sink.Clear();
         return DynValue.Nil;
     }
 
     private DynValue Invalidate(ScriptExecutionContext context, CallbackArguments args) {
+        _changed = true;
         sink.Invalidate();
         return DynValue.Nil;
     }
 
     private DynValue Object(ScriptExecutionContext context, CallbackArguments args) {
+        _changed = true;
         sink.Object(args[0].String, args.Count > 0 ? args[1].CastToString() : null);
         return DynValue.Nil;
     }
@@ -78,6 +84,7 @@ public class MoontaleStory : Source
         } catch (ScriptRuntimeException e) {
             Debug.LogError(e.Message + "\n" + string.Join("\n    ", e.CallStack.Select(x => $"{x.Name}:{x.Location}")));
         }
+        _changed = false;
         sink.Flush();
     }
 
@@ -89,7 +96,19 @@ public class MoontaleStory : Source
         } catch (ScriptRuntimeException e) {
             Debug.LogError(e.Message + "\n" + string.Join("\n    ", e.CallStack.Select(x => $"{x.Name}:{x.Location}")));
         }
-        sink.Flush();
+        if (_changed) {
+            _changed = false;
+            sink.Flush();
+        }
+    }
+
+    protected virtual void Update()
+    {
+        script.Call(script.Globals["Update"], Time.deltaTime);
+        if (_changed) {
+            _changed = false;
+            sink.Flush();
+        }
     }
 }
 

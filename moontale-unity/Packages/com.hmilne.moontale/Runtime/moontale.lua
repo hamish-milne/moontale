@@ -34,6 +34,12 @@ local _firstRender = false
 ---If true, one of the branches in an If()/ElseIf() chain has been taken
 local _ifTaken = false
 
+local _waiting = nil
+
+local _visible = {}
+
+local _idSequence = 0
+
 ---Dummy render function to avoid dealing with 'nil' values
 ---@param content function
 local function _empty(content)
@@ -77,12 +83,15 @@ function Clear()
     _events = {}
     _linkPushed = false
     _reloadOnHover = false
+    _idSequence = 0
 end
 
 ---Override of the host function; invalidates any event IDs
 function Invalidate()
     _invalidate()
     _hovering = {}
+    _waiting = nil
+    _visible = {}
 end
 
 ---Generates a Changer that registers a callback for its content
@@ -152,6 +161,36 @@ function RaiseEvent(event, idx)
     end
 end
 
+function Update(deltaTime)
+    if _waiting then
+        coroutine.resume(_waiting, deltaTime)
+    end
+end
+
+function Delay(duration)
+    _waiting = coroutine.running()
+    repeat
+        duration = duration - coroutine.yield()
+    until duration <= 0
+    _waiting = nil
+end
+
+function Typewriter(content)
+    if _firstRender then
+        local _text = Text
+        Text = function(str)
+            for i=1,#str do
+                _text(str:sub(i, i))
+                Delay(0.01)
+            end
+        end
+        Show(content)
+        Text = _text
+    else
+        Show(content)
+    end
+end
+
 ---Checks that its argument can be used as a changer
 ---@param fn changer
 ---@return changer
@@ -184,9 +223,12 @@ function Jump(target)
     Clear()
     Invalidate()
     PassageName = target
-    _firstRender = true
-    Display(target)
-    _firstRender = false
+    local routine = coroutine.create(function ()
+        _firstRender = true
+        Display(target)
+        _firstRender = false
+    end)
+    coroutine.resume(routine)
 end
 
 ---Causes the current passage to be re-rendered.
@@ -524,4 +566,23 @@ LinkStyle = Hover(Color.red, Color.darkred)
 ---@return changer
 function Link(target)
     return Combine(On.click(function() Jump(target) end), LinkStyle)
+end
+
+function LinkReplace(text, id)
+    if id == nil then
+        _idSequence = _idSequence + 1
+        id = _idSequence
+    end
+    return function(content)
+        if _visible[id] then
+            Show(content)
+        else
+            Combine(On.click(function()
+                if not _visible[id] then
+                    _visible[id] = true
+                    Reload()
+                end
+            end), LinkStyle)(text)
+        end
+    end
 end
