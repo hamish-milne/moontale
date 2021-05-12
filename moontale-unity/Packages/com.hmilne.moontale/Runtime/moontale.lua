@@ -40,6 +40,9 @@ local _visible = {}
 
 local _idSequence = 0
 
+local _typedCharsThisFrame = 0
+local _typedCharsTotal = 0
+
 ---Dummy render function to avoid dealing with 'nil' values
 ---@param content function
 local function _empty(content)
@@ -84,6 +87,7 @@ function Clear()
     _linkPushed = false
     _reloadOnHover = false
     _idSequence = 0
+    _typedCharsThisFrame = 0
 end
 
 ---Override of the host function; invalidates any event IDs
@@ -92,6 +96,7 @@ function Invalidate()
     _hovering = {}
     _waiting = nil
     _visible = {}
+    _typedCharsTotal = 0
 end
 
 ---Generates a Changer that registers a callback for its content
@@ -176,19 +181,35 @@ function Delay(duration)
 end
 
 function Typewriter(content)
-    if _firstRender then
-        local _text = Text
-        Text = function(str)
-            for i=1,#str do
-                _text(str:sub(i, i))
+    local _text = Text
+    Text = function(str)
+        local prefix = _typedCharsTotal - _typedCharsThisFrame
+        if #str <= prefix then
+            _text(str)
+            _typedCharsThisFrame = _typedCharsThisFrame + #str
+        else
+            if prefix > 0 then
+                _text(str:sub(1, prefix))
+                _typedCharsThisFrame = _typedCharsThisFrame + prefix
+            end
+            local i = prefix + 1
+            while i <= #str do
+                -- Handle UTF-8 sequences
+                local start = i
+                while str:byte(i) >= 0x80 do
+                    i = i + 1
+                end
+                _text(str:sub(start, i))
                 Delay(0.01)
+                i = i + 1
+                local charsTyped = (i - start) + 1
+                _typedCharsTotal = _typedCharsTotal + charsTyped
+                _typedCharsThisFrame = _typedCharsThisFrame + charsTyped
             end
         end
-        Show(content)
-        Text = _text
-    else
-        Show(content)
     end
+    Show(content)
+    Text = _text
 end
 
 ---Checks that its argument can be used as a changer
@@ -234,7 +255,10 @@ end
 ---Causes the current passage to be re-rendered.
 function Reload()
     Clear()
-    Display(PassageName)
+    local routine = coroutine.create(function ()
+        Display(PassageName)
+    end)
+    coroutine.resume(routine)
 end
 
 ---Renders the passage with the given name in-line with the text.
