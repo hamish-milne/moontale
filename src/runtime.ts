@@ -13,7 +13,7 @@ export function loadStory(src: string[], emitFn: (html: string, invalidate: bool
     L = lauxlib.luaL_newstate()
 
     lua.lua_atpanic(L, _ => {
-        logFn(lua.lua_tojsstring(L, 1), "Panic")
+        logFn(lua.lua_tojsstring(L, lua.lua_gettop(L)), "Panic")
         return 0
     })
 
