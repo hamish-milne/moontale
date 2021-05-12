@@ -103,6 +103,13 @@ describe("Compiler", () => {
                 ["AsChanger(foo)(function()", "AsChanger(bar)(function()", "Text('Text ')", "end)", "end)"]
             )
         })
+
+        it("parses multi-line code elements", () => {
+            check(
+                "foo {$ bar\n\nbaz\n\n$} bar",
+                ["Text('foo ')", 'bar\n\nbaz', "Text(' bar ')"]
+            )
+        })
     })
 
     describe("Story to Lua conversion", () => {
