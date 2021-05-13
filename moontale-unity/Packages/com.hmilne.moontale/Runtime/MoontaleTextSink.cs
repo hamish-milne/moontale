@@ -15,7 +15,10 @@ public class MoontaleTextSink : RichTextSink
     private Stack<string> eventId = new Stack<string>();
     private List<(int idx, string id)> charIdRegions = new List<(int, string)>();
 
+    protected override int baseSize => text.fontSize;
+
     protected override void Space(int px) {
+        Text("\n");
         OpenTag("size", px.ToString());
         Text("\n");
         CloseTag("size");
@@ -65,6 +68,8 @@ public class MoontaleTextSink : RichTextSink
     }
 
     private string CloseAll() {
+        var hadText = hasText;
+        hasText = false;
         var prev = buffer;
         try {
             buffer = new StringBuilder();
@@ -76,6 +81,7 @@ public class MoontaleTextSink : RichTextSink
             return buffer.ToString();
         } finally {
             buffer = prev;
+            hasText = hadText;
         }
     }
 

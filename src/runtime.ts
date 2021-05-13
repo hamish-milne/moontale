@@ -12,14 +12,14 @@ export function loadStory(src: string[], emitFn: (html: string, invalidate: bool
     emit = emitFn
     L = lauxlib.luaL_newstate()
 
-    lua.lua_atpanic(L, _ => {
-        logFn(lua.lua_tojsstring(L, 1), "Panic")
+    lua.lua_atpanic(L, L => {
+        logFn(lua.lua_tojsstring(L, lua.lua_gettop(L)), "Panic")
         return 0
     })
 
     lualib.luaL_openlibs(L)
 
-    lua.lua_register(L, "print", _ => {
+    lua.lua_register(L, "print", L => {
         let l = lua.lua_gettop(L)
         let args = []
         for (let i = 1; i <= l; i++) {
@@ -29,12 +29,13 @@ export function loadStory(src: string[], emitFn: (html: string, invalidate: bool
         return 0
     })
 
-    lua.lua_register(L, "Log", _ => {
+    lua.lua_register(L, "Log", L => {
+        let top = lua.lua_gettop(L)
         logFn(lua.lua_tojsstring(L, 1), lua.lua_tojsstring(L, 2))
         return 0
     })
 
-    lua.lua_register(L, "Push", _ => {
+    lua.lua_register(L, "Push", L => {
         let str = lua.lua_tojsstring(L, 1)
         tags.push(str)
         if (str == 'a') {
@@ -48,7 +49,7 @@ export function loadStory(src: string[], emitFn: (html: string, invalidate: bool
         wasChanged = true
         return 0
     })
-    lua.lua_register(L, "Pop", _ => {
+    lua.lua_register(L, "Pop", L => {
         let str = tags.splice(tags.length - 1, 1)[0]
         if (str) {
             if (str === "color") {
@@ -60,24 +61,24 @@ export function loadStory(src: string[], emitFn: (html: string, invalidate: bool
         wasChanged = true
         return 0
     })
-    lua.lua_register(L, "Text", _ => {
+    lua.lua_register(L, "Text", L => {
         let str = lua.lua_tojsstring(L, 1)
         buf.push(str)
         wasChanged = true
         return 0
     })
-    lua.lua_register(L, "Object", _ => {
+    lua.lua_register(L, "Object", L => {
         let str = lua.lua_tojsstring(L, 1)
         buf.push(`<${str}>`)
         wasChanged = true
         return 0
     })
-    lua.lua_register(L, "Clear", _ => {
+    lua.lua_register(L, "Clear", L => {
         buf = []
         wasChanged = true
         return 0
     })
-    lua.lua_register(L, "Invalidate", _ => {
+    lua.lua_register(L, "Invalidate", L => {
         invalidated = true
         wasChanged = true
         return 0
@@ -104,4 +105,15 @@ export function start() {
     emit?.(buf.join(''), invalidated)
     invalidated = false
     wasChanged = false
+}
+
+export function update(deltaTime: number) {
+    lua.lua_getglobal(L, 'Update')
+    lua.lua_pushnumber(L, deltaTime)
+    lua.lua_call(L, 1, 0)
+    if (wasChanged) {
+        wasChanged = false
+        emit?.(buf.join(''), invalidated)
+        invalidated = false;
+    }
 }

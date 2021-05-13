@@ -1,6 +1,6 @@
 
 import { storyToLua } from './convert'
-import { loadStory, start, raiseEvent } from './runtime'
+import { loadStory, start, raiseEvent, update } from './runtime'
 import './style.css'
 import moontaleLib from '../moontale-unity/Packages/com.hmilne.moontale/Runtime/moontale.lua'
 import "@fortawesome/fontawesome-free/svgs/solid/code.svg"
@@ -97,4 +97,13 @@ window.addEventListener('mouseout', event => {
         raiseEvent(event.type, id)
     }
 })
+
+let lastTime = performance.now()
+let callback: FrameRequestCallback = time => {
+    update((time - lastTime) * 1000)
+    lastTime = time
+    window.requestAnimationFrame(callback)
+}
+window.requestAnimationFrame(callback)
+
 start()

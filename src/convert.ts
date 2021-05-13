@@ -56,7 +56,9 @@ function renderOne(input: Token, output: string[], state: {level: number}) {
     function add(str: string) {
         output.push(`${'  '.repeat(state.level)}${str}`)
     }
-    const changer = input.attrGet('changer')
+    // Undo the placeholder character added in preprocess()
+    input.content = input.content?.replace(/\f/g, '\n')
+    const changer = input.attrGet('changer')?.replace(/\f/g, '\n')
     const href = escape(input.attrGet('href') ?? '')
     switch (input.type) {
     case 'inline':
@@ -125,12 +127,43 @@ function renderOne(input: Token, output: string[], state: {level: number}) {
 
 export function markdownToLua(src: string, outputBuffer: string[], state: {level: number}) {
     let startLevel = state.level
-    for(const token of md.parse(src, {})) {
+    for(const token of md.parse(preprocess(src), {})) {
         renderOne(token, outputBuffer, state)
     }
     while (state.level > startLevel) {
         renderOne(new Token('content_close', '', -1), outputBuffer, state)
     }
+}
+
+function preprocess(src: string): string {
+    let idx = 0
+    let out = ""
+    while (idx < src.length) {
+        let i1 = src.indexOf("{$", idx)
+        let i2 = src.indexOf("<$", idx)
+        let search: string
+        let start: number
+        if (i1 >= 0) {
+            start = i1
+            search = "$}"
+        } else if (i2 >= 0) {
+            start = i2
+            search = "$>"
+        } else {
+            out += src.substr(idx)
+            break
+        }
+        out += src.substring(idx, start)
+        let end = src.indexOf(search, idx + 2)
+        if (end < 0) {
+            idx += 2
+        } else {
+            // Swap out newlines for a placeholder character, to force them to be 'inline'
+            out += src.substring(start, end + 2).replace(/\n/g, '\f')
+            idx = end + 2
+        }
+    }
+    return out
 }
 
 export function storyToLua(story: Element): string {

@@ -34,6 +34,19 @@ local _firstRender = false
 ---If true, one of the branches in an If()/ElseIf() chain has been taken
 local _ifTaken = false
 
+---The current/last executed passage coroutine, so we can resume it with an Update
+local _waiting = nil
+
+---The set of LinkReplace targets that are now visible
+local _visible = {}
+
+---An auto-incrementing number used as a default identifier for LinkReplace targets
+local _idSequence = 0
+
+---Typewriter internal state
+local _typedCharsThisFrame = 0
+local _typedCharsTotal = 0
+
 ---Dummy render function to avoid dealing with 'nil' values
 ---@param content function
 local function _empty(content)
@@ -77,12 +90,17 @@ function Clear()
     _events = {}
     _linkPushed = false
     _reloadOnHover = false
+    _idSequence = 0
+    _typedCharsThisFrame = 0
 end
 
 ---Override of the host function; invalidates any event IDs
 function Invalidate()
     _invalidate()
     _hovering = {}
+    _waiting = nil
+    _visible = {}
+    _typedCharsTotal = 0
 end
 
 ---Generates a Changer that registers a callback for its content
@@ -152,6 +170,58 @@ function RaiseEvent(event, idx)
     end
 end
 
+---Called regularly by the host as time passes
+---@param deltaTime number  The time since Update was last called, in seconds
+function Update(deltaTime)
+    if _waiting then
+        coroutine.resume(_waiting, deltaTime)
+    end
+end
+
+---Pauses execution for the given time period
+---@param duration number
+function Delay(duration)
+    _waiting = coroutine.running()
+    repeat
+        duration = duration - coroutine.yield()
+    until duration <= 0
+    _waiting = nil
+end
+
+---Causes all Text within the content to be emitted one character at a time, with a delay in between
+---@type changer
+function Typewriter(content)
+    local _text = Text
+    Text = function(str)
+        local prefix = _typedCharsTotal - _typedCharsThisFrame
+        if #str <= prefix then
+            _text(str)
+            _typedCharsThisFrame = _typedCharsThisFrame + #str
+        else
+            if prefix > 0 then
+                _text(str:sub(1, prefix))
+                _typedCharsThisFrame = _typedCharsThisFrame + prefix
+            end
+            local i = prefix + 1
+            while i <= #str do
+                -- Handle UTF-8 sequences
+                local start = i
+                while str:byte(i) >= 0x80 do
+                    i = i + 1
+                end
+                _text(str:sub(start, i))
+                Delay(0.01)
+                i = i + 1
+                local charsTyped = (i - start) + 1
+                _typedCharsTotal = _typedCharsTotal + charsTyped
+                _typedCharsThisFrame = _typedCharsThisFrame + charsTyped
+            end
+        end
+    end
+    Show(content)
+    Text = _text
+end
+
 ---Checks that its argument can be used as a changer
 ---@param fn changer
 ---@return changer
@@ -184,15 +254,21 @@ function Jump(target)
     Clear()
     Invalidate()
     PassageName = target
-    _firstRender = true
-    Display(target)
-    _firstRender = false
+    local routine = coroutine.create(function ()
+        _firstRender = true
+        Display(target)
+        _firstRender = false
+    end)
+    coroutine.resume(routine)
 end
 
 ---Causes the current passage to be re-rendered.
 function Reload()
     Clear()
-    Display(PassageName)
+    local routine = coroutine.create(function ()
+        Display(PassageName)
+    end)
+    coroutine.resume(routine)
 end
 
 ---Renders the passage with the given name in-line with the text.
@@ -524,4 +600,26 @@ LinkStyle = Hover(Color.red, Color.darkred)
 ---@return changer
 function Link(target)
     return Combine(On.click(function() Jump(target) end), LinkStyle)
+end
+
+---Shows the first argument until it's clicked, then shows the content body
+---@param text content
+---@param id any  A unique ID for this link; the default is an auto-incremented number
+function LinkReplace(text, id)
+    if id == nil then
+        _idSequence = _idSequence + 1
+        id = _idSequence
+    end
+    return function(content)
+        if _visible[id] then
+            Show(content)
+        else
+            Combine(On.click(function()
+                if not _visible[id] then
+                    _visible[id] = true
+                    Reload()
+                end
+            end), LinkStyle)(text)
+        end
+    end
 end

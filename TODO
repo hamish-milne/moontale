@@ -34,7 +34,7 @@ Library:
     ✔ strip() @done(21-04-18 00:33)
     ✔ name() @done(21-04-18 00:33)
     ✔ combine() @done(21-04-18 00:33)
-    ☐ freeze
+    ✘ freeze @cancelled(21-05-12 16:53)
     ☐ Special passage tags
     ☐ random
 
@@ -67,6 +67,10 @@ Editor features:
     ☐ Keyboard shortcuts
     ☐ Toolbar?
 
+Display features:
+    ☐ Typewriter
+    ☐ Segments
+
 Unity features:
     ✔ MoonSharp runtime @done(21-04-24 00:31)
     ✔ TMPro integration @done(21-04-24 00:31)
@@ -78,3 +82,7 @@ Admin:
     ✔ CI/CD -> publishing @done(21-04-18 00:33)
     ✔ Unit tests (w/ coverage) @done(21-04-26 21:54)
     ✔ Logo :) @done(21-04-17 00:18)
+
+Bugs:
+    ☐ Combine(LinkStyle, On.click()) doesn't work
+    
