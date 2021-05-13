@@ -10,11 +10,13 @@ public abstract class RichTextSink : Sink, IPointerClickHandler, IPointerEnterHa
     protected StringBuilder buffer = new StringBuilder();
     protected readonly Stack<string> tags = new Stack<string>();
     private string lastLink = null;
+    protected bool hasText = false;
 
-    public int[] headerSizes = {
-        96, 60, 48, 34, 24, 20
-    };
-    public int paragraphSpace = 12;
+    protected abstract int baseSize { get; }
+
+    private int HeaderSize(int n) {
+        return Mathf.RoundToInt(baseSize * (1 + 1.0f / n));
+    }
 
     protected void OpenTag(string tag) {
         buffer.Append('<').Append(tag).Append('>'); 
@@ -52,11 +54,17 @@ public abstract class RichTextSink : Sink, IPointerClickHandler, IPointerEnterHa
     {
         switch (tag) {
         case "p":
-            Space(paragraphSpace);
+            if (hasText) {
+                Space(baseSize / 2);
+            }
+            hasText = false;
             break;
         case "h":
             CloseTag("size");
-            Space(paragraphSpace);
+            if (hasText) {
+                Space(baseSize / 2);
+            }
+            hasText = false;
             break;
         case null:
             break;
@@ -116,7 +124,7 @@ public abstract class RichTextSink : Sink, IPointerClickHandler, IPointerEnterHa
         default:
             if (tag.StartsWith("h")) {
                 tags.Push("h");
-                OpenTag("size", headerSizes[int.Parse(tag.Substring(1))].ToString());
+                OpenTag("size", HeaderSize(int.Parse(tag.Substring(1))).ToString());
             } else {
                 tags.Push(null);
             }
@@ -126,6 +134,9 @@ public abstract class RichTextSink : Sink, IPointerClickHandler, IPointerEnterHa
 
     public override void Text(string text)
     {
+        if (text.Length > 0) {
+            hasText = true;
+        }
         buffer.Append(text);
     }
 
@@ -133,6 +144,7 @@ public abstract class RichTextSink : Sink, IPointerClickHandler, IPointerEnterHa
     {
         buffer.Clear();
         tags.Clear();
+        hasText = false;
     }
 
     public override void Invalidate()

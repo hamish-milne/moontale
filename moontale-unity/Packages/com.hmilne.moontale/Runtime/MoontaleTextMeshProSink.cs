@@ -10,7 +10,10 @@ public class MoontaleTextMeshProSink : RichTextSink
     private TMP_Text text;
     private RectTransform rectTransform;
 
+    protected override int baseSize => (int)text.fontSize;
+
     protected override void Space(int px) {
+        Text("\n");
         OpenTag("line-height", px.ToString());
         Text("\n");
         CloseTag("line-height");
