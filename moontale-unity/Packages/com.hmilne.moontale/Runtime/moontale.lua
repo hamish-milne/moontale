@@ -34,12 +34,16 @@ local _firstRender = false
 ---If true, one of the branches in an If()/ElseIf() chain has been taken
 local _ifTaken = false
 
+---The current/last executed passage coroutine, so we can resume it with an Update
 local _waiting = nil
 
+---The set of LinkReplace targets that are now visible
 local _visible = {}
 
+---An auto-incrementing number used as a default identifier for LinkReplace targets
 local _idSequence = 0
 
+---Typewriter internal state
 local _typedCharsThisFrame = 0
 local _typedCharsTotal = 0
 
@@ -166,12 +170,16 @@ function RaiseEvent(event, idx)
     end
 end
 
+---Called regularly by the host as time passes
+---@param deltaTime number  The time since Update was last called, in seconds
 function Update(deltaTime)
     if _waiting then
         coroutine.resume(_waiting, deltaTime)
     end
 end
 
+---Pauses execution for the given time period
+---@param duration number
 function Delay(duration)
     _waiting = coroutine.running()
     repeat
@@ -180,6 +188,8 @@ function Delay(duration)
     _waiting = nil
 end
 
+---Causes all Text within the content to be emitted one character at a time, with a delay in between
+---@type changer
 function Typewriter(content)
     local _text = Text
     Text = function(str)
@@ -592,6 +602,9 @@ function Link(target)
     return Combine(On.click(function() Jump(target) end), LinkStyle)
 end
 
+---Shows the first argument until it's clicked, then shows the content body
+---@param text content
+---@param id any  A unique ID for this link; the default is an auto-incremented number
 function LinkReplace(text, id)
     if id == nil then
         _idSequence = _idSequence + 1

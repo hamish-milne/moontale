@@ -1,10 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.TestTools;
 using UnityEngine.UI;
-using UnityEditor;
 
 namespace Moontale {
 
@@ -60,29 +56,27 @@ public class Tests
         sink.Clear();
     }
 
-    // [UnityTest]
-    public IEnumerator TypewriterEffect()
+    [Test]
+    public void NoEmptyParagraphs()
     {
-        yield return new EnterPlayMode();
         var go = new GameObject();
         var sink = go.AddComponent<MoontaleTextSink>();
-        var text = go.GetComponent<Text>();
-        var tw = go.AddComponent<MoontaleTypewriter>();
-        tw.charsPerSecond = 1000; // Force one char per frame
-        tw.sink = sink;
-        tw.typeOn = true;
-        tw.Text("abcde");
-        tw.Flush();
-        Assert.AreEqual("a", text.text);
-        yield return null;
-        Assert.AreEqual("ab", text.text);
-        yield return null;
-        Assert.AreEqual("abc", text.text);
-        yield return null;
-        Assert.AreEqual("abcd", text.text);
-        yield return null;
-        Assert.AreEqual("abcde", text.text);
-        yield return new ExitPlayMode();
+        go.GetComponent<Text>().fontSize = 10;
+        sink.Awake();
+        sink.Push("p", null);
+        sink.Text("");
+        sink.Pop();
+        sink.Push("p", null);
+        sink.Text("Text!");
+        sink.Pop();
+        sink.Push("p", null);
+        sink.Pop();
+        sink.Push("p", null);
+        sink.Pop();
+        sink.Push("p", null);
+        sink.Pop();
+        sink.Flush();
+        Assert.AreEqual("Text!\n<size=\"5\">\n</size>", go.GetComponent<Text>().text);
     }
 
     [Test]
