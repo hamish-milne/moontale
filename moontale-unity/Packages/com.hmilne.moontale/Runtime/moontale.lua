@@ -47,6 +47,10 @@ local _idSequence = 0
 local _typedCharsThisFrame = 0
 local _typedCharsTotal = 0
 
+local _startup = {}
+local _headers = {}
+local _footers = {}
+
 ---Dummy render function to avoid dealing with 'nil' values
 ---@param content function
 local function _empty(content)
@@ -83,6 +87,23 @@ Passages = setmetatable({}, {
         error("Passage `"..tostring(k).."` does not exist")
     end
 })
+
+function CollectSpecialPassages()
+    _startup = {}
+    _headers = {}
+    _footers = {}
+    for k,v in next, Passages do
+        if v.tags['startup'] then
+            _startup[#_startup+1] = k
+        end
+        if v.tags['header'] then
+            _headers[#_headers+1] = k
+        end
+        if v.tags['footer'] then
+            _footers[#_footers+1] = k
+        end
+    end
+end
 
 ---Override of the host function; clears out any internal state
 function Clear()
@@ -256,7 +277,13 @@ function Jump(target)
     PassageName = target
     local routine = coroutine.create(function ()
         _firstRender = true
+        for k,v in next, _headers do
+            Display(v)
+        end
         Display(target)
+        for k,v in next, _footers do
+            Display(v)
+        end
         _firstRender = false
     end)
     coroutine.resume(routine)
@@ -279,6 +306,10 @@ end
 
 ---Jumps back to the start, without resetting any variables.
 function SoftReset()
+    CollectSpecialPassages()
+    for k,v in next, _startup do
+        Display(v)
+    end
     Jump(StartPassage)
 end
 
