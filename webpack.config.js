@@ -11,15 +11,20 @@ function isProduction(options) { return options.mode === 'production' }
 
 function stringReplace(haystack, needle, replacement) {
     let idx = haystack.indexOf(needle)
+    if (idx < 0) {
+        throw Error("Not found!")
+    }
     return haystack.substring(0, idx) + replacement + haystack.substring(idx + needle.length)
 }
+
+let package = JSON.parse(fs.readFileSync("package.json", "utf-8"))
 
 module.exports = (env, options) => { return {
     mode: 'development',
     devtool: "source-map",
     entry: {
         bundle: './src/index.ts',
-        editor: './src/setup.js'
+        editor: './src/setup.ts'
     },
     module: {
         rules: [{
@@ -80,36 +85,30 @@ module.exports = (env, options) => { return {
             apply: function(compiler) {
                 compiler.hooks.done.tap('BuildStoryFormat', function() {
 
-                    let package = JSON.parse(fs.readFileSync("package.json", "utf-8"))
                     let html = fs.readFileSync(`${__dirname}/dist/index.html`, "utf-8")
                     let js = fs.readFileSync(`${__dirname}/dist/bundle.js`, "utf-8")
-                    let scriptTag = `<script defer="defer" src="bundle.js"></script>`
+                    // TODO: Use PostHTML here instead of this garbage!
+                    let scriptTag = isProduction(options) ? `<script defer="defer" src="bundle.js"></script>` : `<script defer src="bundle.js"></script>`
                     let formats = [
                         ['', package.version, stringReplace(html, scriptTag, `<script defer="defer">${stringReplace(js, 'bundle.js.map', 'https://moontale.hmilne.cc/bundle.js.map')}</script>`)],
                         ['-dev', '0.0.0', stringReplace(html, scriptTag, `<script defer="defer" src="http://localhost:9000/bundle.js"></script>`)],
                         ['-latest', '1.0.0', stringReplace(html, scriptTag, `<script defer="defer" src="https://moontale.hmilne.cc/bundle.js"></script>`)]
                     ]
                     formats.map(tuple => {
-                        // TODO: Use a Webpack entry point for format.js?
-                        let outputJson = {
-                            name: "Moontale",
-                            version: tuple[1],
-                            author: package.author,
-                            description: package.description,
-                            proofing: false,
-                            url: package.repository.url,
-                            license: package.license,
-                            image: 'icon.svg',
-                            source: tuple[2],
-                            setup: '%SETUP%'
-                        }
-                        let jsonString = stringReplace(
-                            JSON.stringify(outputJson),
-                            "\"%SETUP%\"",
-                            `function(){${fs.readFileSync(`${__dirname}/dist/editor.js`, "utf-8")}\n}`
-                        )
-                        let outputString = `window.storyFormat(${jsonString});`
-                        fs.writeFileSync(`build/format${tuple[0]}.js`, outputString)
+                        let output = 
+`window.storyFormat({
+    name: "Moontale",
+    version: ${JSON.stringify(tuple[1])},
+    author: ${JSON.stringify(package.author)},
+    description: ${JSON.stringify(package.description)},
+    proofing: false,
+    url: ${JSON.stringify(package.repository.url)},
+    license: ${JSON.stringify(package.license)},
+    image: 'icon.svg',
+    source: ${JSON.stringify(tuple[2])},
+    setup: function(){${fs.readFileSync("./dist/editor.js", "utf-8")}\n}
+});`
+                        fs.writeFileSync(`build/format${tuple[0]}.js`, output)
                     })
                     fs.copyFileSync("dist/bundle.js.map", "build/bundle.js.map")
                 })
