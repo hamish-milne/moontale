@@ -24,7 +24,8 @@ module.exports = (env, options) => { return {
     devtool: "source-map",
     entry: {
         bundle: './src/index.ts',
-        editor: './src/setup.ts'
+        editor: './src/setup.ts',
+        editor_test: './src/editor_test.ts'
     },
     module: {
         rules: [{
@@ -42,11 +43,23 @@ module.exports = (env, options) => { return {
             },
             {
                 test: /\.css$/i,
+                exclude: /editor.css$/,
                 use: [MiniCssExtractPlugin.loader, 'css-loader'],
+            },
+            {
+                test: /editor.css$/,
+                type: 'asset/source'
             },
             {
                 test: /\.(ttf|eot|svg|png|jpg|gif|ico|woff|woff2)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
                 type: 'asset/resource'
+            },
+            {
+                test: /editor_test\.html/,
+                type: 'asset/resource',
+                generator: {
+                    filename: '[name][ext]'
+                }
             }
         ],
     },
@@ -69,15 +82,19 @@ module.exports = (env, options) => { return {
             //   importing a new CodeMirror instance.
             // NOTE: This is terrible! It basically hacks around CodeMirror's own hack.
             // NOTE: This will probably break other things!!!
-            "typeof exports": JSON.stringify("undefined"),
-            "typeof define": JSON.stringify("undefined")
+            // NOTE: We only enable this for production to not break editor_test
+            "typeof exports": isProduction(options) ? JSON.stringify("undefined") : undefined,
+            "typeof define": isProduction(options) ? JSON.stringify("undefined") : undefined
         }),
         new MiniCssExtractPlugin(),
         new HtmlWebpackPlugin({
             template: "src/index.html",
-            inject: "body"
+            inject: "body",
+            chunks: ['bundle']
         }),
-        new HTMLInlineCSSWebpackPlugin(),
+        new HTMLInlineCSSWebpackPlugin({
+            leaveCSSFile: true
+        }),
         new HtmlWebpackInlineSVGPlugin({
             runPreEmit: true
         }),
