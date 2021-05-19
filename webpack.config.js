@@ -17,7 +17,10 @@ function stringReplace(haystack, needle, replacement) {
 module.exports = (env, options) => { return {
     mode: 'development',
     devtool: "source-map",
-    entry: './src/index.ts',
+    entry: {
+        bundle: './src/index.ts',
+        editor: './src/setup.js'
+    },
     module: {
         rules: [{
                 test: /\.tsx?$/,
@@ -46,16 +49,23 @@ module.exports = (env, options) => { return {
         extensions: ['.tsx', '.ts', '.js'],
     },
     output: {
-        filename: 'bundle.js',
+        filename: '[name].js',
         publicPath: '',
         path: path.resolve(__dirname, 'dist'),
     },
     node: false,
     plugins: [
-        // Excludes nodejs-specific stuff from Fengari
         new webpack.DefinePlugin({
+            // Excludes nodejs-specific stuff from Fengari
             "process.env.FENGARICONF": "void 0",
-            "typeof process": JSON.stringify("undefined")
+            "typeof process": JSON.stringify("undefined"),
+
+            // Force CodeMirror modes to use the 'plain browser env', rather than
+            //   importing a new CodeMirror instance.
+            // NOTE: This is terrible! It basically hacks around CodeMirror's own hack.
+            // NOTE: This will probably break other things!!!
+            "typeof exports": JSON.stringify("undefined"),
+            "typeof define": JSON.stringify("undefined")
         }),
         new MiniCssExtractPlugin(),
         new HtmlWebpackPlugin({
@@ -80,6 +90,7 @@ module.exports = (env, options) => { return {
                         ['-latest', '1.0.0', stringReplace(html, scriptTag, `<script defer="defer" src="https://moontale.hmilne.cc/bundle.js"></script>`)]
                     ]
                     formats.map(tuple => {
+                        // TODO: Use a Webpack entry point for format.js?
                         let outputJson = {
                             name: "Moontale",
                             version: tuple[1],
@@ -89,9 +100,15 @@ module.exports = (env, options) => { return {
                             url: package.repository.url,
                             license: package.license,
                             image: 'icon.svg',
-                            source: tuple[2]
+                            source: tuple[2],
+                            setup: '%SETUP%'
                         }
-                        let outputString = `window.storyFormat(${JSON.stringify(outputJson)});`
+                        let jsonString = stringReplace(
+                            JSON.stringify(outputJson),
+                            "\"%SETUP%\"",
+                            `function(){${fs.readFileSync(`${__dirname}/dist/editor.js`, "utf-8")}\n}`
+                        )
+                        let outputString = `window.storyFormat(${jsonString});`
                         fs.writeFileSync(`build/format${tuple[0]}.js`, outputString)
                     })
                     fs.copyFileSync("dist/bundle.js.map", "build/bundle.js.map")
