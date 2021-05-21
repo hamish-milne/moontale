@@ -11,13 +11,22 @@ function isProduction(options) { return options.mode === 'production' }
 
 function stringReplace(haystack, needle, replacement) {
     let idx = haystack.indexOf(needle)
+    if (idx < 0) {
+        throw Error("Not found!")
+    }
     return haystack.substring(0, idx) + replacement + haystack.substring(idx + needle.length)
 }
+
+let package = JSON.parse(fs.readFileSync("package.json", "utf-8"))
 
 module.exports = (env, options) => { return {
     mode: 'development',
     devtool: "source-map",
-    entry: './src/index.ts',
+    entry: {
+        bundle: './src/index.ts',
+        editor: './src/setup.ts',
+        editor_test: './src/editor_test.ts'
+    },
     module: {
         rules: [{
                 test: /\.tsx?$/,
@@ -34,11 +43,23 @@ module.exports = (env, options) => { return {
             },
             {
                 test: /\.css$/i,
+                exclude: /editor.css$/,
                 use: [MiniCssExtractPlugin.loader, 'css-loader'],
+            },
+            {
+                test: /editor.css$/,
+                type: 'asset/source'
             },
             {
                 test: /\.(ttf|eot|svg|png|jpg|gif|ico|woff|woff2)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
                 type: 'asset/resource'
+            },
+            {
+                test: /editor_test\.html/,
+                type: 'asset/resource',
+                generator: {
+                    filename: '[name][ext]'
+                }
             }
         ],
     },
@@ -46,23 +67,34 @@ module.exports = (env, options) => { return {
         extensions: ['.tsx', '.ts', '.js'],
     },
     output: {
-        filename: 'bundle.js',
+        filename: '[name].js',
         publicPath: '',
         path: path.resolve(__dirname, 'dist'),
     },
     node: false,
     plugins: [
-        // Excludes nodejs-specific stuff from Fengari
         new webpack.DefinePlugin({
+            // Excludes nodejs-specific stuff from Fengari
             "process.env.FENGARICONF": "void 0",
-            "typeof process": JSON.stringify("undefined")
+            "typeof process": JSON.stringify("undefined"),
+
+            // Force CodeMirror modes to use the 'plain browser env', rather than
+            //   importing a new CodeMirror instance.
+            // NOTE: This is terrible! It basically hacks around CodeMirror's own hack.
+            // NOTE: This will probably break other things!!!
+            // NOTE: We only enable this for production to not break editor_test
+            "typeof exports": isProduction(options) ? JSON.stringify("undefined") : undefined,
+            "typeof define": isProduction(options) ? JSON.stringify("undefined") : undefined
         }),
         new MiniCssExtractPlugin(),
         new HtmlWebpackPlugin({
             template: "src/index.html",
-            inject: "body"
+            inject: "body",
+            chunks: ['bundle']
         }),
-        new HTMLInlineCSSWebpackPlugin(),
+        new HTMLInlineCSSWebpackPlugin({
+            leaveCSSFile: true
+        }),
         new HtmlWebpackInlineSVGPlugin({
             runPreEmit: true
         }),
@@ -70,29 +102,30 @@ module.exports = (env, options) => { return {
             apply: function(compiler) {
                 compiler.hooks.done.tap('BuildStoryFormat', function() {
 
-                    let package = JSON.parse(fs.readFileSync("package.json", "utf-8"))
                     let html = fs.readFileSync(`${__dirname}/dist/index.html`, "utf-8")
                     let js = fs.readFileSync(`${__dirname}/dist/bundle.js`, "utf-8")
-                    let scriptTag = `<script defer="defer" src="bundle.js"></script>`
+                    // TODO: Use PostHTML here instead of this garbage!
+                    let scriptTag = isProduction(options) ? `<script defer="defer" src="bundle.js"></script>` : `<script defer src="bundle.js"></script>`
                     let formats = [
                         ['', package.version, stringReplace(html, scriptTag, `<script defer="defer">${stringReplace(js, 'bundle.js.map', 'https://moontale.hmilne.cc/bundle.js.map')}</script>`)],
                         ['-dev', '0.0.0', stringReplace(html, scriptTag, `<script defer="defer" src="http://localhost:9000/bundle.js"></script>`)],
                         ['-latest', '1.0.0', stringReplace(html, scriptTag, `<script defer="defer" src="https://moontale.hmilne.cc/bundle.js"></script>`)]
                     ]
                     formats.map(tuple => {
-                        let outputJson = {
-                            name: "Moontale",
-                            version: tuple[1],
-                            author: package.author,
-                            description: package.description,
-                            proofing: false,
-                            url: package.repository.url,
-                            license: package.license,
-                            image: 'icon.svg',
-                            source: tuple[2]
-                        }
-                        let outputString = `window.storyFormat(${JSON.stringify(outputJson)});`
-                        fs.writeFileSync(`build/format${tuple[0]}.js`, outputString)
+                        let output = 
+`window.storyFormat({
+    name: "Moontale",
+    version: ${JSON.stringify(tuple[1])},
+    author: ${JSON.stringify(package.author)},
+    description: ${JSON.stringify(package.description)},
+    proofing: false,
+    url: ${JSON.stringify(package.repository.url)},
+    license: ${JSON.stringify(package.license)},
+    image: 'icon.svg',
+    source: ${JSON.stringify(tuple[2])},
+    setup: function(){${fs.readFileSync("./dist/editor.js", "utf-8")}\n}
+});`
+                        fs.writeFileSync(`build/format${tuple[0]}.js`, output)
                     })
                     fs.copyFileSync("dist/bundle.js.map", "build/bundle.js.map")
                 })

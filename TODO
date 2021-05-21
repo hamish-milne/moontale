@@ -1,4 +1,4 @@
--- file:///C:/Workspace/moontale/build/format-dev.js
+-- file:///C:/Workspace/moontale/build/format.js
 Build the format.json file:
     ✔ Inline the JS @done(21-04-17 00:18)
     ✔ Inline the CSS @done(21-04-17 00:18)
@@ -35,7 +35,7 @@ Library:
     ✔ name() @done(21-04-18 00:33)
     ✔ combine() @done(21-04-18 00:33)
     ✘ freeze @cancelled(21-05-12 16:53)
-    ☐ Special passage tags
+    ✔ Special passage tags @done(21-05-19 19:42)
     ☐ random
 
 Player features:
@@ -68,8 +68,8 @@ Editor features:
     ☐ Toolbar?
 
 Display features:
-    ☐ Typewriter
-    ☐ Segments
+    ✔ Typewriter @done(21-05-19 19:42)
+    ✔ Segments @done(21-05-19 19:42)
 
 Unity features:
     ✔ MoonSharp runtime @done(21-04-24 00:31)

@@ -324,3 +324,41 @@ describe("LinkReplace()", function ()
         assert.spy(_text).was.called_with("Bar")
     end)
 end)
+
+describe("special passage tags", function ()
+    it("displays 'startup' passages on a SoftReset", function ()
+        _G.Passages = {
+            a = {tags = {startup = true}, content = function () Text('Foo') end},
+            b = {tags = { }, content = function () Text('Bar') end},
+        }
+        _G.StartPassage = 'b'
+        SoftReset()
+        assert.spy(_text).was.called(2)
+        assert.spy(_text).was.called_with('Foo')
+        assert.spy(_text).was.called_with('Bar')
+    end)
+
+    it("displays 'header' passages at the start of every passage", function ()
+        _G.Passages = {
+            a = {tags = {header = true}, content = function () Text('Foo') end},
+            b = {tags = { }, content = function () Text('Bar') end},
+        }
+        CollectSpecialPassages()
+        Jump('b')
+        assert.spy(_text).was.called(2)
+        assert.spy(_text).was.called_with('Foo')
+        assert.spy(_text).was.called_with('Bar')
+    end)
+
+    it("dispays 'footer' passages at the end of every passage", function ()
+        _G.Passages = {
+            a = {tags = {footer = true}, content = function () Text('Foo') end},
+            b = {tags = { }, content = function () Text('Bar') end},
+        }
+        CollectSpecialPassages()
+        Jump('b')
+        assert.spy(_text).was.called(2)
+        assert.spy(_text).was.called_with('Foo')
+        assert.spy(_text).was.called_with('Bar')
+    end)
+end)

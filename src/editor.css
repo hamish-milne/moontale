@@ -1,0 +1,8 @@
+.cm-ScriptMarker, .cm-ContentMarker {
+    font-weight: bold;
+    color: coral;
+}
+
+.cm-header {
+    color: aquamarine !important;
+}
