@@ -3,4 +3,7 @@
     "mocha.requires": [
         "ts-node/register"
     ],
-}
+    "files.watcherExclude": {
+      "**/Library/**": true
+    }
+  }
