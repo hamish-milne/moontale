@@ -102,7 +102,7 @@ module.exports = (env, options) => { return {
             apply: function(compiler) {
                 compiler.hooks.done.tap('BuildStoryFormat', function() {
 
-                    let webRoot = "https://moontale.hmilne.cc"
+                    let webRoot = "https://hamish-milne.github.io/moontale"
                     let html = fs.readFileSync(`${__dirname}/dist/index.html`, "utf-8")
                     let bundleJs = fs.readFileSync(`${__dirname}/dist/bundle.js`, "utf-8")
                     let editorJs = fs.readFileSync(`${__dirname}/dist/editor.js`, "utf-8")
