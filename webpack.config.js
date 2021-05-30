@@ -102,14 +102,21 @@ module.exports = (env, options) => { return {
             apply: function(compiler) {
                 compiler.hooks.done.tap('BuildStoryFormat', function() {
 
+                    let webRoot = "https://moontale.hmilne.cc"
                     let html = fs.readFileSync(`${__dirname}/dist/index.html`, "utf-8")
-                    let js = fs.readFileSync(`${__dirname}/dist/bundle.js`, "utf-8")
+                    let bundleJs = fs.readFileSync(`${__dirname}/dist/bundle.js`, "utf-8")
+                    let editorJs = fs.readFileSync(`${__dirname}/dist/editor.js`, "utf-8")
+
+                    // Set source mapping URLs to the remote URLs, so they work in the Twine editor
+                    bundleJs = stringReplace(bundleJs, 'bundle.js.map', `${webRoot}/bundle.js.map`)
+                    editorJs = stringReplace(editorJs, 'editor.js.map', `${webRoot}/editor.js.map`)
+
                     // TODO: Use PostHTML here instead of this garbage!
                     let scriptTag = isProduction(options) ? `<script defer="defer" src="bundle.js"></script>` : `<script defer src="bundle.js"></script>`
                     let formats = [
-                        ['', package.version, stringReplace(html, scriptTag, `<script defer="defer">${stringReplace(js, 'bundle.js.map', 'https://moontale.hmilne.cc/bundle.js.map')}</script>`)],
+                        ['', package.version, stringReplace(html, scriptTag, `<script defer="defer">${bundleJs}</script>`)],
                         ['-dev', '0.0.0', stringReplace(html, scriptTag, `<script defer="defer" src="http://localhost:9000/bundle.js"></script>`)],
-                        ['-latest', '1.0.0', stringReplace(html, scriptTag, `<script defer="defer" src="https://moontale.hmilne.cc/bundle.js"></script>`)]
+                        ['-latest', '1.0.0', stringReplace(html, scriptTag, `<script defer="defer" src="${webRoot}/bundle.js"></script>`)]
                     ]
                     formats.map(tuple => {
                         let output = 
@@ -123,11 +130,14 @@ module.exports = (env, options) => { return {
     license: ${JSON.stringify(package.license)},
     image: 'icon.svg',
     source: ${JSON.stringify(tuple[2])},
-    setup: function(){${fs.readFileSync("./dist/editor.js", "utf-8")}\n}
+    setup: function(){${editorJs}\n}
 });`
                         fs.writeFileSync(`build/format${tuple[0]}.js`, output)
                     })
+
+                    // Copy source maps to the build, so they're visible in the site
                     fs.copyFileSync("dist/bundle.js.map", "build/bundle.js.map")
+                    fs.copyFileSync("dist/editor.js.map", "build/editor.js.map")
                 })
             },
         },
