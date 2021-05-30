@@ -18,7 +18,7 @@ public class Tests
         source.scriptAssets.Add(new TextAsset(@"
         
         StartPassage = 'foo';
-        Passages = {foo = {content = function() Style.b('Hello world!') end}}
+        Passages = {foo = {content = function() Style.b('Hello world!') end, tags = {}}}
 
         "));
         source.Start();
