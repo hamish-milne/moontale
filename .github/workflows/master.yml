@@ -19,9 +19,10 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: 14.x
-    - uses: luk-schweizer/jest-code-coverage-badge-action@v1.0.1
-      with:
-        kvaas-key-url: 'https://api.keyvalue.xyz/444ccf6f/coverage'
+# Temporarily remove this while keyvalue.xyz is down
+#     - uses: luk-schweizer/jest-code-coverage-badge-action@v1.0.1
+#       with:
+#         kvaas-key-url: 'https://api.keyvalue.xyz/444ccf6f/coverage'
     - name: Deploy to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@4.1.1
       with:
