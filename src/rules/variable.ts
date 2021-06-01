@@ -85,6 +85,8 @@ export default function (state: StateInline, silent: boolean): boolean {
     ) {
         // Continue
     }
-    state.push('code_variable', '', 0).content = output.join('')
+    let tok = state.push('code_variable', '', 0)
+    tok.content = output.join('')
+    tok.meta = start
     return true
 }

@@ -125,6 +125,8 @@ function renderOne(input: Token, output: string[], state: {level: number}) {
     }
 }
 
+export function parse(src: string) { return md.parse(preprocess(src), {}) }
+
 export function markdownToLua(src: string, outputBuffer: string[], state: {level: number}) {
     let startLevel = state.level
     for(const token of md.parse(preprocess(src), {})) {
