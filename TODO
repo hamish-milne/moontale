@@ -9,8 +9,11 @@ Markup niceties:
     ✔ Changers applied to links @done(21-05-03 23:16)
     ✔ Newlines -> spaces @done(21-05-03 22:15)
     ✔ 'Inline' link syntax @done(21-05-03 23:16)
+    ☐ Content block argument syntax: `[=key,value`
+    ☐ Changer combine operator ('+'?)
 
 Error handling:
+    ☐ Catch syntax errors
     ☐ Show an error log in the browser player
     ☐ Protect all the calls from JS
     ☐ Protect all the calls within Lua
@@ -37,6 +40,7 @@ Library:
     ✘ freeze @cancelled(21-05-12 16:53)
     ✔ Special passage tags @done(21-05-19 19:42)
     ☐ random
+    ☐ Collection types: 'Set', 'Map', that have sane length operators etc.
 
 Player features:
     ☐ Back button
@@ -63,7 +67,9 @@ Debugging:
     ☐ Dynamic recompilation
 
 Editor features:
-    ☐ Syntax highlighting
+    ✔ Syntax highlighting @done(21-05-30 19:04)
+    ☐ Better syntax colours
+    ☐ Linting
     ☐ Keyboard shortcuts
     ☐ Toolbar?
 
@@ -85,4 +91,4 @@ Admin:
 
 Bugs:
     ☐ Combine(LinkStyle, On.click()) doesn't work
-    
+    ☐ Content blocks don't work with lists in the middle (content block paragraph nesting issue)

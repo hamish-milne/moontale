@@ -51,6 +51,9 @@ local _startup = {}
 local _headers = {}
 local _footers = {}
 
+
+Visited = {}
+
 ---Dummy render function to avoid dealing with 'nil' values
 ---@param content function
 local function _empty(content)
@@ -113,6 +116,7 @@ function Clear()
     _reloadOnHover = false
     _idSequence = 0
     _typedCharsThisFrame = 0
+    _ifTaken = false
 end
 
 ---Override of the host function; invalidates any event IDs
@@ -269,21 +273,26 @@ function Show(value)
     end
 end
 
+local function _displayWithSurrounds(target)
+    for k,v in next, _headers do
+        Display(v)
+    end
+    Display(target)
+    for k,v in next, _footers do
+        Display(v)
+    end
+end
+
 ---Clears the screen and renders the passage with the given name.
 ---@param target string
 function Jump(target)
     Clear()
     Invalidate()
+    Visited[PassageName] = (Visited[PassageName] or 0) + 1
     PassageName = target
     local routine = coroutine.create(function ()
         _firstRender = true
-        for k,v in next, _headers do
-            Display(v)
-        end
-        Display(target)
-        for k,v in next, _footers do
-            Display(v)
-        end
+        _displayWithSurrounds(target)
         _firstRender = false
     end)
     coroutine.resume(routine)
@@ -293,7 +302,7 @@ end
 function Reload()
     Clear()
     local routine = coroutine.create(function ()
-        Display(PassageName)
+        _displayWithSurrounds(PassageName)
     end)
     coroutine.resume(routine)
 end
