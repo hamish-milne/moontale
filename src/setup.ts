@@ -6,6 +6,7 @@ import 'codemirror/mode/markdown/markdown'
 import 'codemirror/mode/lua/lua'
 import editorCss from './editor.css'
 import { lint } from "./linter"
+import "codemirror/addon/lint/lint.css"
 
 let styleContainer = document.querySelector('style#cm-moontale');
 if (!styleContainer) {

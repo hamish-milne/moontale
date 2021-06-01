@@ -8,5 +8,7 @@ let textArea = document.getElementById("myTextArea") as HTMLTextAreaElement
 window.CodeMirror.fromTextArea(textArea, {
     lineNumbers: true,
     mode: "moontale",
-    theme: "ambiance"
+    theme: "ambiance",
+    lint: true,
+    gutters: ["CodeMirror-lint-markers"]
 });
