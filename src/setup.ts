@@ -1,9 +1,11 @@
 import 'codemirror/addon/mode/multiplex'
 import 'codemirror/addon/mode/overlay'
 import 'codemirror/addon/mode/simple'
+import 'codemirror/addon/lint/lint'
 import 'codemirror/mode/markdown/markdown'
 import 'codemirror/mode/lua/lua'
 import editorCss from './editor.css'
+import { lint } from "./linter"
 
 let styleContainer = document.querySelector('style#cm-moontale');
 if (!styleContainer) {
@@ -37,3 +39,5 @@ window.CodeMirror.defineSimpleMode('moontale', {
         {regex: '', pop: true},
     ]
 })
+
+window.CodeMirror.registerHelper('lint', 'moontale', lint)

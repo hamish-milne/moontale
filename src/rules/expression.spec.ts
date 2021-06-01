@@ -14,6 +14,7 @@ describe("Lua expression block rule", () => {
         expect(rule(state, false)).toBeTruthy()
         let expected = new Token('code_expression', '', 0)
         expected.content = 'def<$\nghi'
+        expected.meta = 3
         expect(state.tokens).toEqual([expected])
     })
 

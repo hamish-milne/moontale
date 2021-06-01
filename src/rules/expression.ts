@@ -11,7 +11,9 @@ export default function (state: StateInline, silent: boolean): boolean {
     if (end === -1) {
         return false
     }
-    state.push('code_expression', '', 0).content = state.src.slice(state.pos + markerLength, end)
+    let tok = state.push('code_expression', '', 0)
+    tok.content = state.src.slice(state.pos + markerLength, end)
+    tok.meta = state.pos
     state.pos = end + markerLength
     return true
 }

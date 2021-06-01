@@ -20,6 +20,7 @@ describe("Lua variable rule", () => {
         expect(rule(state, false)).toBeTruthy()
         let expected = new Token('code_variable', '', 0)
         expected.content = output ?? src
+        expected.meta = 4
         expect(state.tokens).toEqual([expected])
     }
 
