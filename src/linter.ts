@@ -80,13 +80,16 @@ function lintOne(token: Token, output: Annotation[], L: lua_State, parent: Token
     
 }
 
-export const lint: Linter<unknown> = content => {
-    let L = lauxlib.luaL_newstate()
-    lualib.luaL_openlibs(L)
-    let output: Annotation[] = []
-    let state = {extraLines: 0, pendingExtraLines: 0}
-    for(let token of parse(content)) {
-        lintOne(token, output, L, null, state)
+export function makeLinter(lib: string): Linter<unknown> {
+    return content => {
+        let L = lauxlib.luaL_newstate()
+        lualib.luaL_openlibs(L)
+        lauxlib.luaL_dostring(L, enc.encode(lib))
+        let output: Annotation[] = []
+        let state = {extraLines: 0, pendingExtraLines: 0}
+        for(let token of parse(content)) {
+            lintOne(token, output, L, null, state)
+        }
+        return output
     }
-    return output
 }

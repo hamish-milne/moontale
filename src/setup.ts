@@ -5,18 +5,26 @@ import 'codemirror/addon/lint/lint'
 import 'codemirror/mode/markdown/markdown'
 import 'codemirror/mode/lua/lua'
 import editorCss from './editor.css'
-import { lint } from "./linter"
-import "codemirror/addon/lint/lint.css"
+import { makeLinter } from "./linter"
+import lintCss from "codemirror/addon/lint/lint.css"
+import { Editor, EditorConfiguration, Mode } from 'codemirror'
+import moontaleLib from '../moontale-unity/Packages/com.hmilne.moontale/Runtime/moontale.lua'
 
-let styleContainer = document.querySelector('style#cm-moontale');
-if (!styleContainer) {
-    styleContainer = document.createElement('style')
-    styleContainer.setAttribute('id', 'cm-moontale')
-    document.head.appendChild(styleContainer)
+function loadExtraCss(id: string, src: string) {
+    let styleContainer = document.querySelector(`style#${id}`);
+    if (!styleContainer) {
+        styleContainer = document.createElement('style')
+        styleContainer.setAttribute('id', id)
+        document.head.appendChild(styleContainer)
+    }
+    styleContainer.innerHTML = src
 }
-styleContainer.innerHTML = editorCss
 
-window.CodeMirror.defineSimpleMode('moontale', {
+loadExtraCss('cm-lint', lintCss)
+loadExtraCss('cm-moontale', editorCss)
+
+function modeFactory(config: EditorConfiguration): Mode<any> {
+    let modeObj = window.CodeMirror.simpleMode(config, {
     start: [
         {regex: /\{\$/, token: 'tag', mode: {spec: 'lua', end: /\$\}/}},
         {regex: /\<\$/, token: 'tag', mode: {spec: 'lua', end: /\$\>/}},
@@ -39,6 +47,16 @@ window.CodeMirror.defineSimpleMode('moontale', {
         {regex: /\{/, token: 'bracket', mode: {spec: 'lua', end: /\}/}},
         {regex: '', pop: true},
     ]
-})
+    }) 
+    let cm = (modeFactory as any).cm as Editor | undefined
+    // This is a TwineJS hack that lets us access the CodeMirror Editor instance
+    if (cm != undefined) {
+        cm.setOption("lint", true)
+        cm.setOption("lineNumbers", true)
+    }
+    return modeObj
+}
 
-window.CodeMirror.registerHelper('lint', 'moontale', lint)
+window.CodeMirror.defineMode('moontale', modeFactory)
+
+window.CodeMirror.registerHelper('lint', 'moontale', makeLinter(moontaleLib))

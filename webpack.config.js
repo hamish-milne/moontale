@@ -43,11 +43,11 @@ module.exports = (env, options) => { return {
             },
             {
                 test: /\.css$/i,
-                exclude: /editor.css$/,
+                exclude: /(editor|lint).css$/,
                 use: [MiniCssExtractPlugin.loader, 'css-loader'],
             },
             {
-                test: /editor.css$/,
+                test: /(editor|lint).css$/,
                 type: 'asset/source'
             },
             {
@@ -102,7 +102,7 @@ module.exports = (env, options) => { return {
             apply: function(compiler) {
                 compiler.hooks.done.tap('BuildStoryFormat', function() {
 
-                    let webRoot = "https://hamish-milne.github.io/moontale"
+                    let webRoot = isProduction(options) ? "https://hamish-milne.github.io/moontale" : "http://localhost:9000"
                     let html = fs.readFileSync(`${__dirname}/dist/index.html`, "utf-8")
                     let bundleJs = fs.readFileSync(`${__dirname}/dist/bundle.js`, "utf-8")
                     let editorJs = fs.readFileSync(`${__dirname}/dist/editor.js`, "utf-8")
@@ -115,7 +115,7 @@ module.exports = (env, options) => { return {
                     let scriptTag = isProduction(options) ? `<script defer="defer" src="bundle.js"></script>` : `<script defer src="bundle.js"></script>`
                     let formats = [
                         ['', package.version, stringReplace(html, scriptTag, `<script defer="defer">${bundleJs}</script>`)],
-                        ['-dev', '0.0.0', stringReplace(html, scriptTag, `<script defer="defer" src="http://localhost:9000/bundle.js"></script>`)],
+                        ['-dev', '0.0.0', stringReplace(html, scriptTag, `<script defer="defer" src="${webRoot}/bundle.js"></script>`)],
                         ['-latest', '1.0.0', stringReplace(html, scriptTag, `<script defer="defer" src="${webRoot}/bundle.js"></script>`)]
                     ]
                     formats.map(tuple => {

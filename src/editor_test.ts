@@ -5,10 +5,8 @@ import "./setup"
 import "./editor_test.html"
 
 let textArea = document.getElementById("myTextArea") as HTMLTextAreaElement
-window.CodeMirror.fromTextArea(textArea, {
-    lineNumbers: true,
-    mode: "moontale",
+let editor = window.CodeMirror.fromTextArea(textArea, {
     theme: "ambiance",
-    lint: true,
-    gutters: ["CodeMirror-lint-markers"]
 });
+(window.CodeMirror.modes['moontale'] as any).cm = editor
+editor.setOption('mode', 'moontale')

@@ -6,3 +6,7 @@
 .cm-header {
     color: aquamarine !important;
 }
+
+.CodeMirror-lint-tooltip {
+    z-index: 500;
+}

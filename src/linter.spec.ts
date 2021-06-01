@@ -1,9 +1,9 @@
 import { Editor } from "codemirror"
-import { lint } from "./linter"
+import { makeLinter } from "./linter"
 
 describe("Linter", () => {
     it("foo", () => {
-        lint(`{$
+        makeLinter('')(`{$
             
             foo = 5
             x(foo.bar())
