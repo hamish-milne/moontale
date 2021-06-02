@@ -59,4 +59,6 @@ function modeFactory(config: EditorConfiguration): Mode<any> {
 
 window.CodeMirror.defineMode('moontale', modeFactory)
 
-window.CodeMirror.registerHelper('lint', 'moontale', makeLinter(moontaleLib))
+window.CodeMirror.registerHelper('lint', 'moontale', makeLinter(moontaleLib,
+    () => (document.querySelector('div#storyEditView') as any)?.__vue__?.story?.passages ?? []    
+))
