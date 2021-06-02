@@ -3,7 +3,7 @@ import { makeLinter } from "./linter"
 
 describe("Linter", () => {
     it("foo", () => {
-        makeLinter('')(`{$
+        makeLinter('', () => [])(`{$
             
             foo = 5
             x(foo.bar())

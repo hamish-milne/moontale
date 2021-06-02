@@ -2,6 +2,7 @@ import 'codemirror/addon/mode/multiplex'
 import 'codemirror/addon/mode/overlay'
 import 'codemirror/addon/mode/simple'
 import 'codemirror/addon/lint/lint'
+import * as lintModule from 'codemirror/addon/lint/lint'
 import 'codemirror/mode/markdown/markdown'
 import 'codemirror/mode/lua/lua'
 import editorCss from './editor.css'
@@ -52,11 +53,17 @@ function modeFactory(config: EditorConfiguration): Mode<any> {
     // This is a TwineJS hack that lets us access the CodeMirror Editor instance
     if (cm != undefined) {
         cm.setOption("lint", true)
-        cm.setOption("lineNumbers", true)
+        cm.setOption("lineNumbers", true);
+        // HACK: Force a change to get it to lint for the first time
+        for (let f of (cm as any)._handlers.change) {
+            f(cm)
+        }
     }
     return modeObj
 }
 
 window.CodeMirror.defineMode('moontale', modeFactory)
 
-window.CodeMirror.registerHelper('lint', 'moontale', makeLinter(moontaleLib))
+window.CodeMirror.registerHelper('lint', 'moontale', makeLinter(moontaleLib,
+    () => (document.querySelector('div#storyEditView') as any)?.__vue__?.story?.passages ?? []    
+))
