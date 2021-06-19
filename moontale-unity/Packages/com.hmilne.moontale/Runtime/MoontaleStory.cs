@@ -22,7 +22,7 @@ public class MoontaleStory : Source
     
     public Sink sink;
 
-    public Script script = new Script();
+    public Script script;
 
     private bool _changed = false;
 
@@ -61,6 +61,7 @@ public class MoontaleStory : Source
     }
 
     internal void Awake() {
+        script = new Script();
         script.Globals.Set("Push", DynValue.NewCallback(Push));
         script.Globals.Set("Pop", DynValue.NewCallback(Pop));
         script.Globals.Set("Text", DynValue.NewCallback(Text));

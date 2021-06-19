@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 namespace Moontale {
 
@@ -176,7 +177,7 @@ public abstract class RichTextSink : Sink, IPointerClickHandler, IPointerEnterHa
         if (lastPointerEvent == null) {
             return;
         }
-        lastPointerEvent.position = Input.mousePosition;
+        lastPointerEvent.position = Mouse.current.position.ReadValue();
         var linkId = GetLinkId(lastPointerEvent);
         if (linkId == lastLink) {
             return;

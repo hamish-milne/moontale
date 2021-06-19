@@ -83,8 +83,8 @@ module.exports = (env, options) => { return {
             // NOTE: This is terrible! It basically hacks around CodeMirror's own hack.
             // NOTE: This will probably break other things!!!
             // NOTE: We only enable this for production to not break editor_test
-            "typeof exports": isProduction(options) ? JSON.stringify("undefined") : undefined,
-            "typeof define": isProduction(options) ? JSON.stringify("undefined") : undefined
+            "typeof exports": true || isProduction(options) ? JSON.stringify("undefined") : undefined,
+            "typeof define": true || isProduction(options) ? JSON.stringify("undefined") : undefined
         }),
         new MiniCssExtractPlugin(),
         new HtmlWebpackPlugin({
