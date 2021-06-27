@@ -19,6 +19,9 @@ public class MoontaleStory : Source
 
     [Tooltip("Your story scripts, stored in StreamingAssets")]
     public List<string> scriptStreamingAssets = new List<string>();
+
+    [Tooltip("Whether to start the story immediately, or wait for a call to SoftReset")]
+    public bool AutoStart = true;
     
     public Sink sink;
 
@@ -60,7 +63,11 @@ public class MoontaleStory : Source
         return DynValue.Nil;
     }
 
-    internal void Awake() {
+    private static void PrintError(ScriptRuntimeException e) {
+        Debug.LogError(e.Message + "\n" + string.Join("\n    ", e.CallStack.Select(x => $"{x.Name}:{x.Location}")));
+    }
+
+    internal void Start() {
         script = new Script();
         script.Globals.Set("Push", DynValue.NewCallback(Push));
         script.Globals.Set("Pop", DynValue.NewCallback(Pop));
@@ -68,10 +75,6 @@ public class MoontaleStory : Source
         script.Globals.Set("Clear", DynValue.NewCallback(Clear));
         script.Globals.Set("Object", DynValue.NewCallback(Object));
         script.Globals.Set("Invalidate", DynValue.NewCallback(Invalidate));
-    }
-
-    internal void Start()
-    {
         sink.Source = this;
         try {
             script.DoString(standardLibrary.text, null, standardLibrary.name);
@@ -81,9 +84,19 @@ public class MoontaleStory : Source
             foreach (var path in scriptStreamingAssets) {
                 script.DoString(File.ReadAllText(Application.streamingAssetsPath + "/" + path), null, path);
             }
+        } catch (ScriptRuntimeException e) {
+            PrintError(e);
+        }
+        if (AutoStart) {
+            SoftReset();
+        }
+    }
+
+    public void SoftReset() {
+        try {
             script.Call(script.Globals["SoftReset"]);
         } catch (ScriptRuntimeException e) {
-            Debug.LogError(e.Message + "\n" + string.Join("\n    ", e.CallStack.Select(x => $"{x.Name}:{x.Location}")));
+            PrintError(e);
         }
         _changed = false;
         sink.Flush();
@@ -95,7 +108,7 @@ public class MoontaleStory : Source
         try {
             script.Call(script.Globals["RaiseEvent"], eventType, int.Parse(id));
         } catch (ScriptRuntimeException e) {
-            Debug.LogError(e.Message + "\n" + string.Join("\n    ", e.CallStack.Select(x => $"{x.Name}:{x.Location}")));
+            PrintError(e);
         }
         if (_changed) {
             _changed = false;
@@ -105,7 +118,11 @@ public class MoontaleStory : Source
 
     protected virtual void Update()
     {
-        script.Call(script.Globals["Update"], Time.deltaTime);
+        try {
+            script.Call(script.Globals["Update"], Time.deltaTime);
+        } catch (ScriptRuntimeException e) {
+            PrintError(e);
+        }
         if (_changed) {
             _changed = false;
             sink.Flush();
