@@ -32,6 +32,7 @@
         "mini-css-extract-plugin": "^1.4.1",
         "null-loader": "^4.0.1",
         "nyc": "^15.1.0",
+        "postcss": "^8.3.5",
         "ts-jest": "^26.5.5",
         "ts-loader": "^8.1.0",
         "ts-node": "^9.1.1",

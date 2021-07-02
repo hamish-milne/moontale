@@ -51,8 +51,35 @@ local _startup = {}
 local _headers = {}
 local _footers = {}
 
-
 Visited = {}
+
+local _saved = {}
+Saved = _saved
+
+setmetatable(_G, {
+    __index = function (t, k)
+        return _saved[k]
+    end,
+    __newindex = function(t, k, v)
+        if _saved[k] ~= nil then
+            if v == nil then
+                _saved[k] = false
+            else
+                _saved[k] = v
+            end
+        else
+            rawset(_G, k, v)
+        end
+    end
+})
+
+function Persist(...)
+    for i=1,select('#', ...) do
+        local var = select(i, ...)
+        _saved[var] = rawget(_G, var)
+        rawset(_G, var, nil)
+    end
+end
 
 ---Dummy render function to avoid dealing with 'nil' values
 ---@param content function
@@ -195,11 +222,18 @@ function RaiseEvent(event, idx)
     end
 end
 
+local function _resume(routine, ...)
+    local success, msg = coroutine.resume(routine, ...)
+    if not success then
+        error(msg)
+    end
+end
+
 ---Called regularly by the host as time passes
 ---@param deltaTime number  The time since Update was last called, in seconds
 function Update(deltaTime)
     if _waiting then
-        coroutine.resume(_waiting, deltaTime)
+        _resume(_waiting, deltaTime)
     end
 end
 
@@ -295,7 +329,7 @@ function Jump(target)
         _displayWithSurrounds(target)
         _firstRender = false
     end)
-    coroutine.resume(routine)
+    _resume(routine)
 end
 
 ---Causes the current passage to be re-rendered.
@@ -304,7 +338,7 @@ function Reload()
     local routine = coroutine.create(function ()
         _displayWithSurrounds(PassageName)
     end)
-    coroutine.resume(routine)
+    _resume(routine)
 end
 
 ---Renders the passage with the given name in-line with the text.
@@ -663,3 +697,5 @@ function LinkReplace(text, id)
         end
     end
 end
+
+Persist('Saved', 'PassageName')
