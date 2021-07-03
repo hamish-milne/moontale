@@ -69,6 +69,7 @@ public class MoontaleStory : Source
 
     internal void Start() {
         script = new Script();
+        script.Options.DebugPrint = x => UnityEngine.Debug.Log(x);
         script.Globals.Set("Push", DynValue.NewCallback(Push));
         script.Globals.Set("Pop", DynValue.NewCallback(Pop));
         script.Globals.Set("Text", DynValue.NewCallback(Text));
