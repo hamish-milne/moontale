@@ -698,4 +698,4 @@ function LinkReplace(text, id)
     end
 end
 
-Persist('Saved', 'PassageName')
+Persist('Visited', 'PassageName')
