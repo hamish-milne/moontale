@@ -33,8 +33,8 @@ Even lists:
 3. Third
 
 To link to another passage, the standard Twine syntax works:
-* [[Go forward -> Passage 2]]
-* [[Passage 0 <- Go back]]
+* [[Go forward->Passage 2]]
+* [[Passage 0<-Go back]]
 * [[More information]]
 
 To add Lua code, I can use a script block like this: {$
@@ -51,15 +51,15 @@ The '< >' means that the result will be displayed.
 
 Some variables/expressions, called 'changers', can be applied to content in the passage:
 
-$If(x == 2)[ Yes! My logic is sound. ]
-$Else[ The walls of reality are collapsing! ]
+$If(x == 2)[Yes! My logic is sound.]
+$Else[The walls of reality are collapsing!]
 ```
 
 ## Motivation
 
 It has always been possible, in theory at least, to use the output of Twine \(and [Twee](https://github.com/tmedwards/tweego)\) in non-browser applications. A number of other projects achieve this to some degree: [Cradle](https://github.com/daterre/Cradle), and my own [Spool ](https://github.com/hamish-milne/Spool)library. However, these solutions are hampered by their reliance on existing browser-focused story formats, which make developing and using these solutions difficult at best.
 
-I created Moontale to help make Twine useful in all stages of game development - from prototyping to production.
+I created Moontale to help make Twine even more useful in all stages of game development - from prototyping to production.
 
 ### Who is this for?
 

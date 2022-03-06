@@ -5,7 +5,7 @@ description: Things you should know before beginning
 # Concepts
 
 {% hint style="info" %}
-This guide assumes some familiarity with Lua! If you're new to Lua, I'd recommend skimming chapters 1 through 5 of [Programming in Lua](https://www.lua.org/pil/1.html)
+This guide assumes some familiarity with Lua! Consider skimming chapters 1 through 5 of [Programming in Lua](https://www.lua.org/pil/1.html) if you're new to the language.
 {% endhint %}
 
 ## Markdown
@@ -26,8 +26,8 @@ The content of a passage \(as well as any inner Content Blocks\) is realised as 
 
 ```text
 The following definitions are equivalent:
-1. $name('foo')[Some text **with markup**]
-2. {$ function foo() text('Some text ') em('with markup') end $}
+1. $Name.foo[Some text **with markup**]
+2. {$ function foo() Text('Some text ') Style.em('with markup') end $}
 ```
 
 ## Overriding
@@ -35,33 +35,33 @@ The following definitions are equivalent:
 Many of Moontale's standard functions can be overridden by simply replacing their definitions. This is especially useful because Moontale's markdown syntax will refer to Lua expressions instead of a hard-coded style. For example:
 
 ```lua
-function link()
-    show('Instead of a link, have some text!')
+function Link()
+    Show('Instead of a link, have some text!')
 end
 ```
 
-If a function is defined in a table, like `style`, you can override it by overwriting it:
+If a function is defined in a table, like `Style`, you can override it by overwriting it:
 
 ```lua
-style.em = color.blue -- *Text* will be blue instead of italicised
-style.em = nil -- Revert to the default behaviour
+Style.em = Color.blue -- *Text* will be blue instead of italicised
+Style.em = nil -- Revert to the default behaviour
 ```
 
 You can use the 'base' definitions as well:
 
 ```lua
-style.em = combine(style.em, color.blue) -- *Text* will be blue as well as italicised
+Style.em = Combine(Style.em, Color.blue) -- *Text* will be blue as well as italicised
 ```
 
 For 'free' functions, if you want to access the 'base' definition you'll need to save it first:
 
 ```lua
-local _link = link
-function link(target)
+local _link = Link
+function Link(target)
     -- Make all links red (while keeping their normal behaviour)
-    return combine(color.red, _link(target)
+    return Combine(Color.red, _link(target)
 end
 ```
 
-🚧 When defining overrides, you should put them in a `startup`-tagged passage if they're common to your story. If they're specific to a passage, you should use the `with` changer; if you put them in a code block, the overrides will be permanent!
+🚧 When defining overrides, you should put them in a `startup`-tagged passage if they're common to your story. If they're specific to a passage, you should use the `With` changer; if you put them in a code block, the overrides will be permanent!
 

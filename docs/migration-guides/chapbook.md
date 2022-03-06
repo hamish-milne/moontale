@@ -15,8 +15,8 @@ Chapbook and Moontale have fundamentally different use cases! This guide is not 
 The following syntax is identical in both Chapbook and Moontale:
 
 * `[[Passage]]`
-* `[[Link -> Target]]`
-* `[[Target <- Link]]`
+* `[[Link->Target]]`
+* `[[Target<-Link]]`
 * `*Emphasis*`
 * `**Strong emphasis**`
 * ```Monospace```
@@ -50,13 +50,14 @@ The following syntax is identical in both Chapbook and Moontale:
     </tr>
     <tr>
       <td style="text-align:left"><code>[align center]</code> and friends</td>
-      <td style="text-align:left"><code>$align.right[</code>, <code>$align.center[</code>, <code>$align.justify[</code>,
-        and <code>$align.left[</code> &#x1F6A7;</td>
+      <td style="text-align:left"><code>$Align.right[</code>, <code>$Align.center[</code>, <code>$Align.justify[</code>,
+        and <code>$Align.left[</code> 
+      </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>[after 1 second]</code>
       </td>
-      <td style="text-align:left"><code>$delay(1.0)[</code>&#x1F6A7;</td>
+      <td style="text-align:left"><code>$Delay(1.0)[</code>&#x1F6A7;</td>
     </tr>
     <tr>
       <td style="text-align:left"><code>[append]</code>
@@ -76,44 +77,40 @@ The following syntax is identical in both Chapbook and Moontale:
     <tr>
       <td style="text-align:left"><code>{back link, label: &apos;retreat for now&apos;}</code>
       </td>
-      <td style="text-align:left"><code>$back[retreat for now]</code>
-      </td>
+      <td style="text-align:left"><code>$Back[retreat for now]</code>&#x1F6A7;</td>
     </tr>
     <tr>
       <td style="text-align:left"><code>{restart link, label: &apos;Oh forget it all&apos;}</code>
       </td>
-      <td style="text-align:left"><code>$click(hardReset)[Oh forget it all]</code>
+      <td style="text-align:left"><code>$On.click(hardReset)[Oh forget it all]</code>
       </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>{link to: &apos;passage&apos;, label: &apos;Text&apos;}</code>
       </td>
-      <td style="text-align:left"><code>$link(&apos;passage&apos;)[Text]</code>
+      <td style="text-align:left"><code>$Link(&apos;passage&apos;)[Text]</code>
       </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>{reveal link: &apos;something odd occurred&apos;, text: &apos;I saw five deer...&apos;}</code>
       </td>
-      <td style="text-align:left">
-        <p><code>$revealBefore[something odd occurred]<br />$revealAfter[I saw five deer...]</code>
-        </p>
-        <p>Note that this will reload the passage. &#x1F6A7;</p>
+      <td style="text-align:left"><code>$On.click&lt;&lt;x = true; Reload()&gt;&gt;[something odd occurred]<br />$If(x)[I saw five deer...]</code>
       </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>{reveal link: &apos;groceries&apos;, passage: &apos;Shopping list&apos;}</code>
       </td>
       <td style="text-align:left">
-        <p><code>$revealBefore[groceries]</code> 
+        <p><code>$On.click&lt;&lt;x = true; Reload()&gt;&gt;[groceries]</code> 
         </p>
-        <p><code>$revealAfter[$display(&apos;Shopping list&apos;)]</code>
+        <p><code>$If(x)[[ -&gt;Shopping list]]</code>
         </p>
       </td>
     </tr>
     <tr>
       <td style="text-align:left"><code>{embed passage: &apos;L.A.&apos;}</code>
       </td>
-      <td style="text-align:left"><code>$display(&apos;L.A.&apos;)</code>
+      <td style="text-align:left"><code>$Display(&apos;L.A.&apos;)</code>
       </td>
     </tr>
     <tr>
@@ -130,7 +127,8 @@ The following syntax is identical in both Chapbook and Moontale:
         </p>
         <p><code>   dexterity = 7</code>
         </p>
-        <p><code>$}</code>&#x1F6A7;</p>
+        <p><code>$}</code>
+        </p>
       </td>
     </tr>
     <tr>
