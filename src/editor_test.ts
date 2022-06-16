@@ -1,4 +1,5 @@
-window.CodeMirror = require("codemirror/lib/codemirror.js")
+// Simulate how Twine uses CodeMirror:
+window.CodeMirror = require("codemirror/lib/codemirror.js").CodeMirror;
 import "codemirror/lib/codemirror.css"
 import "codemirror/theme/ambiance.css"
 import "./setup"
