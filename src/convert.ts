@@ -153,18 +153,19 @@ function preprocess(src: string): string {
             start = i2
             search = "$>"
         } else {
-            out += src.substr(idx)
+            out += src.substring(idx)
             break
         }
         out += src.substring(idx, start)
         let end = src.indexOf(search, idx + 2)
         if (end < 0) {
-            idx += 2
+            end = src.length;
         } else {
-            // Swap out newlines for a placeholder character, to force them to be 'inline'
-            out += src.substring(start, end + 2).replace(/\n/g, '\f')
-            idx = end + 2
+            end = end + 2;
         }
+        // Swap out newlines for a placeholder character, to force them to be 'inline'
+        out += src.substring(start, end).replace(/\n/g, '\f')
+        idx = end
     }
     return out
 }

@@ -56,9 +56,20 @@ Visited = {}
 local _saved = {}
 Saved = _saved
 
+local _hoisted = {_saved}
+
+function Hoist(table)
+    _hoisted[#_hoisted + 1] = table
+end
+
 setmetatable(_G, {
     __index = function (t, k)
-        return _saved[k]
+        for i = 1, #_hoisted do
+            local v = _hoisted[i][k]
+            if v then
+                return v
+            end
+        end
     end,
     __newindex = function(t, k, v)
         if _saved[k] ~= nil then

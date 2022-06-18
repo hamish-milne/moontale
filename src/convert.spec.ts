@@ -110,6 +110,13 @@ describe("Compiler", () => {
                 ["Text('foo ')", 'bar\n\nbaz', "Text(' bar ')"]
             )
         })
+
+        it("parses unclosed script blocks", () => {
+            check(
+                "foo {$ bar",
+                ["Text('foo ')", "bar"]
+            )
+        })
     })
 
     describe("Story to Lua conversion", () => {

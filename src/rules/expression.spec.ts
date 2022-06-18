@@ -18,10 +18,13 @@ describe("Lua expression block rule", () => {
         expect(state.tokens).toEqual([expected])
     })
 
-    it("doesn't match on <$ alone", () => {
+    it("matches on <$ alone", () => {
         let state = newState()
         state.pos = 16
-        expect(rule(state, false)).toBeFalsy()
-        expect(state.tokens).toEqual([])
+        expect(rule(state, false)).toBeTruthy()
+        let expected = new Token('code_expression', '', 0)
+        expected.content = 'jkl'
+        expected.meta = 16
+        expect(state.tokens).toEqual([expected])
     })
 })
