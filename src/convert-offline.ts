@@ -1,6 +1,6 @@
 import { storyToLua } from "./convert";
 
-import yargs from "yargs/yargs";
+import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { readFileSync, writeFileSync } from "fs";
 import { JSDOM } from "jsdom";

@@ -1367,7 +1367,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/yargs@npm:^17.0.8":
+"@types/yargs@npm:^17.0.10, @types/yargs@npm:^17.0.8":
   version: 17.0.10
   resolution: "@types/yargs@npm:17.0.10"
   dependencies:
@@ -5794,6 +5794,7 @@ __metadata:
     "@types/jest": ^28.1.1
     "@types/jsdom": ^16.2.14
     "@types/markdown-it": ^12.2.3
+    "@types/yargs": ^17.0.10
     codemirror: ^5.65.5
     copy-webpack-plugin: ^11.0.0
     cross-env: ^7.0.3

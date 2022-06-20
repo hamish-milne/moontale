@@ -12,6 +12,7 @@
     },
     "exclude": [
         "src/**/*.test.ts",
+        "src/convert-offline.ts",
         "node_modules"
     ],
     "ts-node": {

@@ -7,3 +7,5 @@ build/*.map
 .yarn/cache
 .yarn/plugins
 .yarn/install-state.gz
+.pnp.*
+.yarn/sdks

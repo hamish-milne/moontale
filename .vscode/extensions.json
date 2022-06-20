@@ -1,5 +1,6 @@
 {
-    "recommendations": [
-        "Orta.vscode-jest"
-    ]
+  "recommendations": [
+    "Orta.vscode-jest",
+    "arcanis.vscode-zipfs"
+  ]
 }
