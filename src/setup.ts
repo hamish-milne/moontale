@@ -3,7 +3,10 @@ import 'codemirror/addon/mode/overlay'
 import 'codemirror/addon/mode/simple'
 import 'codemirror/addon/lint/lint'
 import 'codemirror/mode/markdown/markdown'
-import 'codemirror/mode/lua/lua'
+// We need to use a custom modification of the default Lua mode which
+// removes the case-insensitivity of the delimiter regexes.
+// import 'codemirror/mode/lua/lua'
+import './mode-lua'
 import editorCss from './editor.css'
 import { makeLinter } from "./linter"
 import lintCss from "codemirror/addon/lint/lint.css"
@@ -53,6 +56,8 @@ function modeFactory(config: EditorConfiguration): Mode<any> {
     if (cm != undefined) {
         cm.setOption("lint", true)
         cm.setOption("lineNumbers", true);
+        cm.setOption("indentWithTabs", true);
+        cm.setOption("indentUnit", 4);
         // HACK: Force a change to get it to lint for the first time
         for (let f of (cm as any)._handlers.change) {
             f(cm)

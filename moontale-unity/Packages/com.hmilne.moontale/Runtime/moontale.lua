@@ -296,7 +296,7 @@ end
 ---@param fn changer
 ---@return changer
 function AsChanger(fn)
-    if type(fn) == 'function' then
+    if type(fn) == 'function' or type(fn) == 'table' then
         return fn
     else
         Log('Error: '..tostring(fn)..' cannot be used as a changer')
