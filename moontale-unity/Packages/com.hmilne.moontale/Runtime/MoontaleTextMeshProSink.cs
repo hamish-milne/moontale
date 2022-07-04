@@ -56,7 +56,7 @@ public class MoontaleTextMeshProSink : RichTextSink
     protected override string GetLinkId(PointerEventData eventData)
     {
         var linkId = TMP_TextUtilities.FindIntersectingLink(text, eventData.position,
-            eventData.clickCount == 0 ? null : eventData.pressEventCamera
+            eventData.clickCount == 0 ? Camera.main : eventData.pressEventCamera
         );
         if (linkId >= 0 && linkId < text.textInfo.linkCount) {
             return text.textInfo.linkInfo[linkId].GetLinkID();
