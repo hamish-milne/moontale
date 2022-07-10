@@ -51,7 +51,7 @@ function escape(input: string): string {
         .replace(/\n/g, '\\\n')
 }
 
-function renderOne(input: Token, output: string[], state: {level: number}) {
+function renderOne(input: Token, output: string[], state: {level: number, links: string[]}) {
 
     function add(str: string) {
         output.push(`${'  '.repeat(state.level)}${str}`)
@@ -82,6 +82,7 @@ function renderOne(input: Token, output: string[], state: {level: number}) {
             add(`Combine(AsChanger(${changer}), Link('${href}'))(function()`)
         }
         state.level++
+        state.links.push(href)
         break
     case 'link_inline':
         if (changer == null) {
@@ -125,7 +126,9 @@ function renderOne(input: Token, output: string[], state: {level: number}) {
     }
 }
 
-export function markdownToLua(src: string, outputBuffer: string[], state: {level: number}) {
+export function parse(src: string) { return md.parse(preprocess(src), {}) }
+
+export function markdownToLua(src: string, outputBuffer: string[], state: {level: number, links: string[]}) {
     let startLevel = state.level
     for(const token of md.parse(preprocess(src), {})) {
         renderOne(token, outputBuffer, state)
@@ -150,18 +153,19 @@ function preprocess(src: string): string {
             start = i2
             search = "$>"
         } else {
-            out += src.substr(idx)
+            out += src.substring(idx)
             break
         }
         out += src.substring(idx, start)
         let end = src.indexOf(search, idx + 2)
         if (end < 0) {
-            idx += 2
+            end = src.length;
         } else {
-            // Swap out newlines for a placeholder character, to force them to be 'inline'
-            out += src.substring(start, end + 2).replace(/\n/g, '\f')
-            idx = end + 2
+            end = end + 2;
         }
+        // Swap out newlines for a placeholder character, to force them to be 'inline'
+        out += src.substring(start, end).replace(/\n/g, '\f')
+        idx = end
     }
     return out
 }
@@ -186,8 +190,10 @@ export function storyToLua(story: Element): string {
             buf.push(`    tags = { ${tags.map(t => `['${escape(t)}'] = true`).join(',')} },`)
             buf.push(`    position = {${node.getAttribute('position')}},`)
             buf.push(`    content = function()`)
-            markdownToLua(node.textContent, buf, {level: 3})
-            buf.push(`    end`)
+            let links: string[] = []
+            markdownToLua(node.textContent, buf, {level: 3, links})
+            buf.push(`    end,`)
+            buf.push(`    links = { ${links.map(t => `'${escape(t)}'`).join(',')} }`)
             buf.push(`  },`)
         }
     }

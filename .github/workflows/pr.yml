@@ -7,8 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - run: npm ci
-    - run: npm run build
+    - run: yarn install --immutable
+    - run: yarn build
     - run: sudo apt-get install luarocks
     - run: sudo luarocks install busted
     - working-directory: ./lua
@@ -16,7 +16,7 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: 14.x
-    - uses: artiomtr/jest-coverage-report-action@v1.2
+    - uses: ArtiomTr/jest-coverage-report-action@v2
       with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
   unity:

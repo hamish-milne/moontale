@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 namespace Moontale {
 
@@ -121,6 +122,11 @@ public abstract class RichTextSink : Sink, IPointerClickHandler, IPointerEnterHa
             tags.Push(tag);
             OpenTag(tag, arg);
             break;
+        case "ul":
+        case "ol":
+            Space(baseSize / 2);
+            tags.Push(null);
+            break;
         default:
             if (tag.StartsWith("h")) {
                 tags.Push("h");
@@ -173,11 +179,11 @@ public abstract class RichTextSink : Sink, IPointerClickHandler, IPointerEnterHa
 
     protected virtual void Update()
     {
-        if (lastPointerEvent == null) {
-            return;
+        var linkId = "";
+        if (lastPointerEvent != null) {
+            lastPointerEvent.position = Mouse.current.position.ReadValue();
+            linkId = GetLinkId(lastPointerEvent);
         }
-        lastPointerEvent.position = Input.mousePosition;
-        var linkId = GetLinkId(lastPointerEvent);
         if (linkId == lastLink) {
             return;
         }

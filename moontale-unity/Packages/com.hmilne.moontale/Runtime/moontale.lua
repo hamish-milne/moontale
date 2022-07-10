@@ -51,6 +51,47 @@ local _startup = {}
 local _headers = {}
 local _footers = {}
 
+Visited = {}
+
+local _saved = {}
+Saved = _saved
+
+local _hoisted = {_saved}
+
+function Hoist(table)
+    _hoisted[#_hoisted + 1] = table
+end
+
+setmetatable(_G, {
+    __index = function (t, k)
+        for i = 1, #_hoisted do
+            local v = _hoisted[i][k]
+            if v then
+                return v
+            end
+        end
+    end,
+    __newindex = function(t, k, v)
+        if _saved[k] ~= nil then
+            if v == nil then
+                _saved[k] = false
+            else
+                _saved[k] = v
+            end
+        else
+            rawset(_G, k, v)
+        end
+    end
+})
+
+function Persist(...)
+    for i=1,select('#', ...) do
+        local var = select(i, ...)
+        _saved[var] = rawget(_G, var)
+        rawset(_G, var, nil)
+    end
+end
+
 ---Dummy render function to avoid dealing with 'nil' values
 ---@param content function
 local function _empty(content)
@@ -113,6 +154,7 @@ function Clear()
     _reloadOnHover = false
     _idSequence = 0
     _typedCharsThisFrame = 0
+    _ifTaken = false
 end
 
 ---Override of the host function; invalidates any event IDs
@@ -173,7 +215,7 @@ end
 ---@param event string
 ---@param idx string
 function RaiseEvent(event, idx)
-    idx = tonumber(idx)
+    local idx = tonumber(idx)
     if idx == nil then return end
     if event == 'mouseover' then
         _hovering[idx] = true
@@ -191,11 +233,18 @@ function RaiseEvent(event, idx)
     end
 end
 
+local function _resume(routine, ...)
+    local success, msg = coroutine.resume(routine, ...)
+    if not success then
+        error(msg)
+    end
+end
+
 ---Called regularly by the host as time passes
 ---@param deltaTime number  The time since Update was last called, in seconds
 function Update(deltaTime)
     if _waiting then
-        coroutine.resume(_waiting, deltaTime)
+        _resume(_waiting, deltaTime)
     end
 end
 
@@ -247,7 +296,7 @@ end
 ---@param fn changer
 ---@return changer
 function AsChanger(fn)
-    if type(fn) == 'function' then
+    if type(fn) == 'function' or type(fn) == 'table' then
         return fn
     else
         Log('Error: '..tostring(fn)..' cannot be used as a changer')
@@ -269,33 +318,38 @@ function Show(value)
     end
 end
 
+local function _displayWithSurrounds(target)
+    for k,v in next, _headers do
+        Display(v)
+    end
+    Display(target)
+    for k,v in next, _footers do
+        Display(v)
+    end
+end
+
 ---Clears the screen and renders the passage with the given name.
 ---@param target string
 function Jump(target)
     Clear()
     Invalidate()
+    Visited[PassageName] = (Visited[PassageName] or 0) + 1
     PassageName = target
     local routine = coroutine.create(function ()
         _firstRender = true
-        for k,v in next, _headers do
-            Display(v)
-        end
-        Display(target)
-        for k,v in next, _footers do
-            Display(v)
-        end
+        _displayWithSurrounds(target)
         _firstRender = false
     end)
-    coroutine.resume(routine)
+    _resume(routine)
 end
 
 ---Causes the current passage to be re-rendered.
 function Reload()
     Clear()
     local routine = coroutine.create(function ()
-        Display(PassageName)
+        _displayWithSurrounds(PassageName)
     end)
-    coroutine.resume(routine)
+    _resume(routine)
 end
 
 ---Renders the passage with the given name in-line with the text.
@@ -654,3 +708,5 @@ function LinkReplace(text, id)
         end
     end
 end
+
+Persist('Visited', 'PassageName')

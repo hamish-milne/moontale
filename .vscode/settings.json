@@ -1,9 +1,15 @@
 {
-    "mocha.files.glob": "src/**/*.spec.ts",
-    "mocha.requires": [
-        "ts-node/register"
-    ],
-    "files.watcherExclude": {
-      "**/Library/**": true
-    }
-  }
+  "files.watcherExclude": {
+    "**/Library/**": true
+  },
+  "Lua.workspace.library": [
+    "./moontale-unity/Packages/com.hmilne.moontale/Runtime"
+  ],
+  "search.exclude": {
+    "**/.yarn": true,
+    "**/.pnp.*": true
+  },
+  "typescript.tsdk": ".yarn/sdks/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "jest.jestCommandLine": "yarn jest",
+}

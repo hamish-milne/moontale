@@ -9,16 +9,19 @@ before_each(function()
     _push = spy.new(function() end)
     _pop = spy.new(function() end)
     _invalidate = spy.new(function() end)
+    _object = spy.new(function() end)
     _G.Invalidate = _invalidate
     _G.Clear = _clear
     _G.Text = _text
     _G.Push = _push
     _G.Pop = _pop
+    _G.Object = _object
     require('moontale')
 end)
 
 after_each(function()
     package.loaded['moontale'] = nil
+    setmetatable(_G, nil)
 end)
 
 describe("Clear()", function()

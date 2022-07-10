@@ -3,7 +3,7 @@
         "outDir": "./dist/",
         "noImplicitAny": false,
         "module": "commonjs",
-        "target": "es5",
+        "target": "es2015",
         "allowJs": true,
         "allowSyntheticDefaultImports": true,
         "moduleResolution": "node",
@@ -12,6 +12,10 @@
     },
     "exclude": [
         "src/**/*.test.ts",
+        "src/convert-offline.ts",
         "node_modules"
-    ]
+    ],
+    "ts-node": {
+        "swc": true
+    }
 }

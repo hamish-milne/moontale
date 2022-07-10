@@ -1,2 +1,4 @@
 {
+    "lua.debug.settings.path": "C:/Workspace/Tools/lua/?.lua;C:/Workspace/Tools/lua/?/init.lua;C:/Workspace/Tools/?.lua;C:/Workspace/Tools/?/init.lua;C:/Workspace/Tools/../share/lua/5.4/?.lua;C:/Workspace/Tools/../share/lua/5.4/?/init.lua;./?.lua;./?/init.lua;C:/Users/hamis/AppData/Roaming/luarocks/share/lua/5.4/?.lua;C:/Users/hamis/AppData/Roaming/luarocks/share/lua/5.4/?/init.lua",
+    "lua.debug.settings.cpath": "C:/Workspace/Tools/?.dll;C:/Workspace/Tools/../lib/lua/5.4/?.dll;C:/Workspace/Tools/loadall.dll;./?.dll;C:/Users/hamis/AppData/Roaming/luarocks/lib/lua/5.4/?.dll"
 }

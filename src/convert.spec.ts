@@ -7,7 +7,7 @@ describe("Compiler", () => {
 
         function check(input: string, output: string[]) {
             let out: string[] = []
-            markdownToLua(input, out, {level: 0})
+            markdownToLua(input, out, {level: 0, links: []})
             output.splice(0, 0, "Style.p(function()")
             output.push("end)")
             expect(out.map(x => x.trim())).toEqual(output)
@@ -110,6 +110,13 @@ describe("Compiler", () => {
                 ["Text('foo ')", 'bar\n\nbaz', "Text(' bar ')"]
             )
         })
+
+        it("parses unclosed script blocks", () => {
+            check(
+                "foo {$ bar",
+                ["Text('foo ')", "bar"]
+            )
+        })
     })
 
     describe("Story to Lua conversion", () => {
@@ -135,7 +142,8 @@ Passages = {
       Style.p(function()
         Text('Text ')
       end)
-    end
+    end,
+    links = {  }
   },
 }
 StartPassage = 'Foo'`

@@ -19,10 +19,11 @@ describe("Content block rule", () => {
 
     it("matches on ']", () => {
         let state = newState()
+        state.level = 1
         state.pos = 7
         expect(rule(state, false)).toBeTruthy()
         let expected = new Token('content_close', '', -1)
-        expected.level = -1
+        expected.level = 0
         expect(state.tokens).toEqual([expected])
     })
 

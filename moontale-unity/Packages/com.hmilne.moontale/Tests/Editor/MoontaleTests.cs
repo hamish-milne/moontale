@@ -13,7 +13,6 @@ public class Tests
         var sink = go.AddComponent<MoontaleTextSink>();
         sink.Awake();
         var source = new GameObject().AddComponent<MoontaleStory>();
-        source.Awake();
         source.sink = sink;
         source.scriptAssets.Add(new TextAsset(@"
         

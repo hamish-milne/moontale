@@ -22,7 +22,7 @@ export default function (state: StateInline, silent: boolean): boolean {
     }
 
     if (state.src.charCodeAt(state.pos) === 0x5D /* ] */) {
-        state.push('content_close', '', -1)
+        state.push('content_close', '', state.level <= 0 ? 0 : -1)
         state.pos++
         return true
     }

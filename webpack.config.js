@@ -17,7 +17,9 @@ function stringReplace(haystack, needle, replacement) {
     return haystack.substring(0, idx) + replacement + haystack.substring(idx + needle.length)
 }
 
-let package = JSON.parse(fs.readFileSync("package.json", "utf-8"))
+let package = JSON.parse(fs.readFileSync("package.json", "utf-8"));
+
+const undef = JSON.stringify("undefined");
 
 module.exports = (env, options) => { return {
     mode: 'development',
@@ -43,11 +45,11 @@ module.exports = (env, options) => { return {
             },
             {
                 test: /\.css$/i,
-                exclude: /editor.css$/,
+                exclude: /(editor|lint).css$/,
                 use: [MiniCssExtractPlugin.loader, 'css-loader'],
             },
             {
-                test: /editor.css$/,
+                test: /(editor|lint).css$/,
                 type: 'asset/source'
             },
             {
@@ -76,15 +78,14 @@ module.exports = (env, options) => { return {
         new webpack.DefinePlugin({
             // Excludes nodejs-specific stuff from Fengari
             "process.env.FENGARICONF": "void 0",
-            "typeof process": JSON.stringify("undefined"),
+            "typeof process": undef,
 
             // Force CodeMirror modes to use the 'plain browser env', rather than
             //   importing a new CodeMirror instance.
             // NOTE: This is terrible! It basically hacks around CodeMirror's own hack.
-            // NOTE: This will probably break other things!!!
-            // NOTE: We only enable this for production to not break editor_test
-            "typeof exports": isProduction(options) ? JSON.stringify("undefined") : undefined,
-            "typeof define": isProduction(options) ? JSON.stringify("undefined") : undefined
+            // NOTE: This might break other things!!!
+            "typeof exports": undef,
+            "typeof define": undef
         }),
         new MiniCssExtractPlugin(),
         new HtmlWebpackPlugin({
@@ -102,7 +103,7 @@ module.exports = (env, options) => { return {
             apply: function(compiler) {
                 compiler.hooks.done.tap('BuildStoryFormat', function() {
 
-                    let webRoot = "https://hamish-milne.github.io/moontale"
+                    let webRoot = isProduction(options) ? "https://hamish-milne.github.io/moontale" : "http://localhost:9000"
                     let html = fs.readFileSync(`${__dirname}/dist/index.html`, "utf-8")
                     let bundleJs = fs.readFileSync(`${__dirname}/dist/bundle.js`, "utf-8")
                     let editorJs = fs.readFileSync(`${__dirname}/dist/editor.js`, "utf-8")
@@ -115,7 +116,7 @@ module.exports = (env, options) => { return {
                     let scriptTag = isProduction(options) ? `<script defer="defer" src="bundle.js"></script>` : `<script defer src="bundle.js"></script>`
                     let formats = [
                         ['', package.version, stringReplace(html, scriptTag, `<script defer="defer">${bundleJs}</script>`)],
-                        ['-dev', '0.0.0', stringReplace(html, scriptTag, `<script defer="defer" src="http://localhost:9000/bundle.js"></script>`)],
+                        ['-dev', '0.0.0', stringReplace(html, scriptTag, `<script defer="defer" src="${webRoot}/bundle.js"></script>`)],
                         ['-latest', '1.0.0', stringReplace(html, scriptTag, `<script defer="defer" src="${webRoot}/bundle.js"></script>`)]
                     ]
                     formats.map(tuple => {
@@ -149,10 +150,11 @@ module.exports = (env, options) => { return {
         ],
     },
     devServer: {
-        contentBase: path.join(__dirname, 'dist'),
+        static: {
+            directory: path.join(__dirname, 'dist'),
+        },
         compress: true,
         port: 9000,
-        inline: true,
         hot: true,
         headers: {
             "Access-Control-Allow-Origin": "*",
