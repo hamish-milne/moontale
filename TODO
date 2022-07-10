@@ -21,7 +21,7 @@ Error handling:
 Serialization:
     ☐ save()
     ☐ load()
-    ✔ 'saved' table (with shadowing in _G) @done(22-07-01 22:20)
+    ✔ 'saved' table (with shadowing in _G) @done(22-06-21 00:15)
 
 Library:
     ✔ show() @done(21-04-18 00:33)
@@ -69,7 +69,7 @@ Debugging:
 Editor features:
     ✔ Syntax highlighting @done(21-05-30 19:04)
     ☐ Better syntax colours
-    ✔ Linting @done(22-07-01 22:20)
+    ✔ Linting @done(22-06-21 00:16)
     ☐ Keyboard shortcuts
     ☐ Toolbar?
 
