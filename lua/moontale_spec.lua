@@ -21,6 +21,7 @@ end)
 
 after_each(function()
     package.loaded['moontale'] = nil
+    setmetatable(_G, nil)
 end)
 
 describe("Clear()", function()

@@ -215,7 +215,7 @@ end
 ---@param event string
 ---@param idx string
 function RaiseEvent(event, idx)
-    idx = tonumber(idx)
+    local idx = tonumber(idx)
     if idx == nil then return end
     if event == 'mouseover' then
         _hovering[idx] = true
