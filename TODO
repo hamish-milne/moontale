@@ -21,7 +21,7 @@ Error handling:
 Serialization:
     ☐ save()
     ☐ load()
-    ☐ 'saved' table (with shadowing in _G)
+    ✔ 'saved' table (with shadowing in _G) @done(22-07-01 22:20)
 
 Library:
     ✔ show() @done(21-04-18 00:33)
@@ -69,7 +69,7 @@ Debugging:
 Editor features:
     ✔ Syntax highlighting @done(21-05-30 19:04)
     ☐ Better syntax colours
-    ☐ Linting
+    ✔ Linting @done(22-07-01 22:20)
     ☐ Keyboard shortcuts
     ☐ Toolbar?
 
@@ -92,3 +92,4 @@ Admin:
 Bugs:
     ☐ Combine(LinkStyle, On.click()) doesn't work
     ☐ Content blocks don't work with lists in the middle (content block paragraph nesting issue)
+    ☐ Extra space after formatting ends
