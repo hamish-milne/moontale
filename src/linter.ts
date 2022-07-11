@@ -1,4 +1,3 @@
-
 import { Annotation, Linter } from 'codemirror/addon/lint/lint'
 import { parse, markdownToLua } from "./convert"
 import Token from 'markdown-it/lib/token'

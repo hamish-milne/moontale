@@ -2,7 +2,7 @@
 window.CodeMirror = require("codemirror/lib/codemirror.js").CodeMirror;
 import "codemirror/lib/codemirror.css"
 import "codemirror/theme/ambiance.css"
-import "./setup"
+import "./hydrate_legacy"
 import "./editor_test.html"
 
 let textArea = document.getElementById("myTextArea") as HTMLTextAreaElement
