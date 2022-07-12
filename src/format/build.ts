@@ -6,6 +6,7 @@ import PostHTML from 'posthtml';
 import {NodeTag, parser} from 'posthtml-parser';
 import htmlnano from 'htmlnano';
 import { readFileSync } from 'fs';
+import posthtmlInlineAssets from 'posthtml-inline-assets';
 
 function nullLoader(filter: RegExp): Plugin {
     return {
@@ -21,7 +22,7 @@ function nullLoader(filter: RegExp): Plugin {
     }
 }
 
-async function buildOne(entry: string) {
+async function buildOne(entry: string, output: string | undefined) {
     const result = await build({
         plugins: [
             nullLoader(/mdurl/),
@@ -43,9 +44,10 @@ async function buildOne(entry: string) {
             '../xml/xml',
         ],
         entryPoints: [entry],
+        outfile: output,
         bundle: true,
         minify: true,
-        write: false,
+        write: output ? true : false,
         define: {
             // Excludes nodejs-specific stuff from Fengari
             "process.env.FENGARICONF": "undefined",
@@ -56,26 +58,30 @@ async function buildOne(entry: string) {
             ['.lua']: 'text'
         },
     });
-    return result.outputFiles[0].text;
+    return output ? '' : result.outputFiles[0].text;
 }
 
-async function buildHtml(input: string, scriptContent: string): Promise<string> {
+async function buildHtml(input: string): Promise<string> {
     const result = await PostHTML([
-        tree => tree.walk(node => {
-            if (node.tag === "script") {
-                node.content = [scriptContent];
+        posthtmlInlineAssets({
+            errors: 'warn',
+            transforms: {
+                image: {
+                    resolve(node: NodeTag) {
+                        return node.tag === 'img' && node.attrs.src && require.resolve(node.attrs.src as string);
+                    },
+                    transform(node: NodeTag, args: { from: string, buffer: Buffer, mime: string }) {
+                        const svgRoot = parser(args.buffer.toString('utf8'))[0] as NodeTag;
+                        node.tag = 'svg';
+                        Object.assign(node.attrs, svgRoot.attrs);
+                        node.attrs.src = undefined;
+                        node.content = svgRoot.content as any[];
+                    }
+                }
             }
-            if (node.tag === 'img' && typeof node.attrs === 'object' && typeof node.attrs.src === 'string') {
-                const svgRoot = parser(readFileSync(require.resolve(node.attrs.src)).toString())[0] as NodeTag;
-                node.tag = 'svg';
-                Object.assign(node.attrs, svgRoot.attrs);
-                node.attrs.src = undefined;
-                node.content = svgRoot.content as any[];
-            }
-            return node;
         }),
         htmlnano({
-            minifyCss: false,
+            minifyCss: true,
             minifyJs: false,
             minifySvg: false,
             collapseWhitespace: 'aggressive'
@@ -98,10 +104,10 @@ async function buildFormat(entry: string, output: string, placeholders: Record<s
 }
 
 async function doBuild() {
-    const hydrate = await buildOne('./src/format/hydrate.ts');
-    const legacy = (await buildOne('./src/hydrate_legacy.ts'));
-    const runtime = await buildOne('./src/index.ts');
-    const sourceHtml = await buildHtml('./src/index.html', runtime);
+    const hydrate = await buildOne('./src/format/hydrate.ts', undefined);
+    const legacy = (await buildOne('./src/hydrate_legacy.ts', undefined));
+    await buildOne('./src/index.ts', './dist/player.js');
+    const sourceHtml = await buildHtml('./src/index.html');
     await buildFormat('./src/format/format.js', './dist/format.js', {
         'HYDRATE': JSON.stringify(hydrate),
         'HYDRATE_LEGACY': `()=>{${legacy}}`,
