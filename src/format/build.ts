@@ -1,4 +1,4 @@
-import {build, Plugin} from 'esbuild';
+import {build, BuildOptions, Plugin} from 'esbuild';
 import {pnpPlugin} from '@yarnpkg/esbuild-plugin-pnp';
 import {replace} from 'esbuild-plugin-replace';
 
@@ -22,8 +22,15 @@ function nullLoader(filter: RegExp): Plugin {
     }
 }
 
-async function buildOne(entry: string, output: string | undefined) {
+const hasSourceMaps = false;
+const common: Partial<BuildOptions> = {
+    minify: true,
+    target: 'es2015',
+}
+
+async function buildOne(entry: string, format: 'cjs' | 'iife', output: string | undefined) {
     const result = await build({
+        ...common,
         plugins: [
             nullLoader(/mdurl/),
             replace({
@@ -46,7 +53,8 @@ async function buildOne(entry: string, output: string | undefined) {
         entryPoints: [entry],
         outfile: output,
         bundle: true,
-        minify: true,
+        sourcemap: hasSourceMaps ? 'inline' : undefined,
+        format: format,
         write: output ? true : false,
         define: {
             // Excludes nodejs-specific stuff from Fengari
@@ -90,27 +98,31 @@ async function buildHtml(input: string): Promise<string> {
     return result.html;
 }
 
-async function buildFormat(entry: string, output: string, placeholders: Record<string, string>) {
-    await build({
+async function buildFormat(entry: string, output: string | undefined, placeholders: Record<string, string>) {
+    const result = await build({
+        ...common,
         plugins: [
             replace(placeholders),
         ],
         entryPoints: [entry],
         outfile: output,
+        write: output ? true : false,
         bundle: false,
-        minify: true,
-        format: undefined
+        format: undefined,
+        sourcemap: output ? 'linked' : (hasSourceMaps ? 'inline' : undefined),
     });
+    return output ? '' : result.outputFiles[0].text;
 }
 
 async function doBuild() {
-    const hydrate = await buildOne('./src/format/hydrate.ts', undefined);
-    const legacy = (await buildOne('./src/hydrate_legacy.ts', undefined));
-    await buildOne('./src/index.ts', './dist/player.js');
+    const mode_factory = await buildOne('./src/format/codemirror_mode_factory.cjs', 'cjs', undefined);
+    const hydrate = await buildFormat('./src/format/hydrate.js', undefined, {
+        'MODE_FACTORY': mode_factory,
+    })
+    await buildOne('./src/index.ts', 'iife', './dist/player.js');
     const sourceHtml = await buildHtml('./src/index.html');
-    await buildFormat('./src/format/format.js', './dist/format.js', {
+    await buildFormat('./src/format/format.js', './build/format.js', {
         'HYDRATE': JSON.stringify(hydrate),
-        'HYDRATE_LEGACY': `()=>{${legacy}}`,
         'SOURCE': JSON.stringify(sourceHtml)
     })
 }

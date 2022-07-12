@@ -7,16 +7,13 @@ window.storyFormat({
     url: "https://github.com/hamish-milne/moontale",
     license: "MIT",
     image: 'icon.svg',
-    editorExtensions: {
-        twine: {
-            '^2.4.0': {
-                codeMirror: {
-                    mode: null
-                }
-            }
-        }
-    },
     hydrate: HYDRATE,
-    setup: HYDRATE_LEGACY,
     source: SOURCE,
+    // Legacy support for Twine <=2.3
+    setup() {
+        const out = {};
+        const f = new Function(this.properties.hydrate);
+        f.call(out);
+        window.CodeMirror.defineMode('moontale', out.editorExtensions.twine['^2.4.0'].codeMirror.mode);
+    },
 })
