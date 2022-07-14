@@ -7,14 +7,10 @@
         "allowJs": true,
         "allowSyntheticDefaultImports": true,
         "moduleResolution": "node",
+        "resolveJsonModule": true,
         "esModuleInterop": true,
         "sourceMap": true
     },
-    "exclude": [
-        "src/**/*.test.ts",
-        "src/convert-offline.ts",
-        "node_modules"
-    ],
     "ts-node": {
         "swc": true
     }

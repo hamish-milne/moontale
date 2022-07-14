@@ -1,9 +1,10 @@
+import 'codemirror/addon/lint/lint'
 import { makeLinter } from "./linter"
-import { getCodeMirror, getCodeMirrorStatic, getNamespace, getPassages } from './twine_hacks'
+import { getCodeMirror, getNamespace, getPassages } from './twine_hacks'
 
 import editorCss from './editor.css'
 import lintCss from "codemirror/addon/lint/lint.css"
-import moontaleLib from '../moontale-unity/Packages/com.hmilne.moontale/Runtime/moontale.lua'
+import moontaleLib from '../../moontale-unity/Packages/com.hmilne.moontale/Runtime/moontale.lua'
 
 function loadExtraCss(id: string, src: string) {
     let styleContainer = document.querySelector(`style#${id}`);
@@ -20,7 +21,7 @@ export function setup() {
     loadExtraCss('cm-moontale', editorCss)
     let cm = getCodeMirror();
     if (cm != undefined) {
-        getCodeMirrorStatic(cm).registerHelper('lint', getNamespace(), makeLinter(moontaleLib, getPassages));
+        window.CodeMirror.registerHelper('lint', getNamespace(), makeLinter(moontaleLib, getPassages));
         cm.setOption("lint", true)
         cm.setOption("lineNumbers", true);
         cm.setOption("indentWithTabs", true);

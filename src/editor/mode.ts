@@ -10,7 +10,7 @@ import './mode-lua'
 import type { EditorConfiguration, Mode } from 'codemirror'
 import { setup } from './setup'
 
-export function modeFactory(config: EditorConfiguration): Mode<any> {
+export default function(config: EditorConfiguration): Mode<any> {
 
     let modeObj = window.CodeMirror.simpleMode(config, {
     start: [

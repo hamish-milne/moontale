@@ -2,7 +2,7 @@ import { Editor } from "codemirror"
 import { makeLinter } from "./linter"
 
 describe("Linter", () => {
-    it("foo", () => {
+    it("can be created", () => {
         makeLinter('', () => [])(`{$
             
             foo = 5

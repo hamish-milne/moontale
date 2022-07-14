@@ -1,4 +1,4 @@
-import { storyToLua } from "./convert";
+import { storyToLua } from "../common/convert";
 
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";

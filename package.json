@@ -1,15 +1,26 @@
 {
     "name": "moontale",
+    "title": "Moontale",
+    "icon": "./src/format/icon.svg",
     "version": "0.1.0",
     "description": "A Twine 2 story format that outputs Lua",
     "main": "index.js",
     "scripts": {
-        "build": "node -r ts-node/register ./src/format/build.ts",
+        "build": "ts-node ./src/bin/build.ts",
         "test": "jest --coverage",
-        "convert": "node -r ts-node/register ./src/convert-offline.ts"
+        "convert": "ts-node ./src/bin/convert-offline.ts",
+        "watch": "nodemon --watch src --ext ts,js,cjs,html,css --exec 'yarn build'",
+        "serve": "http-server ./build -c-1 --cors",
+        "dev": "concurrently 'yarn:watch' 'yarn:serve'"
+    },
+    "watch": {
+        "build": "src/**"
     },
     "author": "Hamish Milne",
     "license": "MIT",
+    "runtimes": {
+        "twine": "^2.4.0"
+    },
     "repository": {
         "url": "https://github.com/hamish-milne/moontale"
     },
@@ -19,15 +30,19 @@
         "@types/jest": "^28.1.1",
         "@types/jsdom": "^16.2.14",
         "@types/markdown-it": "^12.2.3",
+        "@types/mime": "^2.0.3",
         "@types/node": "^18.0.3",
         "@types/yargs": "^17.0.10",
         "@yarnpkg/esbuild-plugin-pnp": "^3.0.0-rc.11",
+        "concurrently": "^7.2.2",
         "cssnano": "^5.1.12",
         "esbuild": "^0.14.49",
         "esbuild-plugin-replace": "^1.2.0",
         "htmlnano": "^2.0.2",
+        "http-server": "^14.1.1",
         "jest": "^28.1.1",
         "jsdom": "^20.0.0",
+        "nodemon": "^2.0.19",
         "nyc": "^15.1.0",
         "postcss": "^8.4.14",
         "posthtml": "^0.16.6",

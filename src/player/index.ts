@@ -1,7 +1,7 @@
 
-import { storyToLua } from './convert'
-import { loadStory, start, raiseEvent, update } from './runtime'
-import moontaleLib from '../moontale-unity/Packages/com.hmilne.moontale/Runtime/moontale.lua'
+import { storyToLua } from '../common/convert'
+import { loadStory, start, raiseEvent, update } from '../common/runtime'
+import moontaleLib from '../../moontale-unity/Packages/com.hmilne.moontale/Runtime/moontale.lua'
 
 const transitionTime = 200
 

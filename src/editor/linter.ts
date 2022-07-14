@@ -1,6 +1,5 @@
-import 'codemirror/addon/lint/lint';
 import { Annotation, Linter } from 'codemirror/addon/lint/lint'
-import { parse, markdownToLua } from "./convert"
+import { parse, markdownToLua } from "../common/convert"
 import Token from 'markdown-it/lib/token'
 import { lua, lauxlib, lualib, lua_State } from 'fengari'
 
@@ -100,7 +99,7 @@ export function makeLinter(lib: string, passages: () => {text: string, tags: str
         // TODO: This isn't super performant. Is it possible to copy the Lua state? Or run the linted code in a sandbox?
         let L = lauxlib.luaL_newstate()
         lualib.luaL_openlibs(L)
-        for (let fname of ["Log", "Push", "Pop", "Text", "Object", "Clear", "Invalidate"]) {
+        for (let fname of ["Log", "Push", "Pop", "Text", "Object", "Clear", "Invalidate", "print"]) {
             lua.lua_register(L, fname, L => 0)
         }
         let output: Annotation[] = []

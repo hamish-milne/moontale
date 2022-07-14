@@ -5,7 +5,7 @@ import {replace} from 'esbuild-plugin-replace';
 import PostHTML from 'posthtml';
 import {NodeTag, parser} from 'posthtml-parser';
 import htmlnano from 'htmlnano';
-import { readFileSync } from 'fs';
+import { copyFileSync, readFileSync } from 'fs';
 import posthtmlInlineAssets from 'posthtml-inline-assets';
 
 function nullLoader(filter: RegExp): Plugin {
@@ -24,11 +24,13 @@ function nullLoader(filter: RegExp): Plugin {
 
 const hasSourceMaps = false;
 const common: Partial<BuildOptions> = {
-    minify: true,
+    minifyWhitespace: false,
+    minifyIdentifiers: false,
+    minifySyntax: true,
     target: 'es2015',
 }
 
-async function buildOne(entry: string, format: 'cjs' | 'iife', output: string | undefined) {
+async function buildModule(entry: string, format: 'cjs' | 'iife', output: string) {
     const result = await build({
         ...common,
         plugins: [
@@ -53,7 +55,7 @@ async function buildOne(entry: string, format: 'cjs' | 'iife', output: string | 
         entryPoints: [entry],
         outfile: output,
         bundle: true,
-        sourcemap: hasSourceMaps ? 'inline' : undefined,
+        sourcemap: output ? 'linked' : false,
         format: format,
         write: output ? true : false,
         define: {
@@ -115,15 +117,21 @@ async function buildFormat(entry: string, output: string | undefined, placeholde
 }
 
 async function doBuild() {
-    const mode_factory = await buildOne('./src/format/codemirror_mode_factory.cjs', 'cjs', undefined);
+    const Package = (await import("../../package.json")).default;
+    const iconName = Package.icon.split(/\//).pop();
+    copyFileSync(Package.icon, `./build/${iconName}`);
+    Package.icon = iconName;
+    const mode_factory = await buildModule('./src/format/codemirror_mode_factory.cjs', 'cjs', undefined);
     const hydrate = await buildFormat('./src/format/hydrate.js', undefined, {
         'MODE_FACTORY': mode_factory,
+        'PACKAGE': JSON.stringify(Package),
     })
-    await buildOne('./src/index.ts', 'iife', './dist/player.js');
-    const sourceHtml = await buildHtml('./src/index.html');
+    await buildModule('./src/player/index.ts', 'iife', './dist/player.js');
+    const sourceHtml = await buildHtml('./src/player/index.html');
     await buildFormat('./src/format/format.js', './build/format.js', {
         'HYDRATE': JSON.stringify(hydrate),
-        'SOURCE': JSON.stringify(sourceHtml)
+        'SOURCE': JSON.stringify(sourceHtml),
+        'PACKAGE': JSON.stringify(Package),
     })
 }
 

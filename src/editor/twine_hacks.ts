@@ -26,10 +26,6 @@ export function getCodeMirror(): Editor {
     return (document.getElementsByClassName('CodeMirror')[0] as any).CodeMirror;
 }
 
-export function getCodeMirrorStatic(editor: Editor): typeof CodeMirror {
-    return window.CodeMirror ??= Object.getPrototypeOf(editor).constructor;
-}
-
 export function getNamespace(): string {
     return window.CodeMirror ? 'moontale' : 'moontale-0.1.0';
 }

@@ -1,0 +1,7 @@
+.cm-tag {
+    font-weight: bold;
+}
+
+.CodeMirror-lint-tooltip {
+    z-index: 500;
+}
