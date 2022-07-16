@@ -27,5 +27,5 @@ export function getCodeMirror(): Editor {
 }
 
 export function getNamespace(): string {
-    return window.CodeMirror ? 'moontale' : 'moontale-0.1.0';
+    return document.getElementsByClassName('passage-map').length == 0 ? 'moontale' : 'moontale-0.1.0';
 }

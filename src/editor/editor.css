@@ -5,3 +5,15 @@
 .CodeMirror-lint-tooltip {
     z-index: 500;
 }
+
+.CodeMirror-linenumber {
+    color: var(--gray);
+}
+
+.CodeMirror-linenumbers {
+    background-color: var(--off-white);
+}
+
+.CodeMirror-gutters {
+    border-color: var(--light-gray);
+}
