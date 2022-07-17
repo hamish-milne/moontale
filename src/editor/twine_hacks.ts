@@ -1,4 +1,3 @@
-import type CodeMirror from "codemirror";
 import type {Editor} from "codemirror";
 
 export function getPassages(): { text: string, tags: string[] }[] {

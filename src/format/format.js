@@ -13,7 +13,12 @@ window.storyFormat({
     // We re-use the 'hydrate' function to avoid having an extra JS bundle
     setup() {
         const out = {};
+        // const s = document.createElement('script');
+        // document.body.appendChild(s);
+        // s.textContent = this.properties.hydrate;
         new Function(this.properties.hydrate).call(out);
         window.CodeMirror.defineMode(PACKAGE.name, out.editorExtensions.twine[PACKAGE.runtimes.twine].codeMirror.mode);
+        // delete window.editorExtensions;
+        // document.body.removeChild(s);
     },
 })

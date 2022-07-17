@@ -13,9 +13,6 @@
         "serve": "http-server ./build -c-1 --cors",
         "dev": "concurrently 'yarn:watch' 'yarn:serve'"
     },
-    "watch": {
-        "build": "src/**"
-    },
     "author": "Hamish Milne",
     "license": "MIT",
     "runtimes": {
