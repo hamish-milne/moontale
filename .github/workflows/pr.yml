@@ -18,6 +18,7 @@ jobs:
         node-version: 14.x
     - uses: ArtiomTr/jest-coverage-report-action@v2
       with:
+          test-script: yarn jest
           github_token: ${{ secrets.GITHUB_TOKEN }}
   unity:
     runs-on: ubuntu-latest
