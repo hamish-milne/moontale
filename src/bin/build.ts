@@ -1,5 +1,5 @@
 /// <reference lib="es2021" />
-import {build, BuildOptions, BuildResult, Plugin} from 'esbuild';
+import {build, BuildOptions, Plugin} from 'esbuild';
 import {pnpPlugin} from '@yarnpkg/esbuild-plugin-pnp';
 import {replace} from 'esbuild-plugin-replace';
 
@@ -50,17 +50,16 @@ const fixSourceMapUrl: Plugin = {
     }
 }
 
-// const hasSourceMaps = false;
-const common: Partial<BuildOptions> = {
+const common: BuildOptions = {
     minifyWhitespace: false,
     minifyIdentifiers: false,
-    minifySyntax: true,
+    minifySyntax: false,
     target: 'es2015',
     sourcemap: 'linked',
     write: false,
 }
 
-function moduleOptions(placeholders: Record<string, string>): BuildOptions { return {
+function moduleOptions(pkg: any, placeholders: Record<string, string>): BuildOptions { return {
     ...common,
     plugins: [
         nullLoader(/mdurl/),
@@ -89,6 +88,7 @@ function moduleOptions(placeholders: Record<string, string>): BuildOptions { ret
         // Excludes nodejs-specific stuff from Fengari
         "process.env.FENGARICONF": "undefined",
         "process": "undefined",
+        "PACKAGE": JSON.stringify(pkg)
     },
     loader: {
         ['.css']: 'text',
@@ -96,20 +96,23 @@ function moduleOptions(placeholders: Record<string, string>): BuildOptions { ret
     },
 } };
 
-function formatOptions(placeholders: Record<string, string>): BuildOptions {
+function formatOptions(pkg: any, placeholders: Record<string, string>): BuildOptions {
     return {
         ...common,
         plugins: [
             replace(placeholders),
             fixSourceMapUrl,
         ],
+        define: {
+            PACKAGE: JSON.stringify(pkg)
+        },
         bundle: false,
         format: undefined,
     }
 }
 
-async function text(input: Promise<BuildResult>, writeJs = false): Promise<string> {
-    const result = await input;
+async function buildJs(options: BuildOptions, writeJs = false): Promise<string> {
+    const result = await build(options);
     let text: string;
     for (const file of result.outputFiles ?? []) {
         if (writeJs || !file.path.endsWith(".js")) {
@@ -121,47 +124,6 @@ async function text(input: Promise<BuildResult>, writeJs = false): Promise<strin
     }
     return text;
 }
-
-// async function buildModule(entry: string, format: 'cjs' | 'iife', output: string) {
-//     const result = await build({
-//         ...common,
-//         plugins: [
-//             nullLoader(/mdurl/),
-//             replace({
-//                 include: /\.js$/,
-//                 // Force CodeMirror modes to use the 'plain browser env', rather than
-//                 //   importing a new CodeMirror instance.
-//                 // NOTE: This is terrible! It basically hacks around CodeMirror's own hack.
-//                 // NOTE: This might break other things!!!
-//                 'typeof exports': 'undefined',
-//                 'typeof define': 'undefined',
-//                 'typeof module': 'undefined',
-//             }),
-//             pnpPlugin(),
-//         ],
-//         external: [
-//             '../../lib/codemirror',
-//             '../meta',
-//             '../xml/xml',
-//         ],
-//         entryPoints: [entry],
-//         outfile: output,
-//         bundle: true,
-//         sourcemap: output ? 'linked' : false,
-//         format: format,
-//         write: output ? true : false,
-//         define: {
-//             // Excludes nodejs-specific stuff from Fengari
-//             "process.env.FENGARICONF": "undefined",
-//             "process": "undefined",
-//         },
-//         loader: {
-//             ['.css']: 'text',
-//             ['.lua']: 'text'
-//         },
-//     });
-//     return output ? '' : result.outputFiles[0].text;
-// }
 
 async function buildHtml(input: string): Promise<string> {
     const result = await PostHTML([
@@ -192,71 +154,42 @@ async function buildHtml(input: string): Promise<string> {
     return result.html;
 }
 
-// async function buildFormat(entry: string, output: string | undefined, placeholders: Record<string, string>) {
-//     const result = await build({
-//         ...common,
-//         plugins: [
-//             replace(placeholders),
-//         ],
-//         entryPoints: [entry],
-//         outfile: output,
-//         write: output ? true : false,
-//         bundle: false,
-//         format: undefined,
-//         sourcemap: output ? 'linked' : (hasSourceMaps ? 'inline' : undefined),
-//     });
-//     return output ? '' : result.outputFiles[0].text;
-// }
-
 async function doBuild() {
     const Package = (await import("../../package.json")).default;
     const iconName = Package.icon.split(/\//).pop();
     copyFileSync(Package.icon, `./build/${iconName}`);
     Package.icon = iconName;
-    const modeFactory = await text(build({
-        ...moduleOptions({}),
+    const modeFactory = await buildJs({
+        ...moduleOptions(Package, {}),
         entryPoints: ['./src/editor/mode.ts'],
         outfile: './build/mode.js',
         globalName: 'mode',
-    }));
-    const hydrate_raw = await text(build({
-        ...moduleOptions({
+    });
+    const hydrate_raw = await buildJs({
+        ...moduleOptions(Package, {
             'MODE_FACTORY': modeFactory,
             'PACKAGE': JSON.stringify(Package),
         }),
         entryPoints: ['./src/format/hydrate.ts'],
         outfile: './build/hydrate.js',
-        globalName: 'DUMMY_THIS.editorExtensions',
-    }));
-    const hydrate = hydrate_raw.replace('DUMMY_THIS.editorExtensions', 'this.editorExtensions');
-    const player = await text(build({
-        ...moduleOptions({}),
+        globalName: 'DUMMY_GLOBAL_NAME',
+    });
+    // NOTE: To ensure sourcemaps work correctly, these two strings should be the same length:
+    const hydrate = hydrate_raw.replace('var DUMMY_GLOBAL_NAME', 'this.editorExtensions');
+    await buildJs({
+        ...moduleOptions(Package, {}),
         entryPoints: ['./src/player/index.ts'],
-        outfile: './dist/player.js',
-    }), true);
+        outfile: './build/player.js',
+    }, true);
     const sourceHtml = await buildHtml('./src/player/index.html');
-    await text(build({
-        ...formatOptions({
+    await buildJs({
+        ...formatOptions(Package, {
             'HYDRATE': JSON.stringify(hydrate),
             'SOURCE': JSON.stringify(sourceHtml),
-            'PACKAGE': JSON.stringify(Package),
         }),
         entryPoints: ['./src/format/format.js'],
         outfile: './build/format.js',
-    }), true);
-
-    // const mode_factory = await buildModule('./src/editor/mode.js', 'iife', undefined);
-    // const hydrate = await buildFormat('./src/format/hydrate.js', undefined, {
-    //     'MODE_FACTORY': mode_factory,
-    //     'PACKAGE': JSON.stringify(Package),
-    // })
-    // await buildModule('./src/player/index.ts', 'iife', './dist/player.js');
-    // const sourceHtml = await buildHtml('./src/player/index.html');
-    // await buildFormat('./src/format/format.js', './build/format.js', {
-    //     'HYDRATE': JSON.stringify(hydrate),
-    //     'SOURCE': JSON.stringify(sourceHtml),
-    //     'PACKAGE': JSON.stringify(Package),
-    // })
+    }, true);
 }
 
 doBuild();
