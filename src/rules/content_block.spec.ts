@@ -13,7 +13,7 @@ describe("Content block rule", () => {
         state.pos = 3
         expect(rule(state, false)).toBeTruthy()
         let expected = new Token('content_open', '', 1)
-        expected.attrs = [['changer', null]]
+        expected.attrs = [['changer', null!]]
         expect(state.tokens).toEqual([expected])
     })
 

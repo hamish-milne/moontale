@@ -1,5 +1,5 @@
 /// <reference lib="es2021" />
-import {build, BuildOptions, Plugin} from 'esbuild';
+import {build, BuildOptions, OnLoadResult, Plugin} from 'esbuild';
 import {pnpPlugin} from '@yarnpkg/esbuild-plugin-pnp';
 import {replace} from 'esbuild-plugin-replace';
 
@@ -8,6 +8,9 @@ import {NodeTag, parser} from 'posthtml-parser';
 import htmlnano from 'htmlnano';
 import { copyFileSync, readFileSync, writeFileSync, unlinkSync } from 'fs';
 import posthtmlInlineAssets from 'posthtml-inline-assets';
+import postcss from 'postcss';
+import cssnano from 'cssnano';
+import path from 'path';
 
 function nullLoader(filter: RegExp): Plugin {
     return {
@@ -66,7 +69,7 @@ function flattenJson(obj: object, prefix: string, excludeKeys: string[]): Record
 }
 
 const common: BuildOptions = {
-    minify: false,
+    minify: true,
     target: 'es2015',
     sourcemap: 'linked',
     write: false,
@@ -98,7 +101,20 @@ function moduleOptions(defines: Record<string, string>): BuildOptions { return {
             delimiters: ['', ''],
             ...removeUseStrict,
         }),
-        pnpPlugin(),
+        pnpPlugin({
+            async onLoad(args) {
+                const contents = readFileSync(args.path);
+                const result: OnLoadResult = {
+                    contents: contents,
+                    loader: 'default',
+                    resolveDir: path.dirname(args.path),
+                };
+                if (args.path.endsWith(".css")) {
+                    result.contents = Buffer.from((await postcss([cssnano()]).process(contents, { from: args.path })).css, 'utf8');
+                }
+                return result;
+            }
+        }),
         fixSourceMapUrl,
     ],
     external: [
@@ -198,9 +214,9 @@ async function doBuild() {
         outfile: './build/format.js',
         sourcemap: false,
     });
-    // for (const path of ['./build/player.js', './build/hydrate.js']) {
-    //     unlinkSync(path);
-    // }
+    for (const path of ['./build/player.js', './build/hydrate.js']) {
+        unlinkSync(path);
+    }
 }
 
 doBuild();
