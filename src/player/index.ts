@@ -5,9 +5,9 @@ import moontaleLib from '../../moontale-unity/Packages/com.hmilne.moontale/Runti
 
 const transitionTime = 200
 
-let output = document.getElementById('output')
-let outputContainer = document.getElementById('outputContainer')
-let luaCode = document.getElementById('lua')
+let output = document.getElementById('output')!
+let outputContainer = document.getElementById('outputContainer')!
+let luaCode = document.getElementById('lua')!
 let inputDisabled = false
 
 let toggle = document.getElementById('outputToggleInput') as HTMLInputElement
@@ -21,7 +21,7 @@ toggle.onchange = event => {
     setTimeout(outputDisplay, transitionTime)
 }
 
-let luaSrc = storyToLua(document.getElementById('storyData').children[0])
+let luaSrc = storyToLua(document.getElementById('storyData')!.children[0])
 luaCode.textContent = luaSrc
 
 let download = document.getElementById('download') as HTMLAreaElement
@@ -47,7 +47,7 @@ loadStory([moontaleLib, luaSrc], (html, invalidate) => {
 })
 
 function getEventId(event: Event): string | null {
-    let target = event.target as Element
+    let target: Element | null = event.target as Element
     while (target && !(Number(target.id) > 0)) {
         target = target.parentElement
     }

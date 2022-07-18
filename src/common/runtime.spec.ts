@@ -6,7 +6,7 @@ let moontaleLib = readFileSync(`${__dirname}/../../moontale-unity/Packages/com.h
 describe("JS runtime", () => {
 
     it("emits HTML for push/pop/text/object", () => {
-        let html: string
+        let html = ''
         loadStory([moontaleLib,
             `function SoftReset() Clear(); Push('p'); Text('text'); Object('hr'); Pop() end`
         ], x => html = x, () => {})
@@ -15,7 +15,7 @@ describe("JS runtime", () => {
     })
 
     it("responds to events from link tags", () => {
-        let html: string
+        let html = ''
         loadStory([moontaleLib, `
             LinkStyle = Show
             function SoftReset() Clear(); Link('Target')('text') end

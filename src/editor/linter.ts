@@ -9,7 +9,7 @@ const errorPattern = /]:(\d+): (.*)/
 function doLua(L: lua_State, src: string, output: Annotation[], pos: [number, number]) {
     if (lauxlib.luaL_dostring(L, enc.encode(src))) {
         let errorStr = lua.lua_tojsstring(L, lua.lua_gettop(L))
-        let [_, line, msg] = errorStr.match(errorPattern)
+        let [_, line, msg] = errorStr.match(errorPattern)!
         output.push({
             // TODO: Limit line position
             from: {ch: 0, line: pos[0] + Number(line) - 1},
@@ -59,7 +59,7 @@ function lintOne(token: Token, output: Annotation[], L: lua_State, parent: Token
 
     switch (token.type) {
     case 'inline':
-        for (const child of token.children) {
+        for (const child of token.children ?? []) {
             lintOne(child, output, L, token, state)
         }
         break
@@ -81,14 +81,13 @@ function lintOne(token: Token, output: Annotation[], L: lua_State, parent: Token
 
 function getLintingContext(passages: {text: string, tags: string[]}[]): string {
     if (passages) {
-        return [].concat(
-            passages.filter(x => x.tags.includes('startup'))
+        return passages.filter(x => x.tags.includes('startup'))
                 .concat(passages.filter(x => x.tags.includes('header')))
             .map(x => {
                 let outbuf = []
                 markdownToLua(x.text, outbuf, {level: 0, links: []})
                 return outbuf.join('\n')
-            })).join('\n')
+            }).join('\n')
     } else {
         return ''
     }

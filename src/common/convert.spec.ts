@@ -124,7 +124,7 @@ describe("Compiler", () => {
         function check(input: string, output: string) {
             let div = new JSDOM().window.document.createElement('div')
             div.innerHTML = input
-            expect(storyToLua(div.firstElementChild)).toBe(`-- Generated with Moontale\n${output}`)
+            expect(storyToLua(div.firstElementChild!)).toBe(`-- Generated with Moontale\n${output}`)
         }
 
         it('can convert simple story', () => {

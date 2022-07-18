@@ -66,10 +66,16 @@ function flattenJson(obj: object, prefix: string, excludeKeys: string[]): Record
 }
 
 const common: BuildOptions = {
-    minify: true,
+    minify: false,
     target: 'es2015',
     sourcemap: 'linked',
     write: false,
+}
+
+// Remove all 'use strict' statements from the code, and add it at the top level with 'banner'.
+const removeUseStrict = {
+    '"use strict"': '',
+    "'use strict'": '',
 }
 
 function moduleOptions(defines: Record<string, string>): BuildOptions { return {
@@ -84,7 +90,13 @@ function moduleOptions(defines: Record<string, string>): BuildOptions { return {
             'typeof exports == "object"': 'false',
             'typeof define == "function"': 'false',
             'typeof module == "object"': 'false',
-            'define.amd': 'false'
+            'define.amd': 'false',
+            ...removeUseStrict,
+        }),
+        replace({
+            include: /\.js$/,
+            delimiters: ['', ''],
+            ...removeUseStrict,
         }),
         pnpPlugin(),
         fixSourceMapUrl,
@@ -106,6 +118,9 @@ function moduleOptions(defines: Record<string, string>): BuildOptions { return {
         ['.css']: 'text',
         ['.lua']: 'text'
     },
+    banner: {
+        js: '"use strict";',
+    },
 } };
 
 async function buildJs(options: BuildOptions): Promise<string> {
@@ -117,7 +132,7 @@ async function buildJs(options: BuildOptions): Promise<string> {
             text = file.text;
         }
     }
-    return text;
+    return text!;
 }
 
 async function buildHtml(input: string): Promise<string> {
@@ -127,13 +142,16 @@ async function buildHtml(input: string): Promise<string> {
             transforms: {
                 image: {
                     resolve(node: NodeTag) {
-                        return node.tag === 'img' && node.attrs.src && require.resolve(node.attrs.src as string);
+                        return node.tag === 'img' && node.attrs && node.attrs.src && require.resolve(node.attrs.src as string);
                     },
                     transform(node: NodeTag, args: { from: string, buffer: Buffer, mime: string }) {
+                        if (!node.attrs) {
+                            return;
+                        }
                         const svgRoot = parser(args.buffer.toString('utf8'))[0] as NodeTag;
                         node.tag = 'svg';
                         Object.assign(node.attrs, svgRoot.attrs);
-                        node.attrs.src = undefined;
+                        delete node.attrs.src;
                         node.content = svgRoot.content as any[];
                     }
                 }
@@ -151,7 +169,7 @@ async function buildHtml(input: string): Promise<string> {
 
 async function doBuild() {
     const pkg = (await import("../../package.json")).default;
-    const iconName = pkg.icon.split(/\//).pop();
+    const iconName = pkg.icon.split(/\//).pop()!;
     copyFileSync(pkg.icon, `./build/${iconName}`);
     pkg.icon = iconName;
     const packageDefines = flattenJson(pkg, "PACKAGE.", ["dependencies", "devDependencies"]);
@@ -180,9 +198,9 @@ async function doBuild() {
         outfile: './build/format.js',
         sourcemap: false,
     });
-    for (const path of ['./build/player.js', './build/hydrate.js']) {
-        unlinkSync(path);
-    }
+    // for (const path of ['./build/player.js', './build/hydrate.js']) {
+    //     unlinkSync(path);
+    // }
 }
 
 doBuild();
