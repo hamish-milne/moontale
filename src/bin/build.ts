@@ -26,11 +26,14 @@ function nullLoader(filter: RegExp): Plugin {
     }
 }
 
-const sourceMapPrefix = 'http://localhost:8080/';
+const sourceMapPrefix = process.argv[2]?.toString()
 const fixSourceMapUrl: Plugin = {
     name: 'fixSourceMapUrl',
     setup(build) {
         build.onEnd(result => {
+            if (!sourceMapPrefix) {
+                return;
+            }
             result.outputFiles = result.outputFiles?.map(file => {
                 if (file.path.endsWith(".js")) {
                     const newText = file.text.replaceAll(/^(\/\/# sourceMappingURL=)(.*)$/gm, (_, p1, p2) => {

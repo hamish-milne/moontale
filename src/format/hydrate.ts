@@ -1,5 +1,5 @@
 export const twine = {
-    ['^2.4.0']: {
+    [PACKAGE.runtimes.twine]: {
         codeMirror: {
             mode: (...args) => {
                 const mode = require('../editor/mode');

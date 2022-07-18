@@ -11,7 +11,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: yarn install --immutable
-    - run: yarn build
+    - run: yarn build https://hamish-milne.github.io/moontale/
     - run: sudo apt-get install luarocks
     - run: sudo luarocks install busted
     - working-directory: ./lua
