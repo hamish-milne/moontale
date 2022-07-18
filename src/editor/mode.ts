@@ -6,7 +6,7 @@ import 'codemirror/mode/markdown/markdown'
 // We need to use a custom modification of the default Lua mode which
 // removes the case-insensitivity of the delimiter regexes.
 // import 'codemirror/mode/lua/lua'
-import './mode-lua'
+import './codemirror-mode-lua'
 
 import type { EditorConfiguration, Mode } from 'codemirror'
 import { setup } from './setup'

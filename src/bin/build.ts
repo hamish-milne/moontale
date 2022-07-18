@@ -6,7 +6,7 @@ import {replace} from 'esbuild-plugin-replace';
 import PostHTML from 'posthtml';
 import {NodeTag, parser} from 'posthtml-parser';
 import htmlnano from 'htmlnano';
-import { copyFileSync, readFileSync, writeFileSync } from 'fs';
+import { copyFileSync, readFileSync, writeFileSync, unlinkSync } from 'fs';
 import posthtmlInlineAssets from 'posthtml-inline-assets';
 
 function nullLoader(filter: RegExp): Plugin {
@@ -18,7 +18,7 @@ function nullLoader(filter: RegExp): Plugin {
                     contents: '',
                     loader: 'js'
                 }
-            })
+            });
         },
     }
 }
@@ -50,29 +50,41 @@ const fixSourceMapUrl: Plugin = {
     }
 }
 
+function flattenJson(obj: object, prefix: string, excludeKeys: string[]): Record<string, string> {
+    const result: Record<string, string> = {};
+    for (const [key, value] of Object.entries(obj)) {
+        if (excludeKeys.includes(key)) {
+            continue;
+        }
+        if (typeof value === 'object') {
+            Object.assign(result, flattenJson(value, `${prefix}${key}.`, excludeKeys));
+        } else {
+            result[`${prefix}${key}`] = JSON.stringify(value);
+        }
+    }
+    return result;
+}
+
 const common: BuildOptions = {
-    minifyWhitespace: false,
-    minifyIdentifiers: false,
-    minifySyntax: false,
+    minify: true,
     target: 'es2015',
     sourcemap: 'linked',
     write: false,
 }
 
-function moduleOptions(pkg: any, placeholders: Record<string, string>): BuildOptions { return {
+function moduleOptions(defines: Record<string, string>): BuildOptions { return {
     ...common,
     plugins: [
         nullLoader(/mdurl/),
+        // Force CodeMirror modes to use the 'plain browser env', rather than
+        //   importing a new CodeMirror instance.
         replace({
-            include: /\.js$/,
-            // Force CodeMirror modes to use the 'plain browser env', rather than
-            //   importing a new CodeMirror instance.
-            // NOTE: This is terrible! It basically hacks around CodeMirror's own hack.
-            // NOTE: This might break other things!!!
-            'typeof exports': 'undefined',
-            'typeof define': 'undefined',
-            'typeof module': 'undefined',
-            ...placeholders,
+            include: /codemirror.*\.js$/,
+            delimiters: ['', ''],
+            'typeof exports == "object"': 'false',
+            'typeof define == "function"': 'false',
+            'typeof module == "object"': 'false',
+            'define.amd': 'false'
         }),
         pnpPlugin(),
         fixSourceMapUrl,
@@ -88,7 +100,7 @@ function moduleOptions(pkg: any, placeholders: Record<string, string>): BuildOpt
         // Excludes nodejs-specific stuff from Fengari
         "process.env.FENGARICONF": "undefined",
         "process": "undefined",
-        "PACKAGE": JSON.stringify(pkg)
+        ...defines
     },
     loader: {
         ['.css']: 'text',
@@ -96,28 +108,11 @@ function moduleOptions(pkg: any, placeholders: Record<string, string>): BuildOpt
     },
 } };
 
-function formatOptions(pkg: any, placeholders: Record<string, string>): BuildOptions {
-    return {
-        ...common,
-        plugins: [
-            replace(placeholders),
-            fixSourceMapUrl,
-        ],
-        define: {
-            PACKAGE: JSON.stringify(pkg)
-        },
-        bundle: false,
-        format: undefined,
-    }
-}
-
-async function buildJs(options: BuildOptions, writeJs = false): Promise<string> {
+async function buildJs(options: BuildOptions): Promise<string> {
     const result = await build(options);
     let text: string;
     for (const file of result.outputFiles ?? []) {
-        if (writeJs || !file.path.endsWith(".js")) {
-            writeFileSync(file.path, file.contents);
-        }
+        writeFileSync(file.path, file.contents);
         if (file.path.endsWith(".js")) {
             text = file.text;
         }
@@ -155,21 +150,13 @@ async function buildHtml(input: string): Promise<string> {
 }
 
 async function doBuild() {
-    const Package = (await import("../../package.json")).default;
-    const iconName = Package.icon.split(/\//).pop();
-    copyFileSync(Package.icon, `./build/${iconName}`);
-    Package.icon = iconName;
-    const modeFactory = await buildJs({
-        ...moduleOptions(Package, {}),
-        entryPoints: ['./src/editor/mode.ts'],
-        outfile: './build/mode.js',
-        globalName: 'mode',
-    });
+    const pkg = (await import("../../package.json")).default;
+    const iconName = pkg.icon.split(/\//).pop();
+    copyFileSync(pkg.icon, `./build/${iconName}`);
+    pkg.icon = iconName;
+    const packageDefines = flattenJson(pkg, "PACKAGE.", ["dependencies", "devDependencies"]);
     const hydrate_raw = await buildJs({
-        ...moduleOptions(Package, {
-            'MODE_FACTORY': modeFactory,
-            'PACKAGE': JSON.stringify(Package),
-        }),
+        ...moduleOptions(packageDefines),
         entryPoints: ['./src/format/hydrate.ts'],
         outfile: './build/hydrate.js',
         globalName: 'DUMMY_GLOBAL_NAME',
@@ -177,19 +164,25 @@ async function doBuild() {
     // NOTE: To ensure sourcemaps work correctly, these two strings should be the same length:
     const hydrate = hydrate_raw.replace('var DUMMY_GLOBAL_NAME', 'this.editorExtensions');
     await buildJs({
-        ...moduleOptions(Package, {}),
+        ...moduleOptions(packageDefines),
         entryPoints: ['./src/player/index.ts'],
         outfile: './build/player.js',
-    }, true);
+    });
     const sourceHtml = await buildHtml('./src/player/index.html');
     await buildJs({
-        ...formatOptions(Package, {
+        ...common,
+        define: {
+            ...packageDefines,
             'HYDRATE': JSON.stringify(hydrate),
             'SOURCE': JSON.stringify(sourceHtml),
-        }),
+        },
         entryPoints: ['./src/format/format.js'],
         outfile: './build/format.js',
-    }, true);
+        sourcemap: false,
+    });
+    for (const path of ['./build/player.js', './build/hydrate.js']) {
+        unlinkSync(path);
+    }
 }
 
 doBuild();
