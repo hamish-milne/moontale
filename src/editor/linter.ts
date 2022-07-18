@@ -1,6 +1,5 @@
-
 import { Annotation, Linter } from 'codemirror/addon/lint/lint'
-import { parse, markdownToLua } from "./convert"
+import { parse, markdownToLua } from "../common/convert"
 import Token from 'markdown-it/lib/token'
 import { lua, lauxlib, lualib, lua_State } from 'fengari'
 
@@ -10,7 +9,7 @@ const errorPattern = /]:(\d+): (.*)/
 function doLua(L: lua_State, src: string, output: Annotation[], pos: [number, number]) {
     if (lauxlib.luaL_dostring(L, enc.encode(src))) {
         let errorStr = lua.lua_tojsstring(L, lua.lua_gettop(L))
-        let [_, line, msg] = errorStr.match(errorPattern)
+        let [_, line, msg] = errorStr.match(errorPattern)!
         output.push({
             // TODO: Limit line position
             from: {ch: 0, line: pos[0] + Number(line) - 1},
@@ -60,7 +59,7 @@ function lintOne(token: Token, output: Annotation[], L: lua_State, parent: Token
 
     switch (token.type) {
     case 'inline':
-        for (const child of token.children) {
+        for (const child of token.children ?? []) {
             lintOne(child, output, L, token, state)
         }
         break
@@ -82,14 +81,13 @@ function lintOne(token: Token, output: Annotation[], L: lua_State, parent: Token
 
 function getLintingContext(passages: {text: string, tags: string[]}[]): string {
     if (passages) {
-        return [].concat(
-            passages.filter(x => x.tags.includes('startup'))
+        return passages.filter(x => x.tags.includes('startup'))
                 .concat(passages.filter(x => x.tags.includes('header')))
             .map(x => {
                 let outbuf = []
                 markdownToLua(x.text, outbuf, {level: 0, links: []})
                 return outbuf.join('\n')
-            })).join('\n')
+            }).join('\n')
     } else {
         return ''
     }
@@ -100,7 +98,7 @@ export function makeLinter(lib: string, passages: () => {text: string, tags: str
         // TODO: This isn't super performant. Is it possible to copy the Lua state? Or run the linted code in a sandbox?
         let L = lauxlib.luaL_newstate()
         lualib.luaL_openlibs(L)
-        for (let fname of ["Log", "Push", "Pop", "Text", "Object", "Clear", "Invalidate"]) {
+        for (let fname of ["Log", "Push", "Pop", "Text", "Object", "Clear", "Invalidate", "print"]) {
             lua.lua_register(L, fname, L => 0)
         }
         let output: Annotation[] = []

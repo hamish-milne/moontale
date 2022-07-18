@@ -70,10 +70,10 @@ export default function (state: StateInline, silent: boolean): boolean {
 
     // If the link matches [[ ->Foo]], then just display Foo inline
     if (ltrLink !== -1 && state.src.slice(state.pos, state.posMax).trim() == "") {
-        state.push('link_inline', '', 0).attrs = [ ['href', target], ['changer', changer] ]
+        state.push('link_inline', '', 0).attrs = [ ['href', target], ['changer', changer!] ]
     } else {
         // The label can contain tokens itself, so we need to call 'tokenize' here
-        state.push('link_open', 'a', 1).attrs = [ ['href', target], ['changer', changer] ]
+        state.push('link_open', 'a', 1).attrs = [ ['href', target], ['changer', changer!] ]
         state.md.inline.tokenize(state)
         state.push('link_close', 'a', -1)
     }

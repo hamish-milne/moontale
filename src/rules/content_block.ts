@@ -16,7 +16,7 @@ export default function (state: StateInline, silent: boolean): boolean {
             changer = null
         }
 
-        state.push('content_open', '', 1).attrs = [['changer', changer]]
+        state.push('content_open', '', 1).attrs = [['changer', changer!]]
         state.pos++
         return true
     }

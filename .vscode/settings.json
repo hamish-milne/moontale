@@ -11,5 +11,5 @@
   },
   "typescript.tsdk": ".yarn/sdks/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
-  "jest.jestCommandLine": "yarn jest",
+  "jest.jestCommandLine": "yarn jest"
 }

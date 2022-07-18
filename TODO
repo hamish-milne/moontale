@@ -1,4 +1,5 @@
 -- file:///C:/Workspace/moontale/build/format.js
+-- file:///C:/Workspace/moontale/dist/format.js
 Build the format.json file:
     ✔ Inline the JS @done(21-04-17 00:18)
     ✔ Inline the CSS @done(21-04-17 00:18)

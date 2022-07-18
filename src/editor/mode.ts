@@ -1,32 +1,18 @@
+import './twine24compat'
 import 'codemirror/addon/mode/multiplex'
 import 'codemirror/addon/mode/overlay'
 import 'codemirror/addon/mode/simple'
-import 'codemirror/addon/lint/lint'
 import 'codemirror/mode/markdown/markdown'
 // We need to use a custom modification of the default Lua mode which
 // removes the case-insensitivity of the delimiter regexes.
 // import 'codemirror/mode/lua/lua'
-import './mode-lua'
-import editorCss from './editor.css'
-import { makeLinter } from "./linter"
-import lintCss from "codemirror/addon/lint/lint.css"
-import { Editor, EditorConfiguration, Mode } from 'codemirror'
-import moontaleLib from '../moontale-unity/Packages/com.hmilne.moontale/Runtime/moontale.lua'
+import './codemirror-mode-lua'
 
-function loadExtraCss(id: string, src: string) {
-    let styleContainer = document.querySelector(`style#${id}`);
-    if (!styleContainer) {
-        styleContainer = document.createElement('style')
-        styleContainer.setAttribute('id', id)
-        document.head.appendChild(styleContainer)
-    }
-    styleContainer.innerHTML = src
-}
+import type { EditorConfiguration, Mode } from 'codemirror'
+import { setup } from './setup'
 
-loadExtraCss('cm-lint', lintCss)
-loadExtraCss('cm-moontale', editorCss)
+export default function(config: EditorConfiguration): Mode<any> {
 
-function modeFactory(config: EditorConfiguration): Mode<any> {
     let modeObj = window.CodeMirror.simpleMode(config, {
     start: [
         {regex: /\{\$/, token: 'tag', mode: {spec: 'lua', end: /\$\}/}},
@@ -50,24 +36,7 @@ function modeFactory(config: EditorConfiguration): Mode<any> {
         {regex: /\{/, token: 'bracket', mode: {spec: 'lua', end: /\}/}},
         {regex: '', pop: true},
     ]
-    }) 
-    let cm = (modeFactory as any).cm as Editor | undefined
-    // This is a TwineJS hack that lets us access the CodeMirror Editor instance
-    if (cm != undefined) {
-        cm.setOption("lint", true)
-        cm.setOption("lineNumbers", true);
-        cm.setOption("indentWithTabs", true);
-        cm.setOption("indentUnit", 4);
-        // HACK: Force a change to get it to lint for the first time
-        for (let f of (cm as any)._handlers.change) {
-            f(cm)
-        }
-    }
+    });
+    setup();
     return modeObj
 }
-
-window.CodeMirror.defineMode('moontale', modeFactory)
-
-window.CodeMirror.registerHelper('lint', 'moontale', makeLinter(moontaleLib,
-    () => (document.querySelector('div#storyEditView') as any)?.__vue__?.story?.passages ?? []    
-))

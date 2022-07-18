@@ -1,4 +1,4 @@
-import { storyToLua } from "./convert";
+import { storyToLua } from "../common/convert";
 
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
@@ -19,7 +19,7 @@ import { JSDOM } from "jsdom";
       handler: function (argv) {
         const input = new JSDOM(readFileSync(String(argv.input), "utf8"));
         const output = storyToLua(
-          input.window.document.getElementById("storyData").children[0]
+          input.window.document.getElementById("storyData")!.children[0]
         );
         writeFileSync(String(argv.output), output);
       },

@@ -1,8 +1,8 @@
-import content_block from './rules/content_block'
-import expression from './rules/expression'
-import passage_link from './rules/passage_link'
-import variable from './rules/variable'
-import script_block from './rules/script_block'
+import content_block from '../rules/content_block'
+import expression from '../rules/expression'
+import passage_link from '../rules/passage_link'
+import variable from '../rules/variable'
+import script_block from '../rules/script_block'
 import Token from 'markdown-it/lib/token'
 import ParserInline from 'markdown-it/lib/parser_inline'
 import ParserBlock from 'markdown-it/lib/parser_block'
@@ -30,7 +30,7 @@ const md = {
         if (typeof src !== 'string') {
             throw new Error('Input data should be a String');
         }
-        var state = new this.core.State(src, this, env);
+        var state = new this.core.State(src, this as any, env);
         this.core.process(state);
         return state.tokens;
     } 
@@ -62,7 +62,7 @@ function renderOne(input: Token, output: string[], state: {level: number, links:
     const href = escape(input.attrGet('href') ?? '')
     switch (input.type) {
     case 'inline':
-        for (const child of input.children) {
+        for (const child of input.children!) {
             renderOne(child, output, state)
         }
         break
@@ -174,7 +174,7 @@ export function storyToLua(story: Element): string {
     let startNode = story.getAttribute('startnode')
     let startNodeName: string | null = null
     const buf: string[] = ['-- Generated with Moontale']
-    buf.push(`story = '${escape(story.getAttribute('name'))}'`)
+    buf.push(`story = '${escape(story.getAttribute('name')!)}'`)
     buf.push(`Passages = {`)
     for (let i = 0; i < story.children.length; i++) {
         let node = story.children[i]
@@ -182,8 +182,8 @@ export function storyToLua(story: Element): string {
             if (startNode === node.getAttribute('pid')) {
                 startNodeName = node.getAttribute('name')
             }
-            buf.push(`  ['${escape(node.getAttribute('name'))}'] = {`)
-            let tags = node.getAttribute('tags').split(' ')
+            buf.push(`  ['${escape(node.getAttribute('name')!)}'] = {`)
+            let tags = node.getAttribute('tags')!.split(' ')
             if (tags.length === 1 && tags[0] === '') {
                 tags = []
             }
@@ -191,14 +191,14 @@ export function storyToLua(story: Element): string {
             buf.push(`    position = {${node.getAttribute('position')}},`)
             buf.push(`    content = function()`)
             let links: string[] = []
-            markdownToLua(node.textContent, buf, {level: 3, links})
+            markdownToLua(node.textContent!, buf, {level: 3, links})
             buf.push(`    end,`)
             buf.push(`    links = { ${links.map(t => `'${escape(t)}'`).join(',')} }`)
             buf.push(`  },`)
         }
     }
     buf.push(`}`)
-    buf.push(`StartPassage = '${escape(startNodeName)}'`)
+    buf.push(`StartPassage = '${escape(startNodeName!)}'`)
 
     return buf.join('\n')
 }

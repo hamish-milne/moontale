@@ -21,7 +21,7 @@ export function loadStory(src: string[], emitFn: (html: string, invalidate: bool
 
     lua.lua_register(L, "print", L => {
         let l = lua.lua_gettop(L)
-        let args = []
+        let args: string[] = []
         for (let i = 1; i <= l; i++) {
             args.push(lua.lua_tojsstring(L, i))
         }
@@ -84,10 +84,13 @@ export function loadStory(src: string[], emitFn: (html: string, invalidate: bool
         return 0
     })
 
-    src.map(x => lauxlib.luaL_dostring(L, enc.encode(x)))
+    src.map(x => lauxlib.luaL_dostring(L!, enc.encode(x)))
 }
 
 export function raiseEvent(event: string, id: string) {
+    if (L == null) {
+        return;
+    }
     lua.lua_getglobal(L, 'RaiseEvent')
     lua.lua_pushstring(L, event)
     lua.lua_pushstring(L, id)
@@ -100,6 +103,9 @@ export function raiseEvent(event: string, id: string) {
 }
 
 export function start() {
+    if (L == null) {
+        return;
+    }
     lua.lua_getglobal(L, 'SoftReset')
     lua.lua_call(L, 0, 0)
     emit?.(buf.join(''), invalidated)
@@ -108,6 +114,9 @@ export function start() {
 }
 
 export function update(deltaTime: number) {
+    if (L == null) {
+        return;
+    }
     lua.lua_getglobal(L, 'Update')
     lua.lua_pushnumber(L, deltaTime)
     lua.lua_call(L, 1, 0)
