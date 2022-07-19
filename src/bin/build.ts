@@ -134,8 +134,10 @@ function moduleOptions(defines: Record<string, string>): BuildOptions { return {
         ...defines
     },
     loader: {
-        ['.css']: 'text',
-        ['.lua']: 'text'
+        '.css': 'text',
+        '.lua': 'text',
+        '.svg': 'dataurl',
+        '.png': 'dataurl',
     },
     banner: {
         js: '"use strict";',
