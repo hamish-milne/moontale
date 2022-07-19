@@ -8,4 +8,7 @@ declare module 'codemirror' {
         // tslint:disable-next-line:no-unnecessary-generics
         states: { [P in K]: P extends 'meta' ? Record<string, any> : Rule[] } & { start: Rule[] },
     ): Mode<unknown>;
+
+    interface EditorConfiguration extends CommentOptions {
+    }
 }

@@ -1,6 +1,6 @@
-import { Annotation, Linter } from 'codemirror/addon/lint/lint'
+import type { Annotation, Linter } from 'codemirror/addon/lint/lint'
 import { parse, markdownToLua } from "../common/convert"
-import Token from 'markdown-it/lib/token'
+import type Token from 'markdown-it/lib/token'
 import { lua, lauxlib, lualib, lua_State } from 'fengari'
 
 const enc = new TextEncoder()

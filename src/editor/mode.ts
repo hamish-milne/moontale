@@ -1,4 +1,3 @@
-import './twine24compat'
 import 'codemirror/addon/mode/multiplex'
 import 'codemirror/addon/mode/overlay'
 import 'codemirror/addon/mode/simple'
@@ -9,7 +8,6 @@ import 'codemirror/mode/markdown/markdown'
 import './codemirror-mode-lua'
 
 import type { EditorConfiguration, Mode } from 'codemirror'
-import { setup } from './setup'
 
 export default function(config: EditorConfiguration): Mode<any> {
 
@@ -37,6 +35,5 @@ export default function(config: EditorConfiguration): Mode<any> {
         {regex: '', pop: true},
     ]
     });
-    setup();
     return modeObj
 }
