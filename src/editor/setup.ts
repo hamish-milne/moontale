@@ -1,6 +1,6 @@
 import 'codemirror/addon/lint/lint'
 import { makeLinter } from "./linter"
-import { getCodeMirror, getNamespace, getPassages } from './twine_hacks'
+import { getEditorInstances, getNamespace, getPassages } from './twine_hacks'
 
 import editorCss from './editor.css'
 import lintCss from "codemirror/addon/lint/lint.css"
@@ -19,9 +19,8 @@ function loadExtraCss(id: string, src: string) {
 export function setup() {
     loadExtraCss('cm-lint', lintCss)
     loadExtraCss('cm-moontale', editorCss)
-    let cm = getCodeMirror();
-    if (cm != undefined) {
-        window.CodeMirror.registerHelper('lint', getNamespace(), makeLinter(moontaleLib, getPassages));
+    window.CodeMirror.registerHelper('lint', getNamespace(), makeLinter(moontaleLib, getPassages));
+    for (const cm of getEditorInstances()) {
         cm.setOption("lint", true)
         cm.setOption("lineNumbers", true);
         cm.setOption("indentWithTabs", true);
