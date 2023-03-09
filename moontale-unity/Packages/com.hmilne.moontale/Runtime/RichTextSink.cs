@@ -162,7 +162,7 @@ public abstract class RichTextSink : Sink, IPointerClickHandler, IPointerEnterHa
 
     public void OnPointerClick(PointerEventData eventData) {
         var linkId = GetLinkId(eventData);
-        if (!string.IsNullOrEmpty(linkId)) {
+        if (!string.IsNullOrEmpty(linkId) && linkId == lastLink) {
             Source.RaiseEvent("click", linkId);
         }
     }
