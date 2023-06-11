@@ -1,3 +1,4 @@
+#if ENABLE_TMP
 using UnityEngine;
 using UnityEngine.EventSystems;
 using TMPro;
@@ -67,3 +68,4 @@ public class MoontaleTextMeshProSink : RichTextSink
 }
 
 }
+#endif

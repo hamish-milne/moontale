@@ -111,7 +111,8 @@ public class MoontaleTextSink : RichTextSink
 
     protected override string GetLinkId(PointerEventData eventData) {
         var textInfo = text.cachedTextGenerator;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, eventData.position, null, out var pos);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, eventData.position, text.canvas.worldCamera, out var pos);
+        pos *= text.pixelsPerUnit;
 
         // Find the clicked line based on the Y position
         var line = textInfo.lines.Select((l, i) => (l, i))
